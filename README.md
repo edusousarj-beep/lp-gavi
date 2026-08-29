@@ -29,13 +29,15 @@ npx http-server -p 8000 .
 
 ## Antes de publicar
 
-Três valores são placeholder e precisam ser preenchidos:
+Número do SDR e id do pixel já estão preenchidos. Falta só:
 
 | Onde | O quê |
 | --- | --- |
-| `assets/js/sdr.js` → `CONFIG.phone` | número do SDR, internacional, só dígitos |
-| `index.html` → `fbq('init', 'PIXEL_ID')` | id do pixel |
 | `index.html` → `og:image`, `og:url` | quando o domínio estiver definido |
+
+O número do SDR aparece em dois lugares e os dois precisam bater: o
+`CONFIG.phone` do `sdr.js` e o `href` de fallback do `<a data-sdr>` no HTML —
+esse segundo é o que vale quando o JS não carrega.
 
 ## Como a atribuição funciona
 

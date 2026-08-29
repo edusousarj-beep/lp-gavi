@@ -15,8 +15,8 @@
   'use strict';
 
   var CONFIG = {
-    // TODO: número real do SDR, formato internacional, só dígitos.
-    phone: '5500000000000',
+    // SDR: +55 21 99910-0432
+    phone: '5521999100432',
     message: 'Oi, Gavi! Vim pela página da mentoria e quero ver como funciona por dentro.',
     storageKey: 'gavi.attrib',
     ttlDays: 90,
