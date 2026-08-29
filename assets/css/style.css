@@ -2,14 +2,15 @@
    Tokens — nenhuma cor literal existe fora deste bloco.
    ========================================================================== */
 :root {
-  --bg:         #0A0A0B;
-  --surface:    #131316;
-  --border:     #222226;
-  --accent:     #C6F84E;
-  --accent-dim: #8FBF2E;
-  --text:       #FAFAFA;
-  --text-2:     #A1A1A6;
-  --text-3:     #6E6E73;
+  --bg:          #062D33;  /* petróleo escuro */
+  --surface:     #1B6070;  /* cards do bento */
+  --border:      #0E404A;  /* derivado: mesma sutileza da borda antiga (1.29:1) */
+  --accent:      #E32443;  /* ÚNICO acento */
+  --accent-dim:  #C00E2B;  /* hover e estados pressionados */
+  --accent-soft: #FFA8B7;  /* auxiliar. Tinta do vermelho, não um segundo acento */
+  --text:        #FEFEFE;  /* headline */
+  --text-2:      #B5D4D7;  /* corpo */
+  --text-3:      #729599;  /* derivado do --text-2: labels, eyebrow */
 
   --radius:      16px;
   --radius-pill: 999px;
@@ -103,7 +104,12 @@ a { color: inherit; }
   padding: var(--s1) var(--s2);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  /*
+   * Vazado, não preenchido com --surface. O surface da marca é um teal claro:
+   * preenchido, o eyebrow vira um bloco que compete com a headline, e --text-3
+   * sobre ele cai para 2.19:1. Sobre o --bg, --text-3 dá 4.52:1.
+   */
+  background: transparent;
 }
 
 /* ==========================================================================
@@ -145,7 +151,11 @@ a { color: inherit; }
   overflow: hidden;
 }
 
-/* Brilho de fundo. Mesmo acento, muito diluído — não conta como segunda cor. */
+/*
+ * Luz ambiente no teal da marca, não no acento. Vermelho diluído sobre o
+ * petróleo dá uma mancha arroxeada suja; e gastar o acento no fundo tira do
+ * botão a exclusividade dele. Assim o único vermelho da viewport é o CTA.
+ */
 .hero__glow {
   position: absolute;
   z-index: -1;
@@ -154,8 +164,8 @@ a { color: inherit; }
   width: 640px;
   height: 640px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 62%);
-  opacity: 0.16;
+  background: radial-gradient(circle, var(--surface) 0%, transparent 62%);
+  opacity: 0.55;
   filter: blur(60px);
   pointer-events: none;
 }
@@ -221,7 +231,11 @@ a { color: inherit; }
 
 .btn--primary {
   background: var(--accent);
-  color: var(--bg);
+  /*
+   * Texto claro, ao contrário do lime anterior. O vermelho da marca é escuro:
+   * --bg sobre --accent dá 3.21:1 e reprova em AA; --text dá 4.53:1 e passa.
+   */
+  color: var(--text);
   box-shadow: 0 0 40px -8px var(--accent);
 }
 
@@ -274,7 +288,7 @@ a { color: inherit; }
     width: 900px;
     height: 900px;
     right: -20%;
-    opacity: 0.2;
+    opacity: 0.6;
   }
 
   .hero__actions { flex-direction: row; align-items: center; gap: var(--s3); }

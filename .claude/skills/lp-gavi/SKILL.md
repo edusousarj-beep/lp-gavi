@@ -26,8 +26,9 @@ Estas regras vêm de decisões já tomadas. Não as reverta sem o usuário pedir
 3. **Não dispare `LeadQualificado` no clique do botão.** Esse evento é o sinal de
    renda qualificada usado para otimizar campanha no Meta. Sujar ele com clique
    de página destrói a otimização. Use um evento separado para o clique.
-4. **Uma cor de acento só.** Se o pedido introduzir uma segunda cor viva,
-   avise que isso quebra o sistema antes de implementar.
+4. **Uma cor de acento só.** O acento é `--accent`. `--accent-soft` é tinta
+   dele, com uso restrito (ver Design tokens); qualquer outra cor viva quebra o
+   sistema — avise antes de implementar.
 5. **Sem depoimento inventado.** Se não houver depoimento real disponível,
    deixe o slot vazio e sinalize — não escreva um placeholder que pareça real.
 
@@ -37,18 +38,42 @@ Definidos em `:root`. Nunca escreva cor literal fora daqui.
 
 ```css
 :root {
-  --bg:        #0A0A0B;   /* fundo base */
-  --surface:   #131316;   /* cards do bento */
-  --border:    #222226;
-  --accent:    #C6F84E;   /* ÚNICO acento — ajustar ao definitivo da marca */
-  --accent-dim:#8FBF2E;
-  --text:      #FAFAFA;   /* headline */
-  --text-2:    #A1A1A6;   /* corpo */
-  --text-3:    #6E6E73;   /* labels, eyebrow */
-  --radius:    16px;
+  --bg:          #062D33;  /* petróleo escuro — fundo base */
+  --surface:     #1B6070;  /* cards do bento */
+  --border:      #0E404A;  /* derivado */
+  --accent:      #E32443;  /* ÚNICO acento — botões e destaques */
+  --accent-dim:  #C00E2B;  /* hover e estados pressionados */
+  --accent-soft: #FFA8B7;  /* auxiliar — ver restrição abaixo */
+  --text:        #FEFEFE;  /* headline */
+  --text-2:      #B5D4D7;  /* corpo */
+  --text-3:      #729599;  /* derivado do --text-2 — labels, eyebrow */
+  --radius:      16px;
   --radius-pill: 999px;
 }
 ```
+
+Cores da marca: `--bg`, `--surface`, `--accent`, `--accent-dim`, `--text`,
+`--text-2` (`#B5D4D7`) e `--accent-soft` (`#FFA8B7`). `--border` e `--text-3`
+são derivados, calculados para contraste — não os troque no olho.
+
+### Regras de contraste desta paleta
+
+O vermelho da marca é escuro. Isso inverte coisas que valiam na paleta antiga:
+
+- **Texto do botão primário é `--text`, não `--bg`.** `--bg` sobre `--accent` dá
+  3.21:1 e reprova em AA. `--text` sobre `--accent` dá 4.53:1 e passa.
+- **`--text-3` só existe sobre `--bg`** (4.52:1). Sobre `--surface` cai para
+  2.19:1. Em card de `--surface`, use `--text` (7.05:1) ou `--text-2` (4.52:1).
+- **`--surface` é um teal claro**, não um cinza quase preto como antes. Painel
+  preenchido com ele pesa muito: use em card de bento de verdade, não em chip,
+  badge ou eyebrow. Esses ficam vazados, com `--border`.
+
+### `--accent-soft` (#FFA8B7)
+
+É uma tinta do vermelho, não um segundo acento. Vale para tinta de ícone dentro
+de superfície vermelha, ou ênfase inline pequena. **Não** vale para botão,
+badge, borda de destaque ou qualquer coisa que dispute atenção com o CTA — isso
+é a regra 4 sendo quebrada por outro caminho.
 
 Escala de espaçamento: 8 / 16 / 24 / 40 / 64 / 96 / 144 px. Nada fora dela.
 
@@ -56,7 +81,7 @@ Tipografia: uma grotesk, **dois pesos apenas** (400 e 700/800).
 Headline em clamp, corpo em 16–18px, eyebrow em 11–12px com `letter-spacing:
 0.14em; text-transform: uppercase; color: var(--text-3)`.
 
-Botão primário: pill, fundo `--accent`, texto escuro, glow via
+Botão primário: pill, fundo `--accent`, texto `--text`, glow via
 `box-shadow: 0 0 40px -8px var(--accent)`. Um botão primário por viewport.
 
 ## Arquitetura de seções
@@ -99,13 +124,14 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 `ref/` contém frames de uma LP usada como referência de estilo (agência Dr.
 Reels, capturada em vídeo de celular filmando um monitor).
 
-**Use para layout e hierarquia. Não use para cor.** A câmera estourou o verde
-neon — as cores do arquivo não correspondem às cores reais da página. Os tokens
-acima mandam.
+**Use para layout e hierarquia. Não use para cor.** A referência é verde sobre
+preto e a página é vermelho sobre petróleo — não há relação de cor entre as
+duas. Os tokens acima mandam.
 
 ## Antes de dar por pronto
 
-- [ ] Um só acento em toda a página
+- [ ] Um só acento em toda a página (`--accent-soft` não conta como segundo)
+- [ ] Texto sobre `--accent` e sobre `--surface` conferido contra as regras de contraste
 - [ ] Nenhuma menção ao método ou a preço
 - [ ] Todos os CTAs no mesmo destino, com UTM sobrevivendo
 - [ ] Evento de clique separado de `LeadQualificado`
