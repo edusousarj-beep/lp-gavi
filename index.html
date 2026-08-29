@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inglês com a Gavi — veja a mentoria por dentro</title>
+  <meta name="description" content="Veja como a mentoria de inglês da Gavi funciona por dentro: a rotina real, o ritmo da semana e o que muda de verdade. Depois você decide.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Inglês com a Gavi — veja a mentoria por dentro">
+  <meta property="og:description" content="A rotina real de quem está destravando o inglês. Sem promessa mágica.">
+  <!-- TODO: og:image (1200x630) e og:url quando o domínio estiver definido. -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Uma grotesk, dois pesos apenas. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!--
+    Meta Pixel — só PageView aqui.
+    `LeadQualificado` NÃO pertence a esta página: é o sinal de renda qualificada
+    usado para otimizar a campanha, e quem dispara é o SDR depois de qualificar.
+    O clique do botão tem evento próprio (ClickSDR), em assets/js/sdr.js.
+  -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'PIXEL_ID'); /* TODO: id do pixel */
+    fbq('track', 'PageView');
+  </script>
+</head>
+<body>
+
+  <header class="site-head">
+    <div class="wrap site-head__inner">
+      <a class="brand" href="/">Inglês com a Gavi</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__glow" aria-hidden="true"></div>
+
+      <div class="wrap hero__inner">
+        <p class="eyebrow eyebrow--pill" data-reveal>Mentoria de inglês</p>
+
+        <h1 class="hero__title" id="hero-title" data-reveal>
+          Veja a mentoria <em>por dentro</em> antes de decidir.
+        </h1>
+
+        <p class="hero__lede" data-reveal>
+          Sem aula demonstrativa, sem promessa mágica. Você vê a rotina real de
+          quem está destravando o inglês: como é uma semana, o que se pratica e
+          o que muda de verdade. Depois você decide.
+        </p>
+
+        <div class="hero__actions" data-reveal>
+          <!--
+            href de fallback: funciona sem JS. Ao carregar, sdr.js reescreve o
+            link com a origem da campanha embutida na mensagem.
+          -->
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="hero"
+             href="https://wa.me/5500000000000"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+            </svg>
+            <span>Quero ver por dentro</span>
+          </a>
+
+          <p class="hero__micro">
+            Chama no WhatsApp. Responde gente, não robô.
+          </p>
+        </div>
+
+        <!--
+          Slot de números (alunas, tempo médio, etc.) fica aqui.
+          Deixado vazio de propósito: sem dado real conferido, não entra número
+          na página. Preencher com o que a Gavi puder comprovar.
+        -->
+      </div>
+    </section>
+
+    <!--
+      Próximas seções, na ordem definida:
+      2. Veja por dentro (vídeo real de 30–60s)
+      3. A semana de uma aluna (bento grid)
+      4. Quem conduz (Bruna Gavioli)
+      5. Prova (depoimentos — vídeo tem prioridade)
+      6. Objeções (accordion)
+      7. CTA final
+      Botão do SDR se repete a cada duas seções, sempre com data-sdr.
+    -->
+  </main>
+
+  <script src="assets/js/sdr.js" defer></script>
+  <script src="assets/js/reveal.js" defer></script>
+</body>
+</html>
