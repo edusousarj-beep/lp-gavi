@@ -91,17 +91,352 @@
     </section>
 
     <!--
-      Próximas seções, na ordem definida:
-      2. Prova corporativa (logos sob "Alunas em" — sem sugerir relação comercial)
-      3. Para quem é (filtro explícito de perfil)
-      4. Veja por dentro (vídeo real de 30–60s)
-      5. O método M.O.V.E. (pilares nomeados, sem ensinar a execução)
-      6. Quem conduz (Bruna Gavioli)
-      7. Prova (depoimentos — vídeo tem prioridade)
-      8. Objeções (accordion: tempo, nível de inglês, "já tentei antes")
-      9. CTA final
-      Botão do SDR se repete a cada duas seções, sempre com data-sdr.
+      Ícone do WhatsApp, definido uma vez e reusado pelos botões abaixo via
+      <use>. O botão do hero mantém o SVG inline dele, intocado.
     -->
+    <svg class="visually-hidden" aria-hidden="true" focusable="false" width="0" height="0">
+      <symbol id="ico-whatsapp" viewBox="0 0 24 24">
+        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+      </symbol>
+    </svg>
+
+    <!-- 2. Prova corporativa =============================================== -->
+    <section class="section" aria-labelledby="empresas-title">
+      <div class="wrap">
+        <h2 class="visually-hidden" id="empresas-title">Onde as alunas trabalham</h2>
+        <p class="eyebrow" data-reveal>Alunas em</p>
+
+        <div class="logos" data-reveal>
+          <!--
+            SLOT VAZIO — logos reais das empresas onde as alunas trabalham.
+            Um <img> por empresa, dentro deste mesmo container:
+
+              <img src="assets/img/logos/<empresa>.svg" alt="<Empresa>">
+
+            Arquivos entram em `assets/img/logos/`, um SVG monocromático por
+            empresa (a cor vem do CSS, não do arquivo).
+
+            Enquanto não houver logo real conferido, este slot fica vazio: sem
+            placeholder, sem logo genérico, sem imagem de banco. O container
+            vazio não ocupa altura na página.
+
+            O rótulo é "Alunas em" e só isso: nunca sugerir que essas empresas
+            têm relação comercial com a mentoria.
+
+            Enquanto o slot estiver vazio, a seção inteira não é renderizada
+            (regra `.section:has(.logos):not(:has(.logos img))` no CSS): um
+            "Alunas em" sem logo nenhum embaixo é um rótulo solto na página.
+            O primeiro <img> aqui dentro traz a seção de volta sozinho.
+          -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Para quem é ==================================================== -->
+    <section class="section" aria-labelledby="perfil-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Para quem é</p>
+          <h2 class="section__title" id="perfil-title" data-reveal>
+            A mentoria atende um perfil específico.
+          </h2>
+          <p class="section__lede" data-reveal>
+            Vale mais descobrir agora do que na conversa com o SDR.
+          </p>
+        </div>
+
+        <div class="grid-2" data-reveal>
+          <div class="card">
+            <h3 class="card__title">É para você se</h3>
+            <ul class="list">
+              <li>Você lê e entende bem, mas trava na hora de falar em reunião ou em call.</li>
+              <li>Usa inglês no trabalho — cliente, sócio, viagem, entrevista — ou vai passar a usar.</li>
+              <li>Tem agenda cheia e precisa de um plano que caiba na semana que você tem de verdade.</li>
+              <li>Quer acompanhamento de perto, não mais um curso gravado para assistir sozinho.</li>
+            </ul>
+          </div>
+
+          <div class="card card--outline">
+            <h3 class="card__title">Não é para você se</h3>
+            <ul class="list">
+              <li>Você está começando do zero e ainda não lê nada em inglês.</li>
+              <li>Procura preparação para prova de proficiência.</li>
+              <li>Quer só material e prefere estudar por conta.</li>
+              <li>Não tem espaço na semana para praticar entre um encontro e outro.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="para-quem-e"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Veja por dentro ================================================ -->
+    <section class="section" aria-labelledby="dentro-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Veja por dentro</p>
+          <h2 class="section__title" id="dentro-title" data-reveal>
+            Um recorte de como isso funciona na prática.
+          </h2>
+          <p class="section__lede" data-reveal>
+            Gravação real, sem edição de vitrine.
+          </p>
+        </div>
+
+        <div class="media" data-reveal>
+          <!--
+            SLOT VAZIO — vídeo real de 30 a 60 segundos (aula, tela ou
+            bastidor). Quando o arquivo existir, entra aqui dentro:
+
+              <video class="media__el" controls playsinline preload="none"
+                     poster="assets/img/por-dentro-poster.jpg">
+                <source src="assets/video/por-dentro.mp4" type="video/mp4">
+              </video>
+
+            Arquivos:
+              assets/video/por-dentro.mp4        vídeo, 30–60s
+              assets/img/por-dentro-poster.jpg   frame de capa do próprio vídeo
+
+            Sem gravação real, o slot fica vazio. Não substituir por imagem de
+            banco nem por mockup: a seção inteira existe para provar que o que
+            se mostra é real.
+          -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. O método M.O.V.E. ============================================== -->
+    <section class="section" aria-labelledby="metodo-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>O método</p>
+          <h2 class="section__title" id="metodo-title" data-reveal>
+            M.O.V.E., os quatro pilares da mentoria.
+          </h2>
+          <p class="section__lede" data-reveal>
+            Cada pilar entrega uma coisa. Como cada um é executado é assunto da
+            conversa, não da página.
+          </p>
+        </div>
+
+        <!--
+          SLOT DE CONTEÚDO — o nome de cada pilar e a frase do que ele entrega
+          precisam vir da Gavi. A skill manda nomear os pilares (regra 1), mas
+          não diz o que M, O, V e E significam, e isso não se inventa.
+
+          Em cada card abaixo, preencher:
+            <h3 class="card__title">  → nome do pilar
+            <p class="card__text">    → uma frase: o que esse pilar entrega
+
+          Sem explicar exercício, sequência ou execução — isso é moeda da call
+          (regra 1: entregue o test drive, não a planta do motor).
+        -->
+        <ol class="pillars" data-reveal>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">M</p>
+            <h3 class="card__title"><!-- SLOT: nome do pilar M --></h3>
+            <p class="card__text"><!-- SLOT: o que o pilar M entrega, uma frase --></p>
+          </li>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">O</p>
+            <h3 class="card__title"><!-- SLOT: nome do pilar O --></h3>
+            <p class="card__text"><!-- SLOT: o que o pilar O entrega, uma frase --></p>
+          </li>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">V</p>
+            <h3 class="card__title"><!-- SLOT: nome do pilar V --></h3>
+            <p class="card__text"><!-- SLOT: o que o pilar V entrega, uma frase --></p>
+          </li>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">E</p>
+            <h3 class="card__title"><!-- SLOT: nome do pilar E --></h3>
+            <p class="card__text"><!-- SLOT: o que o pilar E entrega, uma frase --></p>
+          </li>
+        </ol>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="metodo"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Quem conduz ==================================================== -->
+    <section class="section" aria-labelledby="conduz-title">
+      <div class="wrap">
+        <div class="conduz">
+          <div class="conduz__portrait" data-reveal>
+            <!--
+              SLOT VAZIO — foto real da Bruna Gavioli. Quando existir:
+
+                <img src="assets/img/bruna-gavioli.jpg" alt="Bruna Gavioli"
+                     width="960" height="1200">
+
+              Arquivo: assets/img/bruna-gavioli.jpg — retrato, mínimo 960×1200,
+              foto dela de verdade. Nada de banco de imagem: a seção é rosto e
+              voz, e foto de modelo destrói exatamente o que ela prova.
+            -->
+          </div>
+
+          <div class="conduz__body">
+            <p class="eyebrow" data-reveal>Quem conduz</p>
+            <h2 class="section__title" id="conduz-title" data-reveal>Bruna Gavioli</h2>
+            <div data-reveal>
+              <!--
+                SLOT DE CONTEÚDO — duas ou três frases de autoridade, na voz
+                dela. Autoridade, não currículo: como ela trabalha e por que
+                conduz assim, não lista de certificado e ano de formação.
+
+                Deixado vazio de propósito: não há aqui nenhum fato conferido
+                sobre a Bruna, e biografia não se escreve por aproximação.
+              -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Prova ========================================================== -->
+    <section class="section" aria-labelledby="prova-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Prova</p>
+          <h2 class="section__title" id="prova-title" data-reveal>
+            Quem já passou por isso.
+          </h2>
+        </div>
+
+        <div class="proof" data-reveal>
+          <!--
+            SLOT VAZIO — depoimentos reais. Vídeo tem prioridade sobre texto.
+
+            Vídeo (preferido), um bloco por depoimento:
+              <figure class="proof__item">
+                <video controls playsinline preload="none"
+                       poster="assets/img/depoimentos/<nome>-poster.jpg">
+                  <source src="assets/video/depoimentos/<nome>.mp4" type="video/mp4">
+                </video>
+                <figcaption class="proof__who"><nome>, <cargo/empresa></figcaption>
+              </figure>
+
+            Texto (só quando não houver vídeo daquela aluna):
+              <figure class="proof__item card">
+                <blockquote class="proof__quote">"<depoimento literal>"</blockquote>
+                <figcaption class="proof__who"><nome>, <cargo/empresa></figcaption>
+              </figure>
+
+            Arquivos: assets/video/depoimentos/ e assets/img/depoimentos/.
+
+            REGRA 5 — sem depoimento inventado. Enquanto não houver depoimento
+            real, com nome e autorização da aluna, este slot fica vazio. Não
+            escrever exemplo, não escrever "aluna satisfeita", não deixar texto
+            de rascunho que possa passar por depoimento de verdade.
+          -->
+        </div>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="prova"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Objeções ======================================================= -->
+    <section class="section" aria-labelledby="objecoes-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Antes de falar com a gente</p>
+          <h2 class="section__title" id="objecoes-title" data-reveal>
+            Três perguntas que aparecem sempre.
+          </h2>
+        </div>
+
+        <div class="qa-list" data-reveal>
+          <details class="qa">
+            <summary class="qa__q">Minha agenda não tem espaço para isso.</summary>
+            <p class="qa__a">
+              O plano parte da semana que você tem, não de uma semana ideal. O
+              que não cabe, não entra. Na conversa você diz quanto tempo
+              consegue reservar e ouve se é suficiente — se não for, o SDR diz
+              isso na hora.
+            </p>
+          </details>
+
+          <details class="qa">
+            <summary class="qa__q">Meu inglês está enferrujado demais para começar.</summary>
+            <p class="qa__a">
+              Enferrujado é ponto de partida, não impedimento — quem lê e
+              entende mas trava para falar é justamente o perfil da mentoria.
+              Começar do zero, sem ler nada em inglês, é outra história: aí a
+              resposta é não, e você ouve isso na primeira conversa.
+            </p>
+          </details>
+
+          <details class="qa">
+            <summary class="qa__q">Já tentei antes e não foi para frente.</summary>
+            <p class="qa__a">
+              Curso gravado e aplicativo falham no mesmo ponto: ninguém percebe
+              quando você para. Aqui existe alguém acompanhando e corrigindo a
+              rota. Se o que faltou antes foi constância, é sobre isso que a
+              conversa começa.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. CTA final ====================================================== -->
+    <section class="section section--final" aria-labelledby="final-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 class="section__title" id="final-title" data-reveal>
+            Veja por dentro e decida com informação.
+          </h2>
+          <p class="section__lede" data-reveal>
+            A conversa serve para os dois lados: você entende como a mentoria
+            funciona, e a gente entende se ela faz sentido para o seu caso.
+          </p>
+        </div>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="final"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+          <p class="micro">Conversa direta no WhatsApp, com uma pessoa da equipe.</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="assets/js/sdr.js" defer></script>
