@@ -1,6 +1,6 @@
 ---
 name: lp-gavi
-description: Constrói e edita a landing page do Inglês com a Gavi — LP de "veja a mentoria por dentro" com CTA direto para o SDR, tema dark com acento neon e bento grid. Use SEMPRE que o pedido envolver a LP do inglês, a página da mentoria, seções dela (hero, depoimentos, planos, FAQ), o botão do SDR, tokens de cor/tipografia dessa página, ou qualquer ajuste em HTML/CSS/JS deste repositório — mesmo que o usuário não cite "landing page" explicitamente.
+description: Constrói e edita a landing page do Inglês com a Gavi — LP de "veja a mentoria por dentro" com CTA direto para o SDR, tema dark com acento vermelho da marca e bento grid. Use SEMPRE que o pedido envolver a LP do inglês, a página da mentoria, seções dela (hero, depoimentos, planos, FAQ), o botão do SDR, tokens de cor/tipografia dessa página, ou qualquer ajuste em HTML/CSS/JS deste repositório — mesmo que o usuário não cite "landing page" explicitamente.
 ---
 
 # LP — Inglês com a Gavi
@@ -10,18 +10,19 @@ description: Constrói e edita a landing page do Inglês com a Gavi — LP de "v
 Página de **prova**, não de venda. O objetivo é mostrar como a mentoria funciona
 por dentro para que o lead **queira falar com o SDR**. Não existe checkout aqui.
 
-- Público: adultos que querem destravar inglês para viagem/trabalho, renda 3k+
-- Conversão única: clique no botão do SDR (WhatsApp)
-- Métrica principal: cliques no botão SDR ÷ visitantes únicos
-
+- Público: executivos, empresários e profissionais sêniores que travam em
+  reunião, call e viagem de trabalho. Renda 3k+ é piso de qualificação da
+  campanha, não o tom da página.
+- Tom: sóbrio, adulto, profissional. Sem gíria, sem emoji, sem informalidade de
+  rede social. Nunca cite objeções que o leitor não levantou.
 ## Regras invioláveis
 
 Estas regras vêm de decisões já tomadas. Não as reverta sem o usuário pedir.
 
-1. **Não explique o método.** Mostre ambiente, rotina e transformação. O nome e
-   o funcionamento do M.O.V.E. são moeda da call — não vão para a página.
-   Analogia de referência: entregue o test drive, não a planta do motor.
-2. **Não coloque preço.** Preço só aparece depois do agendamento (Mensagem 3 do
+1. **1. **Nomeie o método, não ensine.** O M.O.V.E. e seus pilares aparecem na
+   página pelo nome e pelo que cada um entrega. O como — exercícios, sequência,
+   execução — é moeda da call e não vai para a página.
+   Analogia de referência: entregue o test drive, não a planta do motor.2. **Não coloque preço.** Preço só aparece depois do agendamento (Mensagem 3 do
    playbook do SDR).
 3. **Não dispare `LeadQualificado` no clique do botão.** Esse evento é o sinal de
    renda qualificada usado para otimizar campanha no Meta. Sujar ele com clique
@@ -89,13 +90,24 @@ Botão primário: pill, fundo `--accent`, texto `--text`, glow via
 Nesta ordem. Botão do SDR repetido a cada duas seções, todos com o mesmo destino.
 
 1. **Hero** — promessa + botão SDR. Sem menu de navegação longo.
-2. **Veja por dentro** — vídeo real de 30–60s (aula, tela, bastidor).
-3. **A semana de uma aluna** — bento grid. Rotina e ritmo, não conteúdo.
-4. **Quem conduz** — Bruna Gavioli, rosto e voz. Autoridade, não currículo.
-5. **Prova** — depoimentos. Vídeo tem prioridade sobre texto.
-6. **Objeções** — accordion: tempo, idade, "já tentei antes".
-7. **CTA final**.
 
+2. **Prova corporativa** — logos das empresas onde as alunas trabalham, sob o
+   rótulo "Alunas em". Nunca sugerir relação comercial com essas empresas.
+
+3. **Para quem é** — filtro explícito. Corta lead fora do perfil antes do SDR.
+
+4. **Veja por dentro** — vídeo real de 30–60s (aula, tela, bastidor).
+
+5. **O método M.O.V.E.** — pilares nomeados e o que cada um entrega. Sem ensinar
+   a execução (regra 1).
+
+6. **Quem conduz** — Bruna Gavioli, rosto e voz. Autoridade, não currículo.
+
+7. **Prova** — depoimentos. Vídeo tem prioridade sobre texto.
+
+8. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes".
+
+9. **CTA final**.
 ## Stack
 
 - HTML estático + Tailwind (ou CSS puro com os tokens acima). Sem framework SPA.
@@ -132,7 +144,7 @@ duas. Os tokens acima mandam.
 
 - [ ] Um só acento em toda a página (`--accent-soft` não conta como segundo)
 - [ ] Texto sobre `--accent` e sobre `--surface` conferido contra as regras de contraste
-- [ ] Nenhuma menção ao método ou a preço
+- [ ] - [ ] Método nomeado sem explicar a execução de nenhum pilar; nenhuma menção a preço
 - [ ] Todos os CTAs no mesmo destino, com UTM sobrevivendo
 - [ ] Evento de clique separado de `LeadQualificado`
 - [ ] Testado em 390px de largura antes de testar em desktop
