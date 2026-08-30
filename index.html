@@ -100,34 +100,37 @@
       </symbol>
     </svg>
 
-    <!-- 2. Prova corporativa =============================================== -->
-    <section class="section" aria-labelledby="empresas-title">
+    <!-- 2. Áreas de atuação ============================================= -->
+    <section class="section" aria-labelledby="areas-title">
       <div class="wrap">
-        <h2 class="visually-hidden" id="empresas-title">Onde as alunas trabalham</h2>
-        <p class="eyebrow" data-reveal>Alunas em</p>
+        <h2 class="visually-hidden" id="areas-title">Áreas em que os mentorados trabalham</h2>
 
-        <div class="logos" data-reveal>
-          <!--
-            SLOT VAZIO — logos reais das empresas onde as alunas trabalham.
-            Um <img> por empresa, dentro deste mesmo container:
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Áreas de atuação</p>
+        </div>
 
-              <img src="assets/img/logos/<empresa>.svg" alt="<Empresa>">
-
-            Arquivos entram em `assets/img/logos/`, um SVG monocromático por
-            empresa (a cor vem do CSS, não do arquivo).
-
-            Enquanto não houver logo real conferido, este slot fica vazio: sem
-            placeholder, sem logo genérico, sem imagem de banco. O container
-            vazio não ocupa altura na página.
-
-            O rótulo é "Alunas em" e só isso: nunca sugerir que essas empresas
-            têm relação comercial com a mentoria.
-
-            Enquanto o slot estiver vazio, a seção inteira não é renderizada
-            (regra `.section:has(.logos):not(:has(.logos img))` no CSS): um
-            "Alunas em" sem logo nenhum embaixo é um rótulo solto na página.
-            O primeiro <img> aqui dentro traz a seção de volta sozinho.
-          -->
+        <!--
+          Prova de público sem logo e sem autorização de empresa: o que aparece
+          é a área, não a marca de quem emprega. Área nova entra como mais um
+          <li>, na coluna que estiver mais curta.
+        -->
+        <div class="grid-2" data-reveal>
+          <ul class="list">
+            <li>Tecnologia e TI</li>
+            <li>Engenharia Mecânica</li>
+            <li>Engenharia Elétrica</li>
+            <li>Engenharia Civil</li>
+            <li>Engenharia Ambiental</li>
+            <li>Logística</li>
+          </ul>
+          <ul class="list">
+            <li>Recursos Humanos</li>
+            <li>Advocacia</li>
+            <li>Turismo</li>
+            <li>Cafeicultura</li>
+            <li>Nutrição Animal</li>
+            <li>Cargos de liderança</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -230,38 +233,35 @@
           </p>
         </div>
 
-        <!--
-          SLOT DE CONTEÚDO — o nome de cada pilar e a frase do que ele entrega
-          precisam vir da Gavi. A skill manda nomear os pilares (regra 1), mas
-          não diz o que M, O, V e E significam, e isso não se inventa.
-
-          Em cada card abaixo, preencher:
-            <h3 class="card__title">  → nome do pilar
-            <p class="card__text">    → uma frase: o que esse pilar entrega
-
-          Sem explicar exercício, sequência ou execução — isso é moeda da call
-          (regra 1: entregue o test drive, não a planta do motor).
-        -->
         <ol class="pillars" data-reveal>
           <li class="card pillar">
             <p class="pillar__mark" aria-hidden="true">M</p>
-            <h3 class="card__title"><!-- SLOT: nome do pilar M --></h3>
-            <p class="card__text"><!-- SLOT: o que o pilar M entrega, uma frase --></p>
+            <h3 class="card__title">Mentalidade</h3>
+            <p class="card__text">
+              Ambiente seguro para praticar. O avanço é gradual e acompanhado.
+            </p>
           </li>
           <li class="card pillar">
             <p class="pillar__mark" aria-hidden="true">O</p>
-            <h3 class="card__title"><!-- SLOT: nome do pilar O --></h3>
-            <p class="card__text"><!-- SLOT: o que o pilar O entrega, uma frase --></p>
+            <h3 class="card__title">Organização</h3>
+            <p class="card__text">
+              Um roadmap com agenda diária. Você sabe o que fazer em cada dia,
+              sem improvisar.
+            </p>
           </li>
           <li class="card pillar">
             <p class="pillar__mark" aria-hidden="true">V</p>
-            <h3 class="card__title"><!-- SLOT: nome do pilar V --></h3>
-            <p class="card__text"><!-- SLOT: o que o pilar V entrega, uma frase --></p>
+            <h3 class="card__title">Voz Ativa</h3>
+            <p class="card__text">
+              O foco é a sua fala. Prática de speaking desde o começo.
+            </p>
           </li>
           <li class="card pillar">
             <p class="pillar__mark" aria-hidden="true">E</p>
-            <h3 class="card__title"><!-- SLOT: nome do pilar E --></h3>
-            <p class="card__text"><!-- SLOT: o que o pilar E entrega, uma frase --></p>
+            <h3 class="card__title">Experiência Real</h3>
+            <p class="card__text">
+              O conteúdo parte de situações da vida adulta profissional.
+            </p>
           </li>
         </ol>
 
@@ -284,31 +284,22 @@
       <div class="wrap">
         <div class="conduz">
           <div class="conduz__portrait" data-reveal>
-            <!--
-              SLOT VAZIO — foto real da Bruna Gavioli. Quando existir:
-
-                <img src="assets/img/bruna-gavioli.jpg" alt="Bruna Gavioli"
-                     width="960" height="1200">
-
-              Arquivo: assets/img/bruna-gavioli.jpg — retrato, mínimo 960×1200,
-              foto dela de verdade. Nada de banco de imagem: a seção é rosto e
-              voz, e foto de modelo destrói exatamente o que ela prova.
-            -->
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/06/FOTOS.webp"
+                 alt="Bruna Gavioli"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
           </div>
 
           <div class="conduz__body">
             <p class="eyebrow" data-reveal>Quem conduz</p>
             <h2 class="section__title" id="conduz-title" data-reveal>Bruna Gavioli</h2>
-            <div data-reveal>
-              <!--
-                SLOT DE CONTEÚDO — duas ou três frases de autoridade, na voz
-                dela. Autoridade, não currículo: como ela trabalha e por que
-                conduz assim, não lista de certificado e ano de formação.
-
-                Deixado vazio de propósito: não há aqui nenhum fato conferido
-                sobre a Bruna, e biografia não se escreve por aproximação.
-              -->
-            </div>
+            <p class="section__lede" data-reveal>
+              Bruna Gavioli dá aula de inglês há 14 anos e foi coordenadora de
+              escola bilíngue. Tem certificação internacional e foi capa da
+              <a href="https://revistaprospere.com.br/legado-bruna-gavioli/"
+                 target="_blank"
+                 rel="noopener">edição Legado da Revista Prospere</a>.
+            </p>
           </div>
         </div>
       </div>
@@ -324,33 +315,100 @@
           </h2>
         </div>
 
+        <!--
+          Vídeo tem prioridade sobre texto, por isso os dois embeds vêm antes
+          dos prints. Embed pelo domínio nocookie: sem cookie de rastreio do
+          YouTube até o visitante dar play.
+
+          O `style` inline dos iframes existe porque style.css não tem regra
+          para iframe e este commit não podia tocar no CSS. Só usa token
+          (`var(--radius)`), nenhuma cor e nenhuma medida nova. Assim que puder
+          mexer no CSS, isso vira uma regra `.proof__item iframe` e sai daqui.
+
+          Depoimento novo entra como mais um <figure class="proof__item">.
+        -->
         <div class="proof" data-reveal>
-          <!--
-            SLOT VAZIO — depoimentos reais. Vídeo tem prioridade sobre texto.
-
-            Vídeo (preferido), um bloco por depoimento:
-              <figure class="proof__item">
-                <video controls playsinline preload="none"
-                       poster="assets/img/depoimentos/<nome>-poster.jpg">
-                  <source src="assets/video/depoimentos/<nome>.mp4" type="video/mp4">
-                </video>
-                <figcaption class="proof__who"><nome>, <cargo/empresa></figcaption>
-              </figure>
-
-            Texto (só quando não houver vídeo daquela aluna):
-              <figure class="proof__item card">
-                <blockquote class="proof__quote">"<depoimento literal>"</blockquote>
-                <figcaption class="proof__who"><nome>, <cargo/empresa></figcaption>
-              </figure>
-
-            Arquivos: assets/video/depoimentos/ e assets/img/depoimentos/.
-
-            REGRA 5 — sem depoimento inventado. Enquanto não houver depoimento
-            real, com nome e autorização da aluna, este slot fica vazio. Não
-            escrever exemplo, não escrever "aluna satisfeita", não deixar texto
-            de rascunho que possa passar por depoimento de verdade.
-          -->
+          <figure class="proof__item">
+            <iframe src="https://www.youtube-nocookie.com/embed/ZmF9XccavNE"
+                    title="Depoimento em vídeo, 1 de 2"
+                    loading="lazy"
+                    allow="encrypted-media; picture-in-picture; web-share"
+                    allowfullscreen
+                    style="display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:var(--radius)"></iframe>
+          </figure>
+          <figure class="proof__item">
+            <iframe src="https://www.youtube-nocookie.com/embed/Mq2io3x4xwc"
+                    title="Depoimento em vídeo, 2 de 2"
+                    loading="lazy"
+                    allow="encrypted-media; picture-in-picture; web-share"
+                    allowfullscreen
+                    style="display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:var(--radius)"></iframe>
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-01-565x1024.jpg"
+                 alt="Print de depoimento, 1 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-02-567x1024.jpg"
+                 alt="Print de depoimento, 2 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-03.jpg"
+                 alt="Print de depoimento, 3 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/Dobler-589x1024.jpeg"
+                 alt="Print de depoimento, 4 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/Destaque-coordenadora-bilingue-768x1024.jpeg"
+                 alt="Print de depoimento, 5 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-23-at-23.42.27-870x1024.jpeg"
+                 alt="Print de depoimento, 6 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/08/Aluna-Monica-473x1024.jpeg"
+                 alt="Print de depoimento, 7 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/08/Foto-resultados-768x1024.jpeg"
+                 alt="Print de depoimento, 8 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-30-at-11.35.10_1_5x-473x1024.webp"
+                 alt="Print de depoimento, 9 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
         </div>
+
+        <!--
+          Link de texto, não botão: o único botão da página continua sendo o do
+          SDR. Margem inline pela mesma razão do iframe acima.
+        -->
+        <p class="micro" data-reveal style="margin-top:var(--s3)">
+          <a href="https://www.instagram.com/stories/highlights/18087879019595832/"
+             target="_blank"
+             rel="noopener">Mais depoimentos nos destaques do Instagram</a>
+        </p>
 
         <div class="cta-inline" data-reveal>
           <a class="btn btn--primary"
