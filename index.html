@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inglês com a Gavi — veja a mentoria por dentro</title>
+  <title>Veja a mentoria por dentro | Inglês com a Gavi</title>
   <meta name="description" content="Veja como a mentoria de inglês da Gavi funciona por dentro: a rotina real, o ritmo da semana e o que muda de verdade. Depois você decide.">
 
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
-  <meta property="og:title" content="Inglês com a Gavi — veja a mentoria por dentro">
+  <meta property="og:title" content="Veja a mentoria por dentro | Inglês com a Gavi">
   <meta property="og:description" content="A rotina real de quem está destravando o inglês. Sem promessa mágica.">
   <!-- TODO: og:image (1200x630) e og:url quando o domínio estiver definido. -->
 
@@ -91,17 +91,444 @@
     </section>
 
     <!--
-      Próximas seções, na ordem definida:
-      2. Prova corporativa (logos sob "Alunas em" — sem sugerir relação comercial)
-      3. Para quem é (filtro explícito de perfil)
-      4. Veja por dentro (vídeo real de 30–60s)
-      5. O método M.O.V.E. (pilares nomeados, sem ensinar a execução)
-      6. Quem conduz (Bruna Gavioli)
-      7. Prova (depoimentos — vídeo tem prioridade)
-      8. Objeções (accordion: tempo, nível de inglês, "já tentei antes")
-      9. CTA final
-      Botão do SDR se repete a cada duas seções, sempre com data-sdr.
+      Ícone do WhatsApp, definido uma vez e reusado pelos botões abaixo via
+      <use>. O botão do hero mantém o SVG inline dele, intocado.
     -->
+    <svg class="visually-hidden" aria-hidden="true" focusable="false" width="0" height="0">
+      <symbol id="ico-whatsapp" viewBox="0 0 24 24">
+        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+      </symbol>
+    </svg>
+
+    <!-- 2. Áreas de atuação ============================================= -->
+    <section class="section" aria-labelledby="areas-title">
+      <div class="wrap">
+        <h2 class="visually-hidden" id="areas-title">Áreas em que os mentorados trabalham</h2>
+
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Áreas de atuação</p>
+        </div>
+
+        <!--
+          Prova de público sem logo e sem autorização de empresa: o que aparece
+          é a área, não a marca de quem emprega.
+
+          Mesmo tratamento visual dos cards do M.O.V.E.: a classe `pillars` dá a
+          grade e o card, e `pillar__mark` é o mesmo slot que lá segura a letra
+          do pilar. Aqui ele segura o ícone, que é decorativo (`aria-hidden`) e
+          herda a cor do card por `currentColor`, sem cor literal.
+
+          Grupo novo entra como mais um <li class="card">, com o ícone no mesmo
+          formato: 24x24, traçado de 1.5, sem preenchimento.
+        -->
+        <ul class="pillars" data-reveal>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5.05 5.05l1.77 1.77M17.18 17.18l1.77 1.77M18.95 5.05l-1.77 1.77M6.82 17.18l-1.77 1.77"/></svg></p>
+            <h3 class="card__title">Engenharia e Indústria</h3>
+            <p class="card__text">Mecânica, Elétrica, Civil, Ambiental</p>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5.5l-3 13"/></svg></p>
+            <h3 class="card__title">Tecnologia e TI</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 22V3M5 4h12l-2.2 3.75L17 11.5H5"/></svg></p>
+            <h3 class="card__title">Liderança e Diretoria</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v17M8 21h8M4.5 7.5h15M4.5 7.5 2 14h5zM19.5 7.5 17 14h5z"/></svg></p>
+            <h3 class="card__title">Jurídico</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1M16 5.6a3 3 0 0 1 0 5.8M17 14.2h.6a4 4 0 0 1 4 4V20"/></svg></p>
+            <h3 class="card__title">Recursos Humanos</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9zM3 7.5 12 12l9-4.5M12 12v9"/></svg></p>
+            <h3 class="card__title">Logística e Operações</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21v-8M12 13c0-4 3-7 7-7 0 4-3 7-7 7ZM12 15c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/></svg></p>
+            <h3 class="card__title">Agronegócio</h3>
+            <p class="card__text">Cafeicultura, Nutrição Animal</p>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></p>
+            <h3 class="card__title">Turismo e Hospitalidade</h3>
+          </li>
+        </ul>
+
+        <!--
+          Linha de fechamento. Margem inline pelo mesmo motivo do iframe da
+          seção 7: não há classe com margem superior e este commit não toca no
+          CSS. Só token, sem cor e sem medida nova.
+        -->
+        <p class="micro" data-reveal style="margin-top:var(--s3)">
+          Trabalhamos também com outras áreas e cargos.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. Para quem é ==================================================== -->
+    <section class="section" aria-labelledby="perfil-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Para quem é</p>
+          <h2 class="section__title" id="perfil-title" data-reveal>
+            A mentoria atende um perfil específico.
+          </h2>
+          <p class="section__lede" data-reveal>
+            Vale mais descobrir agora do que na conversa com o SDR.
+          </p>
+        </div>
+
+        <div class="grid-2" data-reveal>
+          <div class="card">
+            <h3 class="card__title">É para você se</h3>
+            <ul class="list">
+              <li>Você lê e entende bem, mas trava na hora de falar em reunião ou em call.</li>
+              <li>Usa inglês no trabalho, ou vai passar a usar: cliente, sócio, viagem, entrevista.</li>
+              <li>Tem agenda cheia e precisa de um plano que caiba na semana que você tem de verdade.</li>
+              <li>Quer acompanhamento de perto, não mais um curso gravado para assistir sozinho.</li>
+            </ul>
+          </div>
+
+          <div class="card card--outline">
+            <h3 class="card__title">Não é para você se</h3>
+            <ul class="list">
+              <li>Você está começando do zero e ainda não lê nada em inglês.</li>
+              <li>Procura preparação para prova de proficiência.</li>
+              <li>Quer só material e prefere estudar por conta.</li>
+              <li>Não tem espaço na semana para praticar entre um encontro e outro.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="para-quem-e"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Veja por dentro ================================================ -->
+    <section class="section" aria-labelledby="dentro-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Veja por dentro</p>
+          <h2 class="section__title" id="dentro-title" data-reveal>
+            Um recorte de como isso funciona na prática.
+          </h2>
+          <p class="section__lede" data-reveal>
+            Gravação real, sem edição de vitrine.
+          </p>
+        </div>
+
+        <div class="media" data-reveal>
+          <!--
+            SLOT VAZIO — vídeo real de 30 a 60 segundos (aula, tela ou
+            bastidor). Quando o arquivo existir, entra aqui dentro:
+
+              <video class="media__el" controls playsinline preload="none"
+                     poster="assets/img/por-dentro-poster.jpg">
+                <source src="assets/video/por-dentro.mp4" type="video/mp4">
+              </video>
+
+            Arquivos:
+              assets/video/por-dentro.mp4        vídeo, 30–60s
+              assets/img/por-dentro-poster.jpg   frame de capa do próprio vídeo
+
+            Sem gravação real, o slot fica vazio. Não substituir por imagem de
+            banco nem por mockup: a seção inteira existe para provar que o que
+            se mostra é real.
+          -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. O método M.O.V.E. ============================================== -->
+    <section class="section" aria-labelledby="metodo-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>O método</p>
+          <h2 class="section__title" id="metodo-title" data-reveal>
+            M.O.V.E., os quatro pilares da mentoria.
+          </h2>
+          <p class="section__lede" data-reveal>
+            Cada pilar entrega uma coisa. Como cada um é executado é assunto da
+            conversa, não da página.
+          </p>
+        </div>
+
+        <ol class="pillars" data-reveal>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">M</p>
+            <h3 class="card__title">Mentalidade</h3>
+            <p class="card__text">
+              Ambiente seguro para praticar. O avanço é gradual e acompanhado.
+            </p>
+          </li>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">O</p>
+            <h3 class="card__title">Organização</h3>
+            <p class="card__text">
+              Um roadmap com agenda diária. Você sabe o que fazer em cada dia,
+              sem improvisar.
+            </p>
+          </li>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">V</p>
+            <h3 class="card__title">Voz Ativa</h3>
+            <p class="card__text">
+              O foco é a sua fala. Prática de speaking desde o começo.
+            </p>
+          </li>
+          <li class="card pillar">
+            <p class="pillar__mark" aria-hidden="true">E</p>
+            <h3 class="card__title">Experiência Real</h3>
+            <p class="card__text">
+              O conteúdo parte de situações da vida adulta profissional.
+            </p>
+          </li>
+        </ol>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="metodo"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Quem conduz ==================================================== -->
+    <section class="section" aria-labelledby="conduz-title">
+      <div class="wrap">
+        <div class="conduz">
+          <div class="conduz__portrait" data-reveal>
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/06/FOTOS.webp"
+                 alt="Bruna Gavioli"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </div>
+
+          <div class="conduz__body">
+            <p class="eyebrow" data-reveal>Quem conduz</p>
+            <h2 class="section__title" id="conduz-title" data-reveal>Bruna Gavioli</h2>
+            <p class="section__lede" data-reveal>
+              Bruna Gavioli dá aula de inglês há 14 anos e foi coordenadora de
+              escola bilíngue. Tem certificação internacional e foi capa da
+              <a href="https://revistaprospere.com.br/legado-bruna-gavioli/"
+                 target="_blank"
+                 rel="noopener">edição Legado da Revista Prospere</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Prova ========================================================== -->
+    <section class="section" aria-labelledby="prova-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Prova</p>
+          <h2 class="section__title" id="prova-title" data-reveal>
+            Quem já passou por isso.
+          </h2>
+        </div>
+
+        <!--
+          Vídeo tem prioridade sobre texto, por isso os dois embeds vêm antes
+          dos prints. Embed pelo domínio nocookie: sem cookie de rastreio do
+          YouTube até o visitante dar play.
+
+          O `style` inline dos iframes existe porque style.css não tem regra
+          para iframe e este commit não podia tocar no CSS. Só usa token
+          (`var(--radius)`), nenhuma cor e nenhuma medida nova. Assim que puder
+          mexer no CSS, isso vira uma regra `.proof__item iframe` e sai daqui.
+
+          Depoimento novo entra como mais um <figure class="proof__item">.
+        -->
+        <div class="proof" data-reveal>
+          <figure class="proof__item">
+            <iframe src="https://www.youtube-nocookie.com/embed/ZmF9XccavNE"
+                    title="Depoimento em vídeo, 1 de 2"
+                    loading="lazy"
+                    allow="encrypted-media; picture-in-picture; web-share"
+                    allowfullscreen
+                    style="display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:var(--radius)"></iframe>
+          </figure>
+          <figure class="proof__item">
+            <iframe src="https://www.youtube-nocookie.com/embed/Mq2io3x4xwc"
+                    title="Depoimento em vídeo, 2 de 2"
+                    loading="lazy"
+                    allow="encrypted-media; picture-in-picture; web-share"
+                    allowfullscreen
+                    style="display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:var(--radius)"></iframe>
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-01-565x1024.jpg"
+                 alt="Print de depoimento, 1 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-02-567x1024.jpg"
+                 alt="Print de depoimento, 2 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-03.jpg"
+                 alt="Print de depoimento, 3 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/Dobler-589x1024.jpeg"
+                 alt="Print de depoimento, 4 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/Destaque-coordenadora-bilingue-768x1024.jpeg"
+                 alt="Print de depoimento, 5 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-23-at-23.42.27-870x1024.jpeg"
+                 alt="Print de depoimento, 6 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/08/Aluna-Monica-473x1024.jpeg"
+                 alt="Print de depoimento, 7 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/08/Foto-resultados-768x1024.jpeg"
+                 alt="Print de depoimento, 8 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+          <figure class="proof__item">
+            <img src="https://inglescomgavi.com/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-30-at-11.35.10_1_5x-473x1024.webp"
+                 alt="Print de depoimento, 9 de 9"
+                 loading="lazy"
+                 referrerpolicy="no-referrer">
+          </figure>
+        </div>
+
+        <!--
+          Link de texto, não botão: o único botão da página continua sendo o do
+          SDR. Margem inline pela mesma razão do iframe acima.
+        -->
+        <p class="micro" data-reveal style="margin-top:var(--s3)">
+          <a href="https://www.instagram.com/stories/highlights/18087879019595832/"
+             target="_blank"
+             rel="noopener">Mais depoimentos nos destaques do Instagram</a>
+        </p>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="prova"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Objeções ======================================================= -->
+    <section class="section" aria-labelledby="objecoes-title">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="eyebrow" data-reveal>Antes de falar com a gente</p>
+          <h2 class="section__title" id="objecoes-title" data-reveal>
+            Três perguntas que aparecem sempre.
+          </h2>
+        </div>
+
+        <div class="qa-list" data-reveal>
+          <details class="qa">
+            <summary class="qa__q">Minha agenda não tem espaço para isso.</summary>
+            <p class="qa__a">
+              O plano parte da semana que você tem, não de uma semana ideal. O
+              que não cabe, não entra. Na conversa você diz quanto tempo
+              consegue reservar e ouve se é suficiente. Se não for, o SDR diz
+              isso na hora.
+            </p>
+          </details>
+
+          <details class="qa">
+            <summary class="qa__q">Meu inglês está enferrujado demais para começar.</summary>
+            <p class="qa__a">
+              Enferrujado é ponto de partida, não impedimento. Quem lê e
+              entende mas trava para falar é justamente o perfil da mentoria.
+              Começar do zero, sem ler nada em inglês, é outra história: aí a
+              resposta é não, e você ouve isso na primeira conversa.
+            </p>
+          </details>
+
+          <details class="qa">
+            <summary class="qa__q">Já tentei antes e não foi para frente.</summary>
+            <p class="qa__a">
+              Curso gravado e aplicativo falham no mesmo ponto: ninguém percebe
+              quando você para. Aqui existe alguém acompanhando e corrigindo a
+              rota. Se o que faltou antes foi constância, é sobre isso que a
+              conversa começa.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. CTA final ====================================================== -->
+    <section class="section section--final" aria-labelledby="final-title">
+      <div class="wrap">
+        <div class="section__head">
+          <h2 class="section__title" id="final-title" data-reveal>
+            Veja por dentro e decida com informação.
+          </h2>
+          <p class="section__lede" data-reveal>
+            A conversa serve para os dois lados: você entende como a mentoria
+            funciona, e a gente entende se ela faz sentido para o seu caso.
+          </p>
+        </div>
+
+        <div class="cta-inline" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="final"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#ico-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+          <p class="micro">Conversa direta no WhatsApp, com uma pessoa da equipe.</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="assets/js/sdr.js" defer></script>

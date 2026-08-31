@@ -91,8 +91,8 @@ Nesta ordem. Botão do SDR repetido a cada duas seções, todos com o mesmo dest
 
 1. **Hero** — promessa + botão SDR. Sem menu de navegação longo.
 
-2. **Prova corporativa** — logos das empresas onde as alunas trabalham, sob o
-   rótulo "Alunas em". Nunca sugerir relação comercial com essas empresas.
+2. **Áreas de atuação** — as áreas em que os mentorados trabalham. Prova o
+   público sem depender de logo ou autorização de empresa.
 
 3. **Para quem é** — filtro explícito. Corta lead fora do perfil antes do SDR.
 

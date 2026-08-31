@@ -315,3 +315,309 @@ a { color: inherit; }
 
   .btn--primary:hover { transform: none; }
 }
+
+/* ==========================================================================
+   Seções 2–9
+   Bloco acrescentado. Nada acima desta linha foi alterado.
+   Cores só por token; espaçamento só na escala --s1…--s7.
+   ========================================================================== */
+.section {
+  padding-block: var(--s5);
+  border-top: 1px solid var(--border);
+}
+
+.section--final { padding-block: var(--s6); }
+
+.section__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s2);
+  margin-bottom: var(--s4);
+}
+
+.section__title {
+  margin: 0;
+  max-width: 22ch;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.section__lede {
+  max-width: 52ch;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   Cards do bento
+   `--surface` é teal claro: dentro dele o corpo é --text-2 (4.52:1) e o título
+   é --text (7.05:1). --text-3 não entra aqui — sobre --surface cai para 2.19:1.
+   -------------------------------------------------------------------------- */
+.card {
+  padding: var(--s3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-2);
+}
+
+/* Vazado, com --border. Diferencia o card sem gastar uma segunda cor. */
+.card--outline {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.card__title {
+  margin: 0 0 var(--s2);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.card__text { margin: 0; }
+
+.grid-2 { display: grid; gap: var(--s2); }
+
+.list {
+  display: grid;
+  gap: var(--s2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li {
+  position: relative;
+  padding-left: var(--s3);
+}
+
+/*
+ * Marcador neutro, não no acento: o único vermelho da viewport continua sendo
+ * o botão. Ponto é decoração, não texto.
+ */
+.list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--s1);
+  width: var(--s1);
+  height: var(--s1);
+  border-radius: 50%;
+  background: var(--text-2);
+}
+
+.card--outline .list li::before { background: var(--text-3); }
+
+/* --------------------------------------------------------------------------
+   Prova corporativa — o container vazio não ocupa altura enquanto não houver
+   logo real.
+   -------------------------------------------------------------------------- */
+.logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s4);
+  margin-top: var(--s3);
+}
+
+.logos img {
+  display: block;
+  width: auto;
+  height: var(--s3);
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   Vídeo — sem moldura desenhada: enquanto o slot está vazio, nada aparece.
+   -------------------------------------------------------------------------- */
+.media {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.media video,
+.media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   M.O.V.E.
+   -------------------------------------------------------------------------- */
+.pillars {
+  display: grid;
+  gap: var(--s2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pillar__mark {
+  margin: 0 0 var(--s2);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+/* --------------------------------------------------------------------------
+   Quem conduz
+   -------------------------------------------------------------------------- */
+.conduz { display: grid; gap: var(--s3); }
+
+.conduz__portrait {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.conduz__portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.conduz__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s2);
+}
+
+/* --------------------------------------------------------------------------
+   Prova — depoimentos
+   -------------------------------------------------------------------------- */
+.proof { display: grid; gap: var(--s2); }
+
+.proof__item { margin: 0; }
+
+.proof__item video,
+.proof__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+.proof__quote {
+  margin: 0 0 var(--s2);
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+.proof__who {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.card .proof__who { color: var(--text-2); }
+
+/* --------------------------------------------------------------------------
+   Objeções — accordion nativo, sem JS
+   -------------------------------------------------------------------------- */
+.qa { border-bottom: 1px solid var(--border); }
+
+.qa:first-child { border-top: 1px solid var(--border); }
+
+.qa__q {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2);
+  padding-block: var(--s3);
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.qa__q::-webkit-details-marker { display: none; }
+
+.qa__q::after {
+  content: "+";
+  flex: none;
+  font-weight: 400;
+  color: var(--text-3);
+}
+
+.qa[open] .qa__q::after { content: "\2212"; }
+
+.qa__a {
+  max-width: 60ch;
+  padding-bottom: var(--s3);
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+/* --------------------------------------------------------------------------
+   CTA repetido — mesma mecânica do hero, um botão primário por viewport.
+   -------------------------------------------------------------------------- */
+.cta-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s2);
+  margin-top: var(--s4);
+}
+
+.micro {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* --------------------------------------------------------------------------
+   Telas maiores
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+  .section { padding-block: var(--s6); }
+
+  .section--final { padding-block: var(--s7); }
+
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s3);
+  }
+
+  .pillars {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s3);
+  }
+
+  .proof { grid-template-columns: repeat(2, 1fr); gap: var(--s3); }
+
+  .conduz {
+    grid-template-columns: 2fr 3fr;
+    align-items: center;
+    gap: var(--s4);
+  }
+
+  .cta-inline {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--s3);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Estado vazio dos slots
+   Enquanto o ativo real não existe, a página não pode mostrar o rótulo órfão
+   nem a coluna reservada para uma foto que não está lá. `:has()` religa cada
+   bloco sozinho no momento em que o arquivo entra no HTML — não há classe para
+   lembrar de tirar depois.
+   -------------------------------------------------------------------------- */
+
+/* "Alunas em" sem nenhum logo é um rótulo solto no meio da página. */
+.section:has(.logos):not(:has(.logos img)) { display: none; }
+
+@media (min-width: 768px) {
+  /* Sem a foto da Bruna, o texto ocupa a largura inteira em vez de ficar
+     empurrado para a coluna da direita. */
+  .conduz:not(:has(.conduz__portrait img)) { grid-template-columns: 1fr; }
+  .conduz:not(:has(.conduz__portrait img)) .conduz__portrait { display: none; }
+}
