@@ -111,27 +111,61 @@
 
         <!--
           Prova de público sem logo e sem autorização de empresa: o que aparece
-          é a área, não a marca de quem emprega. Área nova entra como mais um
-          <li>, na coluna que estiver mais curta.
+          é a área, não a marca de quem emprega.
+
+          Mesmo tratamento visual dos cards do M.O.V.E.: a classe `pillars` dá a
+          grade e o card, e `pillar__mark` é o mesmo slot que lá segura a letra
+          do pilar. Aqui ele segura o ícone, que é decorativo (`aria-hidden`) e
+          herda a cor do card por `currentColor`, sem cor literal.
+
+          Grupo novo entra como mais um <li class="card">, com o ícone no mesmo
+          formato: 24x24, traçado de 1.5, sem preenchimento.
         -->
-        <div class="grid-2" data-reveal>
-          <ul class="list">
-            <li>Tecnologia e TI</li>
-            <li>Engenharia Mecânica</li>
-            <li>Engenharia Elétrica</li>
-            <li>Engenharia Civil</li>
-            <li>Engenharia Ambiental</li>
-            <li>Logística</li>
-          </ul>
-          <ul class="list">
-            <li>Recursos Humanos</li>
-            <li>Advocacia</li>
-            <li>Turismo</li>
-            <li>Cafeicultura</li>
-            <li>Nutrição Animal</li>
-            <li>Cargos de liderança</li>
-          </ul>
-        </div>
+        <ul class="pillars" data-reveal>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5.05 5.05l1.77 1.77M17.18 17.18l1.77 1.77M18.95 5.05l-1.77 1.77M6.82 17.18l-1.77 1.77"/></svg></p>
+            <h3 class="card__title">Engenharia e Indústria</h3>
+            <p class="card__text">Mecânica, Elétrica, Civil, Ambiental</p>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5.5l-3 13"/></svg></p>
+            <h3 class="card__title">Tecnologia e TI</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 22V3M5 4h12l-2.2 3.75L17 11.5H5"/></svg></p>
+            <h3 class="card__title">Liderança e Diretoria</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v17M8 21h8M4.5 7.5h15M4.5 7.5 2 14h5zM19.5 7.5 17 14h5z"/></svg></p>
+            <h3 class="card__title">Jurídico</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1M16 5.6a3 3 0 0 1 0 5.8M17 14.2h.6a4 4 0 0 1 4 4V20"/></svg></p>
+            <h3 class="card__title">Recursos Humanos</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9zM3 7.5 12 12l9-4.5M12 12v9"/></svg></p>
+            <h3 class="card__title">Logística e Operações</h3>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21v-8M12 13c0-4 3-7 7-7 0 4-3 7-7 7ZM12 15c0-3.3-2.7-6-6-6 0 3.3 2.7 6 6 6Z"/></svg></p>
+            <h3 class="card__title">Agronegócio</h3>
+            <p class="card__text">Cafeicultura, Nutrição Animal</p>
+          </li>
+          <li class="card">
+            <p class="pillar__mark" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></p>
+            <h3 class="card__title">Turismo e Hospitalidade</h3>
+          </li>
+        </ul>
+
+        <!--
+          Linha de fechamento. Margem inline pelo mesmo motivo do iframe da
+          seção 7: não há classe com margem superior e este commit não toca no
+          CSS. Só token, sem cor e sem medida nova.
+        -->
+        <p class="micro" data-reveal style="margin-top:var(--s3)">
+          Trabalhamos também com outras áreas e cargos.
+        </p>
       </div>
     </section>
 
