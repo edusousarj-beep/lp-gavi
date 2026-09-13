@@ -1,8 +1,0 @@
-# Site estatico, sem build step. A raiz do repo e o que vai publicado.
-[build]
-  publish = "."
-  command = ""
-  functions = "netlify/functions"
-
-[functions]
-  node_bundler = "esbuild"
