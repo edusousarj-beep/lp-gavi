@@ -35,6 +35,32 @@ Número do SDR e id do pixel já estão preenchidos. Falta só:
 | --- | --- |
 | `index.html` → `og:image`, `og:url` | quando o domínio estiver definido |
 
+## Ponte do SDR para a Conversions API
+
+`netlify/functions/sdr-event.js` recebe do Make e manda `QUALIFIED`, `BAD` e
+`CONVERTED` para o dataset do SDR com as chaves de correspondência hasheadas.
+Existe porque esses eventos chegavam na Meta sem chave nenhuma
+(`composite_score: 0`), o que impede otimizar campanha por qualificação.
+
+A normalização mora aqui e não no Make de propósito: prefixar `55`
+condicionalmente e validar comprimento no editor de expressões do Make erra em
+silêncio, e silêncio foi o que causou o bug original.
+
+Variáveis de ambiente na Netlify — as duas primeiras são obrigatórias, a função
+devolve `503` sem elas:
+
+| Variável | O quê |
+| --- | --- |
+| `META_CAPI_TOKEN` | token da Conversions API do dataset `963230822869669` |
+| `SDR_WEBHOOK_SECRET` | segredo compartilhado; o Make manda em `x-sdr-secret` |
+| `META_CAPI_TEST_CODE` | opcional, só enquanto valida no Test Events da Meta |
+
+O Make manda `POST` com JSON plano. Campos: `event` (obrigatório, um de
+`QUALIFIED`/`BAD`/`CONVERTED`), e ao menos um identificador entre `lead_id`,
+`telefone`, `email` e `crm_id`. Opcionais: `nome`, `valor`, `moeda`, `quando`,
+`event_id`, `fbc`, `fbp`. Sem identificador a função devolve `422` em vez de
+enviar evento anônimo.
+
 O número do SDR aparece em dois lugares e os dois precisam bater: o
 `CONFIG.phone` do `sdr.js` e o `href` de fallback do `<a data-sdr>` no HTML —
 esse segundo é o que vale quando o JS não carrega.
