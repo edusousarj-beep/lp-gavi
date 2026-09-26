@@ -8,16 +8,20 @@ seções, spec do botão do SDR) está em `.claude/skills/lp-gavi/SKILL.md`.
 
 ## Estado atual
 
-Implementado: **hero + mecânica do botão do SDR**.
-Pendentes as seções 2 a 7 — os slots estão marcados como comentário no
-`index.html`, na ordem definida.
+Todas as seções estão montadas no layout da LP v3 da Lord of Sales, com os
+tokens e as regras da Gavi: hero com vídeo, para quem é, método M.O.V.E.,
+prova, próximo passo, quem conduz, perguntas, CTA final e CTA fixo no celular.
+
+Onde falta material real, a página mostra um `.slot` tracejado dizendo o que
+precisa. Ver "Antes de publicar".
 
 ## Estrutura
 
 ```
-index.html              hero + snippet do pixel
+index.html              seções + sprite de ícones + snippet do pixel
 assets/css/style.css    tokens e estilos
 assets/js/sdr.js        botão do SDR (código crítico)
+assets/js/sticky.js     CTA fixo no celular
 assets/js/reveal.js     reveals no scroll, IntersectionObserver
 ```
 
@@ -29,15 +33,24 @@ npx http-server -p 8000 .
 
 ## Antes de publicar
 
-Número do SDR e id do pixel já estão preenchidos. Falta só:
+Nenhum `.slot` pode ficar visível. O que falta:
 
 | Onde | O quê |
 | --- | --- |
+| Hero | vídeo real de 30–60s (aula, tela ou bastidor) e a capa dele |
+| Método | nome de cada pilar do M.O.V.E. e o que ele entrega |
+| Prova | 2 depoimentos em vídeo; 3 prints com nome, cargo, empresa e transcrição |
+| Prova | logos das empresas onde as alunas trabalham ("Alunas em") |
+| Quem conduz | foto da Bruna (4:5) e 2–3 frases de autoridade com fatos verificáveis |
+| Perguntas | respostas sobre tempo, nível de inglês e "já tentei antes" |
 | `index.html` → `og:image`, `og:url` | quando o domínio estiver definido |
 
-O número do SDR aparece em dois lugares e os dois precisam bater: o
-`CONFIG.phone` do `sdr.js` e o `href` de fallback do `<a data-sdr>` no HTML —
-esse segundo é o que vale quando o JS não carrega.
+Cada slot tem, no HTML, um comentário com a marcação que entra no lugar dele.
+Os números de "Quem conduz" estão comentados: só entram com dado real conferido.
+
+O número do SDR precisa bater em todos os lugares: o `CONFIG.phone` do
+`sdr.js` e o `href` de fallback de cada `<a data-sdr>` no HTML. O `href` é o
+que vale quando o JS não carrega.
 
 ## Como a atribuição funciona
 
@@ -53,4 +66,6 @@ qualificada usado para otimizar campanha no Meta; enchê-lo de clique de página
 destrói a otimização. Quem dispara é o SDR, depois de qualificar.
 
 Todo CTA novo é só um `<a>` com `data-sdr` e `data-sdr-placement="<nome>"` —
-o `sdr.js` cuida do resto e mantém todos no mesmo destino.
+o `sdr.js` cuida do resto e mantém todos no mesmo destino. Os de hoje: `hero`,
+`metodo`, `conversa`, `final` e `fixo` (o CTA fixo do celular). O
+`placement` vai no evento `ClickSDR`, então dá para ver qual botão converte.

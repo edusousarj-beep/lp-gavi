@@ -12,6 +12,20 @@
   <meta property="og:description" content="A rotina real de quem está destravando o inglês. Sem promessa mágica.">
   <!-- TODO: og:image (1200x630) e og:url quando o domínio estiver definido. -->
 
+  <!--
+    Marca que o JS rodou. Só então os reveals escondem conteúdo: sem JS, a
+    página aparece inteira. Se o reveal.js não carregar em 3s, desiste de
+    esconder — a página nunca fica invisível.
+  -->
+  <script>
+    document.documentElement.classList.add('js');
+    setTimeout(function () {
+      if (!document.documentElement.hasAttribute('data-reveal-ready')) {
+        document.documentElement.classList.remove('js');
+      }
+    }, 3000);
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Uma grotesk, dois pesos apenas. -->
@@ -36,29 +50,94 @@
 </head>
 <body>
 
-  <header class="site-head">
-    <div class="wrap site-head__inner">
-      <a class="brand" href="/">Inglês com a Gavi</a>
-    </div>
-  </header>
+  <!--
+    Ícones. WhatsApp no botão; os demais são do Lucide (lucide.dev),
+    licença ISC: Copyright (c) 2026 Lucide Icons and Contributors.
+  -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-whatsapp" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+    </symbol>
+    <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="5"/>
+      <path d="M20 21a8 8 0 0 0-16 0"/>
+    </symbol>
+    <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6" cy="19" r="3"/>
+      <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/>
+      <circle cx="18" cy="5" r="3"/>
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <path d="M16 3.128a4 4 0 0 1 0 7.744"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+      <circle cx="9" cy="7" r="4"/>
+    </symbol>
+    <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/>
+      <rect x="2" y="6" width="14" height="12" rx="2"/>
+    </symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </symbol>
+  </svg>
 
+  <!--
+    Layout: segue a LP v3 da Lord of Sales (hero com vídeo, cards de situação,
+    grade 2x2, prova, card de próximo passo, quem conduz, perguntas, CTA final,
+    CTA fixo no celular). Cor, tipografia e regras são as da Gavi.
+
+    Blocos .slot = material real que ainda falta. Cada um diz o que precisa.
+    Nenhum .slot pode estar visível na página publicada.
+  -->
   <main>
+
+    <!-- 1. Hero — promessa, vídeo e botão do SDR. -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero__glow" aria-hidden="true"></div>
 
       <div class="wrap hero__inner">
-        <p class="eyebrow eyebrow--pill" data-reveal>Mentoria de inglês</p>
+        <p class="brand">Inglês com a Gavi</p>
 
-        <h1 class="hero__title" id="hero-title" data-reveal>
-          Veja a mentoria <em>por dentro</em> antes de decidir.
-        </h1>
+        <div class="hero__copy">
+          <h1 class="hero__title" id="hero-title" data-reveal>
+            Veja a mentoria <em>por dentro</em> antes de decidir.
+          </h1>
 
-        <p class="hero__lede" data-reveal>
-          Aqui você acompanha o funcionamento da mentoria: o método M.O.V.E., o
-          que se pratica e o ponto em que o inglês deixa de travar na reunião,
-          na call e na viagem de trabalho. A decisão vem depois, com a
-          informação na mão.
-        </p>
+          <p class="hero__lede" data-reveal>
+            Aqui você acompanha o funcionamento da mentoria: o método M.O.V.E., o
+            que se pratica e o ponto em que o inglês deixa de travar na reunião,
+            na call e na viagem de trabalho. A decisão vem depois, com a
+            informação na mão.
+          </p>
+        </div>
+
+        <figure class="video" data-reveal>
+          <div class="video__frame">
+            <!--
+              Quando o vídeo existir, troque o .slot abaixo por:
+                <video controls playsinline preload="none" poster="assets/video/capa.jpg">
+                  <source src="assets/video/por-dentro.mp4" type="video/mp4">
+                </video>
+              preload="none": só a capa carrega; o vídeo só baixa no play.
+              Vídeo vertical: troque o aspect-ratio de .video__frame para 9 / 16.
+            -->
+            <div class="slot slot--fill">
+              <svg class="slot__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
+              <p class="slot__title">Vídeo real de 30 a 60 segundos</p>
+              <p class="slot__hint">Pendente: aula, tela ou bastidor da mentoria.</p>
+            </div>
+          </div>
+        </figure>
 
         <div class="hero__actions" data-reveal>
           <!--
@@ -71,40 +150,387 @@
              href="https://wa.me/5521999100432"
              target="_blank"
              rel="noopener">
-            <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
-            </svg>
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
             <span>Quero ver por dentro</span>
           </a>
 
-          <p class="hero__micro">
-            Conversa direta no WhatsApp, com uma pessoa da equipe.
-          </p>
+          <ul class="hero__bullets">
+            <li>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-message"></use></svg>
+              <span>Conversa no<br>WhatsApp</span>
+            </li>
+            <li>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg>
+              <span>Uma pessoa<br>da equipe</span>
+            </li>
+            <li>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>
+              <span>Método<br>M.O.V.E.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Para quem é — filtro explícito, antes do SDR. -->
+    <section class="section" id="para-quem" aria-labelledby="para-quem-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Para quem é</p>
+          <h2 class="h2" id="para-quem-title">O inglês trava em algum destes momentos?</h2>
+        </header>
+
+        <div class="cards">
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na reunião</h3>
+              <p class="card__text">Você acompanha a discussão, mas a sua fala não sai no tempo da conversa.</p>
+            </div>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-video"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na call</h3>
+              <p class="card__text">Sem o apoio do texto, a resposta trava justamente quando precisa ser clara.</p>
+            </div>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plane"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na viagem de trabalho</h3>
+              <p class="card__text">Fora da sala de reunião, o inglês resolve o básico, mas não sustenta uma conversa de negócio.</p>
+            </div>
+          </article>
         </div>
 
+        <p class="section__note" data-reveal>
+          A mentoria é para executivos, empresários e profissionais sêniores que
+          usam inglês no trabalho. Se o inglês não faz parte da sua rotina
+          profissional, este não é o formato para você.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. O método M.O.V.E. — pilares nomeados e o que cada um entrega. -->
+    <section class="section" id="metodo" aria-labelledby="metodo-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">O método</p>
+          <h2 class="h2" id="metodo-title">M.O.V.E.</h2>
+          <p class="section__lede">
+            Os pilares da mentoria e o que cada um entrega. Como cada um
+            funciona na prática, você vê na call.
+          </p>
+        </header>
+
         <!--
-          Slot de números (alunas, tempo médio, etc.) fica aqui.
-          Deixado vazio de propósito: sem dado real conferido, não entra número
-          na página. Preencher com o que a Gavi puder comprovar.
+          Regra 1: nome do pilar + o que ele entrega. Nunca o como (exercício,
+          sequência, execução). Ao preencher, troque cada .slot por:
+            <h3 class="pillar__name">Nome do pilar</h3>
+            <p class="pillar__text">O que ele entrega.</p>
         -->
+        <ol class="pillars">
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">M</span>
+            <div class="slot slot--inline">
+              <p class="slot__title">Pilar M</p>
+              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">O</span>
+            <div class="slot slot--inline">
+              <p class="slot__title">Pilar O</p>
+              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">V</span>
+            <div class="slot slot--inline">
+              <p class="slot__title">Pilar V</p>
+              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">E</span>
+            <div class="slot slot--inline">
+              <p class="slot__title">Pilar E</p>
+              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="section__cta" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="metodo"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
       </div>
     </section>
 
     <!--
-      Próximas seções, na ordem definida:
-      2. Prova corporativa (logos sob "Alunas em" — sem sugerir relação comercial)
-      3. Para quem é (filtro explícito de perfil)
-      4. Veja por dentro (vídeo real de 30–60s)
-      5. O método M.O.V.E. (pilares nomeados, sem ensinar a execução)
-      6. Quem conduz (Bruna Gavioli)
-      7. Prova (depoimentos — vídeo tem prioridade)
-      8. Objeções (accordion: tempo, nível de inglês, "já tentei antes")
-      9. CTA final
-      Botão do SDR se repete a cada duas seções, sempre com data-sdr.
+      4. Prova — depoimentos (vídeo tem prioridade) e logos "Alunas em".
+      Regra 5: só depoimento real. Sem material, o slot fica vazio e sinalizado.
     -->
+    <section class="section" id="prova" aria-labelledby="prova-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <h2 class="h2" id="prova-title">O que mudou para quem passou pela mentoria</h2>
+          <p class="section__lede">Relatos de alunas, com nome, cargo e o contexto de cada uma.</p>
+        </header>
+
+        <div class="proof__block">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Em vídeo</p>
+            <h3 class="h3">Na voz das alunas</h3>
+          </header>
+
+          <!-- Mesmo <video preload="none"> do hero. Vertical: aspect-ratio 9 / 16. -->
+          <div class="proof__videos">
+            <figure class="proof__video" data-reveal>
+              <div class="slot slot--fill">
+                <svg class="slot__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
+                <p class="slot__title">Depoimento em vídeo</p>
+                <p class="slot__hint">Pendente: vídeo real, com nome e cargo da aluna.</p>
+              </div>
+            </figure>
+            <figure class="proof__video" data-reveal>
+              <div class="slot slot--fill">
+                <svg class="slot__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
+                <p class="slot__title">Depoimento em vídeo</p>
+                <p class="slot__hint">Pendente: vídeo real, com nome e cargo da aluna.</p>
+              </div>
+            </figure>
+          </div>
+        </div>
+
+        <div class="proof__block">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Em texto</p>
+            <h3 class="h3">O que as alunas escreveram</h3>
+          </header>
+
+          <!--
+            Ao preencher cada .story:
+              .story__name  → nome real          .story__role → cargo · empresa
+              .slot--print  → <img class="story__print" src="..." alt="Print do depoimento de [nome]" loading="lazy">
+              .slot--quote  → <blockquote class="story__quote">transcrição fiel do print</blockquote>
+          -->
+          <div class="stories">
+            <article class="story" data-reveal>
+              <header class="story__head">
+                <p class="story__name">Depoimento pendente</p>
+                <p class="story__role">Nome, cargo e empresa reais</p>
+              </header>
+              <div class="story__body">
+                <div class="slot slot--print"><p class="slot__hint">Print do depoimento</p></div>
+                <div class="slot slot--quote"><p class="slot__hint">Transcrição fiel do print</p></div>
+              </div>
+            </article>
+            <article class="story" data-reveal>
+              <header class="story__head">
+                <p class="story__name">Depoimento pendente</p>
+                <p class="story__role">Nome, cargo e empresa reais</p>
+              </header>
+              <div class="story__body">
+                <div class="slot slot--print"><p class="slot__hint">Print do depoimento</p></div>
+                <div class="slot slot--quote"><p class="slot__hint">Transcrição fiel do print</p></div>
+              </div>
+            </article>
+            <article class="story" data-reveal>
+              <header class="story__head">
+                <p class="story__name">Depoimento pendente</p>
+                <p class="story__role">Nome, cargo e empresa reais</p>
+              </header>
+              <div class="story__body">
+                <div class="slot slot--print"><p class="slot__hint">Print do depoimento</p></div>
+                <div class="slot slot--quote"><p class="slot__hint">Transcrição fiel do print</p></div>
+              </div>
+            </article>
+          </div>
+
+          <p class="proof__disclaimer" data-reveal>
+            Resultados variam conforme o ponto de partida e a dedicação de cada aluna.
+          </p>
+        </div>
+
+        <div class="proof__block proof__block--logos">
+          <p class="eyebrow" data-reveal>Alunas em</p>
+          <!--
+            Empresas onde as alunas trabalham. Nunca sugerir relação comercial:
+            alt = só o nome da empresa, nunca "parceiro" ou "cliente".
+            Ao preencher: <li><img src="..." alt="Nome da empresa" loading="lazy"></li>
+          -->
+          <ul class="logos" data-reveal>
+            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      5. Próximo passo — no lugar do card de checkout da referência.
+      Sem preço (regra 2): o valor só aparece depois do agendamento.
+    -->
+    <section class="section" id="conversa" aria-labelledby="conversa-title">
+      <div class="wrap">
+        <div class="next" data-reveal>
+          <p class="next__tag">Próximo passo</p>
+          <h2 class="h2 next__title" id="conversa-title">Uma conversa antes de qualquer decisão</h2>
+
+          <ol class="steps">
+            <li>Você chama a equipe no WhatsApp, pelo botão abaixo.</li>
+            <li>Uma pessoa da equipe entende o seu contexto e onde o inglês trava.</li>
+            <li>Vocês agendam uma call para você ver a mentoria por dentro.</li>
+            <li>A decisão vem depois, com a informação na mão.</li>
+          </ol>
+
+          <a class="btn btn--primary btn--block"
+             data-sdr
+             data-sdr-placement="conversa"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Quero ver por dentro</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Quem conduz — Bruna Gavioli. Autoridade, não currículo. -->
+    <section class="section" id="quem-conduz" aria-labelledby="quem-conduz-title">
+      <div class="wrap founder">
+        <div class="founder__text" data-reveal>
+          <p class="eyebrow eyebrow--pill">Quem conduz</p>
+          <h2 class="h2" id="quem-conduz-title">Bruna Gavioli</h2>
+
+          <div class="slot slot--inline">
+            <p class="slot__title">Texto de autoridade</p>
+            <p class="slot__hint">Pendente: duas ou três frases com fatos verificáveis. Autoridade, não currículo.</p>
+          </div>
+
+          <!--
+            Números: só com dado real conferido. Sem isso, o bloco não entra.
+            <dl class="stats">
+              <div><dt>000+</dt><dd>O que o número conta</dd></div>
+              <div><dt>000+</dt><dd>O que o número conta</dd></div>
+              <div><dt>000+</dt><dd>O que o número conta</dd></div>
+            </dl>
+          -->
+        </div>
+
+        <!-- Ao preencher: <img class="founder__photo" src="..." alt="Bruna Gavioli" loading="lazy"> -->
+        <div class="founder__photo slot" data-reveal>
+          <p class="slot__title">Foto da Bruna</p>
+          <p class="slot__hint">Pendente: rosto, formato 4:5.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Objeções — tempo, nível de inglês, "já tentei antes". -->
+    <section class="section" id="duvidas" aria-labelledby="duvidas-title">
+      <div class="wrap wrap--narrow">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Perguntas frequentes</p>
+          <h2 class="h2" id="duvidas-title">Tire suas dúvidas antes da conversa</h2>
+        </header>
+
+        <!-- name="duvidas": abrir uma pergunta fecha a outra, sem JS. -->
+        <div class="faq">
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Tenho pouco tempo. A mentoria cabe na minha agenda?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p class="slot slot--inline slot__hint">Pendente: quanto tempo por semana a mentoria pede e como ela se encaixa numa agenda cheia.</p>
+            </div>
+          </details>
+
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Preciso de um nível mínimo de inglês?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p class="slot slot--inline slot__hint">Pendente: a partir de que nível a mentoria funciona e o que acontece com quem está abaixo dele.</p>
+            </div>
+          </details>
+
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Já tentei aprender inglês e não funcionou. O que muda aqui?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p class="slot slot--inline slot__hint">Pendente: o que é diferente na mentoria, sem ensinar a execução do método (regra 1).</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. CTA final. -->
+    <section class="section final" id="cta-final" aria-labelledby="cta-final-title">
+      <div class="wrap final__inner" data-reveal>
+        <svg class="final__icon" aria-hidden="true" focusable="false"><use href="#i-message"></use></svg>
+        <h2 class="h2" id="cta-final-title">Veja por dentro. Depois decida.</h2>
+        <p class="section__lede">Conversa direta no WhatsApp, com uma pessoa da equipe.</p>
+
+        <a class="btn btn--primary"
+           data-sdr
+           data-sdr-placement="final"
+           href="https://wa.me/5521999100432"
+           target="_blank"
+           rel="noopener">
+          <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+          <span>Quero ver por dentro</span>
+        </a>
+      </div>
+    </section>
+
   </main>
+
+  <footer class="site-foot">
+    <div class="wrap site-foot__inner">
+      <p class="brand">Inglês com a Gavi</p>
+      <p class="site-foot__copy">© 2026 Inglês com a Gavi. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!--
+    CTA fixo, só no celular. sticky.js mostra entre os CTAs da página e esconde
+    sempre que outro botão do SDR está na tela: um botão primário por viewport.
+  -->
+  <div class="sticky-cta" data-sticky-cta>
+    <a class="btn btn--primary btn--block"
+       data-sdr
+       data-sdr-placement="fixo"
+       href="https://wa.me/5521999100432"
+       target="_blank"
+       rel="noopener">
+      <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+      <span>Quero ver por dentro</span>
+    </a>
+  </div>
 
   <script src="assets/js/sdr.js" defer></script>
   <script src="assets/js/reveal.js" defer></script>
+  <script src="assets/js/sticky.js" defer></script>
 </body>
 </html>

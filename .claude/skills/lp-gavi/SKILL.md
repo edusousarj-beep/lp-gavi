@@ -87,27 +87,40 @@ Botão primário: pill, fundo `--accent`, texto `--text`, glow via
 
 ## Arquitetura de seções
 
-Nesta ordem. Botão do SDR repetido a cada duas seções, todos com o mesmo destino.
+Layout da LP v3 da Lord of Sales (ver Referências visuais), nesta ordem. Todo
+CTA vai para o mesmo destino: hero, fim do M.O.V.E., Próximo passo e CTA final,
+mais o CTA fixo no celular.
 
-1. **Hero** — promessa + botão SDR. Sem menu de navegação longo.
+1. **Hero** — marca, promessa, vídeo real de 30–60s (aula, tela, bastidor) e
+   botão SDR, com três bullets curtos embaixo. Sem menu de navegação.
 
-2. **Prova corporativa** — logos das empresas onde as alunas trabalham, sob o
+2. **Para quem é** — três cards de situação (reunião, call, viagem) e uma linha
+   de filtro que corta lead fora do perfil antes do SDR.
+
+3. **O método M.O.V.E.** — grade 2x2 (M, O, V, E): pilares nomeados e o que
+   cada um entrega. Sem ensinar a execução (regra 1).
+
+4. **Prova** — depoimentos em vídeo (prioridade sobre texto), prints com nome,
+   cargo e transcrição, e os logos das empresas onde as alunas trabalham, sob o
    rótulo "Alunas em". Nunca sugerir relação comercial com essas empresas.
 
-3. **Para quem é** — filtro explícito. Corta lead fora do perfil antes do SDR.
-
-4. **Veja por dentro** — vídeo real de 30–60s (aula, tela, bastidor).
-
-5. **O método M.O.V.E.** — pilares nomeados e o que cada um entrega. Sem ensinar
-   a execução (regra 1).
+5. **Próximo passo** — o card de checkout da referência, sem preço: o que
+   acontece depois do clique (WhatsApp, conversa, call, decisão).
 
 6. **Quem conduz** — Bruna Gavioli, rosto e voz. Autoridade, não currículo.
+   Números só com dado real conferido.
 
-7. **Prova** — depoimentos. Vídeo tem prioridade sobre texto.
+7. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes".
 
-8. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes".
+8. **CTA final**.
 
-9. **CTA final**.
+**CTA fixo no celular** (`sticky.js`): aparece entre os CTAs da página e some
+sempre que outro botão do SDR está na tela. É o que mantém "um botão primário
+por viewport" com um CTA sempre à mão.
+
+Material real que falta fica em `.slot`: vazio, sinalizado, dizendo o que
+precisa. Nenhum `.slot` pode estar visível na página publicada.
+
 ## Stack
 
 - HTML estático + Tailwind (ou CSS puro com os tokens acima). Sem framework SPA.
@@ -133,6 +146,12 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 
 ## Referências visuais
 
+**Layout: LP v3 da Lord of Sales** (lord-of-sales.com/v3, da Growth Machine).
+Dela vêm a ordem das seções, o hero com vídeo, os cards, a grade 2x2, o card de
+próximo passo e o CTA fixo. Dela **não** vêm: preço, checkout, contagem
+regressiva, "últimas vagas", bônus e garantia (regra 2 e o tom), nem o laranja
+espalhado em títulos, ícones e números. Aqui o vermelho fica só nos botões.
+
 `ref/` contém frames de uma LP usada como referência de estilo (agência Dr.
 Reels, capturada em vídeo de celular filmando um monitor).
 
@@ -149,3 +168,5 @@ duas. Os tokens acima mandam.
 - [ ] Evento de clique separado de `LeadQualificado`
 - [ ] Testado em 390px de largura antes de testar em desktop
 - [ ] Nenhum depoimento fictício no HTML
+- [ ] Nenhum `.slot` visível na página publicada
+- [ ] CTA fixo nunca aparece junto de outro CTA
