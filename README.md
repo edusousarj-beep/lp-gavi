@@ -14,8 +14,10 @@ Todas as seções estão montadas no layout e na paleta da LP v3 da Lord of Sale
 CTA fixo no celular. A paleta anterior (petróleo e vermelho da marca) está no
 commit `981b86d`.
 
-Onde falta material real, a página mostra um `.slot` tracejado dizendo o que
-precisa. Ver "Antes de publicar".
+O conteúdo (pilares do M.O.V.E., bio da Bruna, vídeos, prints, respostas do
+FAQ e empresas) vem da página atual, inglescomgavi.com/vip/oferta/?v=3. Hoje não
+há nenhum `.slot` na página; se faltar material no futuro, ele entra como
+`.slot` tracejado dizendo o que precisa.
 
 ## Estrutura
 
@@ -24,7 +26,10 @@ index.html              seções + sprite de ícones + snippet do pixel
 assets/css/style.css    tokens e estilos
 assets/js/sdr.js        botão do SDR (código crítico)
 assets/js/sticky.js     CTA fixo no celular
+assets/js/video.js      vídeos do YouTube em fachada (player só no clique)
+assets/js/lightbox.js   print ampliado num <dialog>
 assets/js/reveal.js     reveals no scroll, IntersectionObserver
+assets/logos/           logos das empresas dos mentorados (SVG)
 ```
 
 HTML estático, sem build step. Para rodar local:
@@ -35,19 +40,15 @@ npx http-server -p 8000 .
 
 ## Antes de publicar
 
-Nenhum `.slot` pode ficar visível. O que falta:
+Nenhum `.slot` pode ficar visível. Pendências:
 
 | Onde | O quê |
 | --- | --- |
-| Hero | vídeo real de 30–60s (aula, tela ou bastidor) e a capa dele |
-| Método | nome de cada pilar do M.O.V.E. e o que ele entrega |
-| Prova | 2 depoimentos em vídeo; 3 prints com nome, cargo, empresa e transcrição |
-| Prova | logos das empresas onde as alunas trabalham ("Alunas em") |
-| Quem conduz | foto da Bruna (4:5) e 2–3 frases de autoridade com fatos verificáveis |
-| Perguntas | respostas sobre tempo, nível de inglês e "já tentei antes" |
+| Foto da Bruna e os 9 prints | apontam para o WordPress (`inglescomgavi.com/wp-content/uploads`). Funcionam, mas a LP fica dependente dele. Para trazer ao repositório, libere `inglescomgavi.com` na rede do ambiente ou copie os arquivos para `assets/`. |
+| Vídeo do hero | é o `LFGi4Th1iJo` da página atual. A skill pede 30–60s; confira a duração. |
+| Logos | marcas de terceiros, usadas porque há mentorados nessas empresas (confirmado em 26/09/2026). Empresa nova só com mentorado real lá. |
 | `index.html` → `og:image`, `og:url` | quando o domínio estiver definido |
 
-Cada slot tem, no HTML, um comentário com a marcação que entra no lugar dele.
 Os números de "Quem conduz" estão comentados: só entram com dado real conferido.
 
 O número do SDR precisa bater em todos os lugares: o `CONFIG.phone` do

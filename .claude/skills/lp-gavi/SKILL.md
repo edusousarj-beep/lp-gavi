@@ -54,6 +54,9 @@ Definidos em `:root`. Nunca escreva cor literal fora daqui.
   --accent-line: rgba(250, 100, 0, 0.40);  /* bordas e linhas de destaque */
   --accent-glow: rgba(250, 100, 0, 0.30);  /* luz ambiente e brilho */
 
+  --tile:        #FFFFFF;                  /* fundo dos logos: marcas nas cores originais */
+  --scrim:       rgba(9, 9, 11, 0.88);     /* fundo do print ampliado e da legenda do vídeo */
+
   --radius:      16px;
   --radius-pill: 999px;
 }
@@ -106,24 +109,32 @@ Layout da LP v3 da Lord of Sales (ver Referências visuais), nesta ordem. Todo
 CTA vai para o mesmo destino: hero, fim do M.O.V.E., Próximo passo e CTA final,
 mais o CTA fixo no celular.
 
-1. **Hero** — marca, promessa, vídeo real de 30–60s (aula, tela, bastidor) e
-   botão SDR, com três bullets curtos embaixo. Sem menu de navegação.
+1. **Hero** — marca, promessa, vídeo real (aula, tela, bastidor; ideal 30–60s)
+   e botão SDR, com três bullets curtos embaixo. Sem menu de navegação. Vídeo
+   do YouTube em fachada (`video.js`): só a capa carrega, o player entra no
+   clique.
 
 2. **Para quem é** — três cards de situação (reunião, call, viagem) e uma linha
-   de filtro que corta lead fora do perfil antes do SDR.
+   que separa mentoria de escola, com as palavras da página atual. A mentoria
+   atende todas as áreas e cargos: não corte por área.
 
 3. **O método M.O.V.E.** — grade 2x2 (M, O, V, E): pilares nomeados e o que
    cada um entrega. Sem ensinar a execução (regra 1).
 
-4. **Prova** — depoimentos em vídeo (prioridade sobre texto), prints com nome,
-   cargo e transcrição, e os logos das empresas onde as alunas trabalham, sob o
-   rótulo "Alunas em". Nunca sugerir relação comercial com essas empresas.
+4. **Prova** — depoimentos em vídeo (Shorts 9:16, prioridade sobre texto),
+   faixa de prints com ampliação (`lightbox.js`) e os logos das empresas onde
+   trabalham mentorados atuais ou antigos, sob "Onde nossos mentorados
+   trabalham". O usuário confirmou essas 14 empresas em 26/09/2026; empresa
+   nova só entra com mentorado real lá. Logos nas cores originais, em cartão
+   branco (`--tile`): o branco chapado apaga Siemens e SAP. Nunca sugerir
+   relação comercial: alt só com o nome e nota de "sem vínculo".
 
 5. **Próximo passo** — o card de checkout da referência, sem preço: o que
    acontece depois do clique (WhatsApp, conversa, call, decisão).
 
 6. **Quem conduz** — Bruna Gavioli, rosto e voz. Autoridade, não currículo.
-   Números só com dado real conferido.
+   Números só com dado real conferido. Hoje: foto, função e bio curta tirada
+   da página atual.
 
 7. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes".
 
@@ -135,6 +146,12 @@ por viewport" com um CTA sempre à mão.
 
 Material real que falta fica em `.slot`: vazio, sinalizado, dizendo o que
 precisa. Nenhum `.slot` pode estar visível na página publicada.
+
+**De onde vem o conteúdo.** Pilares do M.O.V.E., bio da Bruna, vídeos, prints,
+respostas do FAQ e empresas vêm da página atual,
+inglescomgavi.com/vip/oferta/?v=3. Mantenha as palavras de lá; não reescreva
+fato (pilar, número, garantia) sem o usuário pedir. O público são
+"mentorados" (homens e mulheres), não "alunas".
 
 ## Stack
 

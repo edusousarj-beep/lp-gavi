@@ -18,6 +18,9 @@
   --accent-line: rgba(250, 100, 0, 0.40);  /* bordas e linhas de destaque */
   --accent-glow: rgba(250, 100, 0, 0.30);  /* luz ambiente e brilho */
 
+  --tile:        #FFFFFF;                  /* fundo dos logos: marcas nas cores originais */
+  --scrim:       rgba(9, 9, 11, 0.88);     /* fundo do print ampliado e da legenda do vídeo */
+
   --radius:      16px;
   --radius-pill: 999px;
 
@@ -365,6 +368,71 @@ a { color: inherit; }
   object-fit: cover;
 }
 
+/* Fachada do YouTube: capa + botão de play. O player só entra no clique. */
+.video__facade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.video__facade img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video__facade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--scrim), transparent 55%);
+  pointer-events: none;
+}
+
+/* A moldura corta o que passa da borda: o foco fica por dentro. */
+.video__facade:focus-visible { outline-offset: -4px; }
+
+/* Play em tinta, não laranja cheio: laranja sólido é só do botão do SDR. */
+.video__play {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--accent-line);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 32px var(--accent-glow);
+  color: var(--accent);
+  transform: translate(-50%, -50%);
+  transition: transform 180ms ease;
+}
+
+.video__play .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.video__facade:hover .video__play { transform: translate(-50%, -50%) scale(1.06); }
+
+.video__label {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: var(--s2);
+  left: 0;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+}
+
 /* ==========================================================================
    Para quem é — cards de situação.
    ========================================================================== */
@@ -476,80 +544,81 @@ a { color: inherit; }
   text-align: center;
 }
 
-.proof__videos {
-  display: grid;
-  gap: var(--s3);
-  max-width: 56rem;
-  margin-inline: auto;
+.proof__hint {
+  font-size: 13px;
+  color: var(--text-3);
 }
 
-.proof__video {
+/* Depoimentos em vídeo são Shorts: duas molduras 9:16 lado a lado. */
+.proof__videos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 280px));
+  justify-content: center;
+  gap: var(--s2);
+}
+
+.proof__video { min-width: 0; }
+
+.proof__frame {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  background: var(--surface);
 }
 
-.proof__video > video {
+.proof__frame > iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  border: 0;
 }
 
-.stories {
-  display: grid;
-  gap: var(--s3);
-  max-width: 56rem;
-  margin-inline: auto;
+.proof__caption {
+  margin-top: var(--s1);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--text-2);
 }
 
-.story {
+/*
+ * Prints: faixa com rolagem lateral, que encosta nas bordas da tela no
+ * celular. Altura fixa, largura pela proporção de cada print: nada é cortado.
+ */
+.prints {
+  display: flex;
+  gap: var(--s2);
+  margin: 0 calc(var(--s3) * -1);
+  padding: 0 var(--s3) var(--s2);
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--s3);
+  scrollbar-color: var(--border) transparent;
+}
+
+.prints li {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.prints__item {
+  display: block;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  background: var(--surface);
 }
 
-.story__head {
-  padding: var(--s2) var(--s3);
-  border-bottom: 1px solid var(--border);
-}
+.prints__item:focus-visible { outline-offset: -4px; }
 
-.story__name {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.story__role {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.story__body {
-  display: grid;
-  gap: var(--s2);
-  padding: var(--s2);
-}
-
-.story__print {
+.prints__item img {
   display: block;
-  width: 100%;
-  max-height: 384px;
-  object-fit: contain;
-}
-
-.story__quote {
-  align-self: center;
-  padding: var(--s2);
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text);
+  width: auto;
+  height: 360px;
 }
 
 .proof__disclaimer {
@@ -562,24 +631,75 @@ a { color: inherit; }
 
 .proof__block--logos { text-align: center; }
 
+/*
+ * Logos nas cores originais, sobre cartão branco, como na página atual.
+ * Branco chapado não serve: apaga Siemens e SAP, que usam letra branca.
+ * Flex com quebra e centro: a última linha fica centrada.
+ */
 .logos {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s2);
-  max-width: 56rem;
-  margin: var(--s3) auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s1);
+  max-width: 64rem;
+  margin: 0 auto;
   padding: 0;
   list-style: none;
 }
 
-/* Logo em branco chapado: nenhuma cor de marca de terceiro na página. */
+.logos li {
+  display: flex;
+  flex: 0 0 calc((100% - 2 * var(--s1)) / 3);
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: var(--s2);
+  border-radius: var(--s1);
+  background: var(--tile);
+}
+
 .logos img {
   display: block;
   width: 100%;
-  height: 48px;
+  height: 32px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
+}
+
+/* Print ampliado. */
+.lightbox {
+  width: auto;
+  max-width: min(92vw, 560px);
+  max-height: 92vh;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.lightbox::backdrop { background: var(--scrim); }
+
+.lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: var(--radius);
+  object-fit: contain;
+}
+
+.lightbox__close {
+  position: absolute;
+  top: var(--s1);
+  right: var(--s1);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
 }
 
 /* ==========================================================================
@@ -660,12 +780,25 @@ a { color: inherit; }
   gap: var(--s2);
 }
 
+.founder__role {
+  font-weight: 800;
+  color: var(--text);
+}
+
+.founder__bio {
+  max-width: 36rem;
+  color: var(--text-2);
+}
+
 .founder__photo {
   order: -1;
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: var(--radius);
+  background: var(--surface);
   object-fit: cover;
+  object-position: top center;
 }
 
 .stats {
@@ -755,7 +888,12 @@ a { color: inherit; }
   transform: none;
 }
 
-.faq__a { padding: 0 var(--s3) var(--s3); }
+.faq__a {
+  padding: 0 var(--s3) var(--s3);
+  color: var(--text-2);
+}
+
+.faq__a p + p { margin-top: var(--s2); }
 
 /* ==========================================================================
    CTA final e rodapé
@@ -915,14 +1053,6 @@ a { color: inherit; }
   text-align: left;
 }
 
-.slot--print { min-height: 160px; }
-
-.slot--quote { min-height: 80px; }
-
-.slot--logo {
-  min-height: 64px;
-  padding: var(--s2);
-}
 
 /* ==========================================================================
    Reveal — só esconde quando o JS está ativo (classe .js no <html>).
@@ -1009,11 +1139,13 @@ a { color: inherit; }
 
   .pillar__letter { margin-bottom: var(--s3); }
 
-  .proof__videos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proof__videos { gap: var(--s3); }
 
-  .story__body { grid-template-columns: 240px minmax(0, 1fr); }
+  .prints__item img { height: 440px; }
 
-  .logos { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .logos { gap: var(--s2); }
+
+  .logos li { flex-basis: calc((100% - 6 * var(--s2)) / 7); }
 
   .next { padding: var(--s5) var(--s4); }
 

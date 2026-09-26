@@ -89,6 +89,10 @@
     <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="m6 9 6 6 6-6"/>
     </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"/>
+      <path d="m6 6 12 12"/>
+    </symbol>
   </svg>
 
   <!--
@@ -96,6 +100,10 @@
     grade 2x2, prova, card de próximo passo, quem conduz, perguntas, CTA final,
     CTA fixo no celular) e a paleta (laranja sobre quase-preto).
     Tipografia e regras são as da Gavi.
+
+    Conteúdo (pilares, bio, vídeos, prints, respostas, logos) vem da página
+    atual: inglescomgavi.com/vip/oferta/?v=3. Imagens e vídeos ainda apontam
+    para o WordPress e o YouTube; ver README.
 
     Blocos .slot = material real que ainda falta. Cada um diz o que precisa.
     Nenhum .slot pode estar visível na página publicada.
@@ -125,18 +133,20 @@
         <figure class="video" data-reveal>
           <div class="video__frame">
             <!--
-              Quando o vídeo existir, troque o .slot abaixo por:
-                <video controls playsinline preload="none" poster="assets/video/capa.jpg">
-                  <source src="assets/video/por-dentro.mp4" type="video/mp4">
-                </video>
-              preload="none": só a capa carrega; o vídeo só baixa no play.
-              Vídeo vertical: troque o aspect-ratio de .video__frame para 9 / 16.
+              Fachada: só a capa do YouTube carrega. O player (youtube-nocookie)
+              entra no clique, via video.js. Sem JS, o link abre o vídeo no YouTube.
             -->
-            <div class="slot slot--fill">
-              <svg class="slot__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
-              <p class="slot__title">Vídeo real de 30 a 60 segundos</p>
-              <p class="slot__hint">Pendente: aula, tela ou bastidor da mentoria.</p>
-            </div>
+            <a class="video__facade"
+               data-youtube="LFGi4Th1iJo"
+               data-title="Veja a mentoria por dentro"
+               href="https://www.youtube.com/watch?v=LFGi4Th1iJo"
+               target="_blank"
+               rel="noopener"
+               aria-label="Assistir ao vídeo: veja a mentoria por dentro">
+              <img src="https://i.ytimg.com/vi/LFGi4Th1iJo/hqdefault.jpg" alt="" width="480" height="360" fetchpriority="high">
+              <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+              <span class="video__label" aria-hidden="true">Veja a mentoria por dentro</span>
+            </a>
           </div>
         </figure>
 
@@ -208,9 +218,8 @@
         </div>
 
         <p class="section__note" data-reveal>
-          A mentoria é para executivos, empresários e profissionais sêniores que
-          usam inglês no trabalho. Se o inglês não faz parte da sua rotina
-          profissional, este não é o formato para você.
+          Aqui não é escola. É mentoria: um plano montado para a sua rotina, a sua
+          área e o que você precisa dizer em inglês nos próximos meses.
         </p>
       </div>
     </section>
@@ -227,39 +236,34 @@
           </p>
         </header>
 
-        <!--
-          Regra 1: nome do pilar + o que ele entrega. Nunca o como (exercício,
-          sequência, execução). Ao preencher, troque cada .slot por:
-            <h3 class="pillar__name">Nome do pilar</h3>
-            <p class="pillar__text">O que ele entrega.</p>
-        -->
+        <!-- Regra 1: nome do pilar + o que ele entrega. Nunca o como (exercício, sequência, execução). -->
         <ol class="pillars">
           <li class="pillar" data-reveal>
             <span class="pillar__letter" aria-hidden="true">M</span>
-            <div class="slot slot--inline">
-              <p class="slot__title">Pilar M</p>
-              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            <div>
+              <h3 class="pillar__name">Mentalidade</h3>
+              <p class="pillar__text">Ambiente seguro, inglês gradual e acompanhamento de perto, sem travas e sem vergonha.</p>
             </div>
           </li>
           <li class="pillar" data-reveal>
             <span class="pillar__letter" aria-hidden="true">O</span>
-            <div class="slot slot--inline">
-              <p class="slot__title">Pilar O</p>
-              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            <div>
+              <h3 class="pillar__name">Organização</h3>
+              <p class="pillar__text">Um roadmap com agenda imersiva diária: você sempre sabe o próximo passo.</p>
             </div>
           </li>
           <li class="pillar" data-reveal>
             <span class="pillar__letter" aria-hidden="true">V</span>
-            <div class="slot slot--inline">
-              <p class="slot__title">Pilar V</p>
-              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            <div>
+              <h3 class="pillar__name">Voz Ativa</h3>
+              <p class="pillar__text">Foco total em desenvolver a sua fala no idioma, desde o começo.</p>
             </div>
           </li>
           <li class="pillar" data-reveal>
             <span class="pillar__letter" aria-hidden="true">E</span>
-            <div class="slot slot--inline">
-              <p class="slot__title">Pilar E</p>
-              <p class="slot__hint">Pendente: nome do pilar e o que ele entrega.</p>
+            <div>
+              <h3 class="pillar__name">Experiência Real</h3>
+              <p class="pillar__text">Método contextualizado na vida adulta e no seu dia a dia real.</p>
             </div>
           </li>
         </ol>
@@ -279,106 +283,153 @@
     </section>
 
     <!--
-      4. Prova — depoimentos (vídeo tem prioridade) e logos "Alunas em".
-      Regra 5: só depoimento real. Sem material, o slot fica vazio e sinalizado.
+      4. Prova — depoimentos (vídeo tem prioridade), prints e as empresas onde
+      os mentorados trabalham. Regra 5: só depoimento real.
     -->
     <section class="section" id="prova" aria-labelledby="prova-title">
       <div class="wrap">
         <header class="section__head" data-reveal>
+          <p class="eyebrow">Prova real de quem aplicou</p>
           <h2 class="h2" id="prova-title">O que mudou para quem passou pela mentoria</h2>
-          <p class="section__lede">Relatos de alunas, com nome, cargo e o contexto de cada uma.</p>
+          <p class="section__lede">Conversas, áudios e depoimentos reais de quem destravou o inglês com o Método M.O.V.E.</p>
         </header>
 
         <div class="proof__block">
           <header class="proof__head" data-reveal>
             <p class="eyebrow">Em vídeo</p>
-            <h3 class="h3">Na voz das alunas</h3>
+            <h3 class="h3">Na voz de quem já viveu</h3>
           </header>
 
-          <!-- Mesmo <video preload="none"> do hero. Vertical: aspect-ratio 9 / 16. -->
+          <!-- Depoimentos verticais (Shorts): moldura 9:16, mesma fachada do hero. -->
           <div class="proof__videos">
             <figure class="proof__video" data-reveal>
-              <div class="slot slot--fill">
-                <svg class="slot__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
-                <p class="slot__title">Depoimento em vídeo</p>
-                <p class="slot__hint">Pendente: vídeo real, com nome e cargo da aluna.</p>
+              <div class="proof__frame">
+                <a class="video__facade"
+                   data-youtube="ZmF9XccavNE"
+                   data-title="Depoimento: a virada de chave"
+                   href="https://www.youtube.com/watch?v=ZmF9XccavNE"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="Assistir ao depoimento: A virada de chave">
+                  <img src="https://i.ytimg.com/vi/ZmF9XccavNE/hqdefault.jpg" alt="" width="480" height="360" loading="lazy">
+                  <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                </a>
               </div>
+              <figcaption class="proof__caption">A virada de chave</figcaption>
             </figure>
             <figure class="proof__video" data-reveal>
-              <div class="slot slot--fill">
-                <svg class="slot__icon" aria-hidden="true" focusable="false"><use href="#i-play"></use></svg>
-                <p class="slot__title">Depoimento em vídeo</p>
-                <p class="slot__hint">Pendente: vídeo real, com nome e cargo da aluna.</p>
+              <div class="proof__frame">
+                <a class="video__facade"
+                   data-youtube="Mq2io3x4xwc"
+                   data-title="Depoimento: experiência transformadora com Thiago Lobato"
+                   href="https://www.youtube.com/watch?v=Mq2io3x4xwc"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="Assistir ao depoimento: Experiência transformadora com Thiago Lobato">
+                  <img src="https://i.ytimg.com/vi/Mq2io3x4xwc/hqdefault.jpg" alt="" width="480" height="360" loading="lazy">
+                  <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                </a>
               </div>
+              <figcaption class="proof__caption">Experiência transformadora com Thiago Lobato</figcaption>
             </figure>
           </div>
         </div>
 
         <div class="proof__block">
           <header class="proof__head" data-reveal>
-            <p class="eyebrow">Em texto</p>
-            <h3 class="h3">O que as alunas escreveram</h3>
+            <p class="eyebrow">Em prints</p>
+            <h3 class="h3">O que os mentorados escreveram</h3>
+            <p class="proof__hint">Arraste para o lado. Toque para ampliar.</p>
           </header>
 
           <!--
-            Ao preencher cada .story:
-              .story__name  → nome real          .story__role → cargo · empresa
-              .slot--print  → <img class="story__print" src="..." alt="Print do depoimento de [nome]" loading="lazy">
-              .slot--quote  → <blockquote class="story__quote">transcrição fiel do print</blockquote>
+            Prints da página atual. Toque abre o print ampliado (lightbox.js);
+            sem JS, o link abre a imagem.
           -->
-          <div class="stories">
-            <article class="story" data-reveal>
-              <header class="story__head">
-                <p class="story__name">Depoimento pendente</p>
-                <p class="story__role">Nome, cargo e empresa reais</p>
-              </header>
-              <div class="story__body">
-                <div class="slot slot--print"><p class="slot__hint">Print do depoimento</p></div>
-                <div class="slot slot--quote"><p class="slot__hint">Transcrição fiel do print</p></div>
-              </div>
-            </article>
-            <article class="story" data-reveal>
-              <header class="story__head">
-                <p class="story__name">Depoimento pendente</p>
-                <p class="story__role">Nome, cargo e empresa reais</p>
-              </header>
-              <div class="story__body">
-                <div class="slot slot--print"><p class="slot__hint">Print do depoimento</p></div>
-                <div class="slot slot--quote"><p class="slot__hint">Transcrição fiel do print</p></div>
-              </div>
-            </article>
-            <article class="story" data-reveal>
-              <header class="story__head">
-                <p class="story__name">Depoimento pendente</p>
-                <p class="story__role">Nome, cargo e empresa reais</p>
-              </header>
-              <div class="story__body">
-                <div class="slot slot--print"><p class="slot__hint">Print do depoimento</p></div>
-                <div class="slot slot--quote"><p class="slot__hint">Transcrição fiel do print</p></div>
-              </div>
-            </article>
-          </div>
+          <ul class="prints" data-reveal>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-03.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-03.jpg" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2026/03/Dobler-589x1024.jpeg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/Dobler-589x1024.jpeg" alt="Print de depoimento de mentorado" width="589" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-23-at-23.42.27-870x1024.jpeg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-23-at-23.42.27-870x1024.jpeg" alt="Print de depoimento de mentorado" width="870" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-01-565x1024.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-01-565x1024.jpg" alt="Print de depoimento de mentorado" width="565" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-30-at-11.35.10_1_5x-473x1024.webp" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2025/06/WhatsApp-Image-2025-06-30-at-11.35.10_1_5x-473x1024.webp" alt="Print de depoimento de mentorado" width="473" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-02-567x1024.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/prova-social-02-567x1024.jpg" alt="Print de depoimento de mentorado" width="567" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2025/08/Aluna-Monica-473x1024.jpeg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2025/08/Aluna-Monica-473x1024.jpeg" alt="Print de depoimento de mentorado" width="473" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2025/08/Foto-resultados-768x1024.jpeg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2025/08/Foto-resultados-768x1024.jpeg" alt="Print de depoimento de mentorado" width="768" height="1024" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="https://inglescomgavi.com/wp-content/uploads/2026/03/Destaque-coordenadora-bilingue-768x1024.jpeg" target="_blank" rel="noopener" data-lightbox>
+                <img src="https://inglescomgavi.com/wp-content/uploads/2026/03/Destaque-coordenadora-bilingue-768x1024.jpeg" alt="Print de depoimento de mentorado" width="768" height="1024" loading="lazy">
+              </a>
+            </li>
+          </ul>
 
           <p class="proof__disclaimer" data-reveal>
-            Resultados variam conforme o ponto de partida e a dedicação de cada aluna.
+            Os resultados dependem da dedicação e da constância na prática de cada aluno.
           </p>
         </div>
 
         <div class="proof__block proof__block--logos">
-          <p class="eyebrow" data-reveal>Alunas em</p>
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Onde nossos mentorados trabalham</p>
+            <p class="proof__hint">Indústria, energia, agro, logística, hotelaria e tecnologia.</p>
+          </header>
           <!--
-            Empresas onde as alunas trabalham. Nunca sugerir relação comercial:
-            alt = só o nome da empresa, nunca "parceiro" ou "cliente".
-            Ao preencher: <li><img src="..." alt="Nome da empresa" loading="lazy"></li>
+            Empresas onde trabalham mentorados atuais ou antigos (confirmado em
+            26/09/2026). Logos nas cores originais, sobre fundo branco, como na
+            página atual. alt = só o nome da empresa, nunca "parceiro" ou "cliente".
+            Arquivos: assets/logos/, do repositório ln-dev7/logos-apps (código MIT;
+            as marcas são dos donos).
           -->
           <ul class="logos" data-reveal>
-            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
-            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
-            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
-            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
-            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
-            <li class="slot slot--logo"><p class="slot__hint">Logo</p></li>
+            <li><img src="assets/logos/caterpillar.svg" alt="Caterpillar" loading="lazy"></li>
+            <li><img src="assets/logos/schneider-electric.svg" alt="Schneider Electric" loading="lazy"></li>
+            <li><img src="assets/logos/siemens.svg" alt="Siemens" loading="lazy"></li>
+            <li><img src="assets/logos/abb.svg" alt="ABB" loading="lazy"></li>
+            <li><img src="assets/logos/bosch.svg" alt="Bosch" loading="lazy"></li>
+            <li><img src="assets/logos/embraer.svg" alt="Embraer" loading="lazy"></li>
+            <li><img src="assets/logos/john-deere.svg" alt="John Deere" loading="lazy"></li>
+            <li><img src="assets/logos/bayer.svg" alt="Bayer" loading="lazy"></li>
+            <li><img src="assets/logos/dhl.svg" alt="DHL" loading="lazy"></li>
+            <li><img src="assets/logos/hilton.svg" alt="Hilton" loading="lazy"></li>
+            <li><img src="assets/logos/marriott.svg" alt="Marriott International" loading="lazy"></li>
+            <li><img src="assets/logos/totvs.svg" alt="TOTVS" loading="lazy"></li>
+            <li><img src="assets/logos/sap.svg" alt="SAP" loading="lazy"></li>
+            <li><img src="assets/logos/kia.svg" alt="Kia" loading="lazy"></li>
           </ul>
+          <p class="proof__disclaimer" data-reveal>
+            As marcas pertencem às respectivas empresas. Sem vínculo, patrocínio ou endosso.
+          </p>
         </div>
       </div>
     </section>
@@ -396,7 +447,7 @@
           <ol class="steps">
             <li>Você chama a equipe no WhatsApp, pelo botão abaixo.</li>
             <li>Uma pessoa da equipe entende o seu contexto e onde o inglês trava.</li>
-            <li>Vocês agendam uma call para você ver a mentoria por dentro.</li>
+            <li>Vocês agendam uma call de diagnóstico para você ver a mentoria por dentro.</li>
             <li>A decisão vem depois, com a informação na mão.</li>
           </ol>
 
@@ -420,10 +471,13 @@
           <p class="eyebrow eyebrow--pill">Quem conduz</p>
           <h2 class="h2" id="quem-conduz-title">Bruna Gavioli</h2>
 
-          <div class="slot slot--inline">
-            <p class="slot__title">Texto de autoridade</p>
-            <p class="slot__hint">Pendente: duas ou três frases com fatos verificáveis. Autoridade, não currículo.</p>
-          </div>
+          <p class="founder__role">Mentora e criadora do Método M.O.V.E.</p>
+          <p class="founder__bio">
+            Professora há 14 anos, ex-coordenadora de escola bilíngue e com
+            certificação internacional. O foco dela é transformar o inglês em algo
+            prático e conectado à vida real.
+          </p>
+          <p class="founder__bio">Foi capa da edição “Legado” da Revista Prospere.</p>
 
           <!--
             Números: só com dado real conferido. Sem isso, o bloco não entra.
@@ -435,11 +489,7 @@
           -->
         </div>
 
-        <!-- Ao preencher: <img class="founder__photo" src="..." alt="Bruna Gavioli" loading="lazy"> -->
-        <div class="founder__photo slot" data-reveal>
-          <p class="slot__title">Foto da Bruna</p>
-          <p class="slot__hint">Pendente: rosto, formato 4:5.</p>
-        </div>
+        <img class="founder__photo" src="https://inglescomgavi.com/wp-content/uploads/2025/06/FOTOS.webp" alt="Bruna Gavioli" loading="lazy" data-reveal>
       </div>
     </section>
 
@@ -459,7 +509,9 @@
               <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
             </summary>
             <div class="faq__a">
-              <p class="slot slot--inline slot__hint">Pendente: quanto tempo por semana a mentoria pede e como ela se encaixa numa agenda cheia.</p>
+              <p>Menos hora presa na agenda, mais hora de inglês na semana: é assim que a mentoria funciona.</p>
+              <p>O que produz fluência não é quantas vezes você entra na aula, e sim quantas horas por semana o inglês existe na sua vida e quanto desse tempo é você falando. Por isso os encontros ao vivo são semanais e se somam a uma agenda imersiva diária, com prática guiada.</p>
+              <p>A quantidade e o formato ideais para o seu caso são definidos na call com o time.</p>
             </div>
           </details>
 
@@ -469,7 +521,7 @@
               <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
             </summary>
             <div class="faq__a">
-              <p class="slot slot--inline slot__hint">Pendente: a partir de que nível a mentoria funciona e o que acontece com quem está abaixo dele.</p>
+              <p>Não. O método começa do zero (From Scratch). Na primeira semana você faz o teste de nivelamento e recebe um roadmap feito para o seu ponto de partida.</p>
             </div>
           </details>
 
@@ -479,7 +531,9 @@
               <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
             </summary>
             <div class="faq__a">
-              <p class="slot slot--inline slot__hint">Pendente: o que é diferente na mentoria, sem ensinar a execução do método (regra 1).</p>
+              <p>É a frase que mais ouvimos aqui. E quase nunca o professor era o problema.</p>
+              <p>O que falha é o desenho: aula genérica, conteúdo sem relação com a sua rotina, nenhum critério de progresso além de terminar o livro e um plano que só funciona se a sua semana for perfeita.</p>
+              <p>A call de diagnóstico começa exatamente por aí: entender por que você parou das outras vezes. Se for algo que a mentoria não resolve, você ouve isso na hora.</p>
             </div>
           </details>
         </div>
@@ -530,8 +584,18 @@
     </a>
   </div>
 
+  <!-- Print ampliado. Sem suporte a <dialog>, o link do print abre a imagem. -->
+  <dialog class="lightbox" data-lightbox-dialog aria-label="Print ampliado">
+    <button class="lightbox__close" type="button" data-lightbox-close aria-label="Fechar">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>
+    </button>
+    <img class="lightbox__img" alt="">
+  </dialog>
+
   <script src="assets/js/sdr.js" defer></script>
   <script src="assets/js/reveal.js" defer></script>
   <script src="assets/js/sticky.js" defer></script>
+  <script src="assets/js/video.js" defer></script>
+  <script src="assets/js/lightbox.js" defer></script>
 </body>
 </html>
