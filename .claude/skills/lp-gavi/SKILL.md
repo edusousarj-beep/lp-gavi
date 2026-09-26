@@ -136,7 +136,10 @@ mais o CTA fixo no celular.
    Números só com dado real conferido. Hoje: foto, função e bio curta tirada
    da página atual.
 
-7. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes".
+7. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes" e
+   garantia. A garantia é real e está em contrato (confirmada em 26/09/2026):
+   8 meses de garantia de resultado, mais os 7 dias do CDC. Não mexa nos
+   termos sem o usuário.
 
 8. **CTA final**.
 
@@ -182,8 +185,9 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 Machine). Dela vêm a ordem das seções, o hero com vídeo, os cards, a grade 2x2,
 o card de próximo passo, o CTA fixo, as cores e o uso do laranja em eyebrows,
 títulos de card, ícones e na ênfase do título. Dela **não** vêm: preço,
-checkout, contagem regressiva, "últimas vagas", bônus e garantia (regra 2 e o
-tom), nem texto branco sobre o laranja, que reprova em contraste.
+checkout, contagem regressiva, "últimas vagas", bônus e o bloco de garantia
+no meio da oferta (regra 2 e o tom), nem texto branco sobre o laranja, que
+reprova em contraste. A garantia da Gavi entra, mas como pergunta no FAQ.
 
 `ref/` contém frames de uma LP usada como referência de estilo (agência Dr.
 Reels, capturada em vídeo de celular filmando um monitor).
