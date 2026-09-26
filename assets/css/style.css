@@ -2,6 +2,9 @@
    Tokens — nenhuma cor literal existe fora deste bloco.
    ========================================================================== */
 :root {
+  /* Página escura: barras de rolagem e controles nativos seguem o tema. */
+  color-scheme: dark;
+
   /* Paleta da LP v3 da Lord of Sales (Growth Machine): laranja sobre quase-preto. */
   --bg:          #09090B;  /* quase-preto */
   --surface:     #1D1D20;  /* cards */
@@ -728,6 +731,13 @@ a { color: inherit; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+/* Sob o botão, colado nele: o card tem gap de --s3, a linha sobe --s1. */
+.next__micro {
+  margin-top: calc(var(--s1) * -1);
+  font-size: 13px;
+  color: var(--text-2);
 }
 
 .steps {
