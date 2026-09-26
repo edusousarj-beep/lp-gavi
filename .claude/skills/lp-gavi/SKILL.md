@@ -1,6 +1,6 @@
 ---
 name: lp-gavi
-description: Constrói e edita a landing page do Inglês com a Gavi — LP de "veja a mentoria por dentro" com CTA direto para o SDR, tema dark com acento vermelho da marca e bento grid. Use SEMPRE que o pedido envolver a LP do inglês, a página da mentoria, seções dela (hero, depoimentos, planos, FAQ), o botão do SDR, tokens de cor/tipografia dessa página, ou qualquer ajuste em HTML/CSS/JS deste repositório — mesmo que o usuário não cite "landing page" explicitamente.
+description: Constrói e edita a landing page do Inglês com a Gavi — LP de "veja a mentoria por dentro" com CTA direto para o SDR, tema escuro com acento laranja (paleta da LP v3 da Lord of Sales) e bento grid. Use SEMPRE que o pedido envolver a LP do inglês, a página da mentoria, seções dela (hero, depoimentos, planos, FAQ), o botão do SDR, tokens de cor/tipografia dessa página, ou qualquer ajuste em HTML/CSS/JS deste repositório — mesmo que o usuário não cite "landing page" explicitamente.
 ---
 
 # LP — Inglês com a Gavi
@@ -39,50 +39,65 @@ Definidos em `:root`. Nunca escreva cor literal fora daqui.
 
 ```css
 :root {
-  --bg:          #062D33;  /* petróleo escuro — fundo base */
-  --surface:     #1B6070;  /* cards do bento */
-  --border:      #0E404A;  /* derivado */
-  --accent:      #E32443;  /* ÚNICO acento — botões e destaques */
-  --accent-dim:  #C00E2B;  /* hover e estados pressionados */
-  --accent-soft: #FFA8B7;  /* auxiliar — ver restrição abaixo */
-  --text:        #FEFEFE;  /* headline */
-  --text-2:      #B5D4D7;  /* corpo */
-  --text-3:      #729599;  /* derivado do --text-2 — labels, eyebrow */
+  --bg:          #09090B;  /* quase-preto — fundo base */
+  --surface:     #1D1D20;  /* cards */
+  --border:      #383838;  /* linhas e bordas neutras */
+  --accent:      #FA6400;  /* ÚNICO acento — botões e destaques */
+  --accent-dim:  #D65600;  /* hover e estados pressionados */
+  --accent-soft: #FFAD33;  /* auxiliar — ver restrição abaixo */
+  --text:        #FFFFFF;  /* headline */
+  --text-2:      #A9A9B1;  /* corpo */
+  --text-3:      #8A8A93;  /* derivado do --text-2 — labels, notas */
+
+  /* Tintas do --accent. Ao trocar o acento, troque aqui também. */
+  --accent-wash: rgba(250, 100, 0, 0.12);  /* fundo de ícone */
+  --accent-line: rgba(250, 100, 0, 0.40);  /* bordas e linhas de destaque */
+  --accent-glow: rgba(250, 100, 0, 0.30);  /* luz ambiente e brilho */
+
   --radius:      16px;
   --radius-pill: 999px;
 }
 ```
 
-Cores da marca: `--bg`, `--surface`, `--accent`, `--accent-dim`, `--text`,
-`--text-2` (`#B5D4D7`) e `--accent-soft` (`#FFA8B7`). `--border` e `--text-3`
-são derivados, calculados para contraste — não os troque no olho.
+**De onde vem esta paleta.** É a da LP v3 da Lord of Sales (Growth Machine),
+tirada do CSS dela. O usuário escolheu trocar a paleta da marca Gavi
+(petróleo `#062D33`, teal `#1B6070`, vermelho `#E32443`) por esta, sabendo do
+custo: a página deixa de ter a cor dos anúncios e do Instagram da marca. Não
+volte para a paleta antiga sem ele pedir; ela está no histórico do git
+(commit `981b86d`).
+
+`--text-3` foi calculado para passar em AA sobre `--bg` e sobre `--surface` —
+não o troque no olho.
 
 ### Regras de contraste desta paleta
 
-O vermelho da marca é escuro. Isso inverte coisas que valiam na paleta antiga:
+O laranja é claro. Isso inverte o que valia na paleta vermelha:
 
-- **Texto do botão primário é `--text`, não `--bg`.** `--bg` sobre `--accent` dá
-  3.21:1 e reprova em AA. `--text` sobre `--accent` dá 4.53:1 e passa.
-- **`--text-3` só existe sobre `--bg`** (4.52:1). Sobre `--surface` cai para
-  2.19:1. Em card de `--surface`, use `--text` (7.05:1) ou `--text-2` (4.52:1).
-- **`--surface` é um teal claro**, não um cinza quase preto como antes. Painel
-  preenchido com ele pesa muito: use em card de bento de verdade, não em chip,
-  badge ou eyebrow. Esses ficam vazados, com `--border`.
+- **Texto do botão primário é `--bg`, não `--text`.** `--text` (branco) sobre
+  `--accent` dá 3.05:1 e reprova em AA no tamanho do botão. `--bg` sobre
+  `--accent` dá 6.53:1 (4.92:1 no hover, `--accent-dim`).
+- **`--accent` pode ser texto**: 6.53:1 sobre `--bg`, 5.52:1 sobre `--surface`.
+  Por isso eyebrow, título de card e letra do M.O.V.E. são laranja.
+- **`--text-3` passa nas duas superfícies**: 5.81:1 sobre `--bg`, 4.91:1 sobre
+  `--surface`. `--text-2` dá 8.52:1 e 7.20:1.
+- **Laranja cheio só no botão.** O resto usa texto laranja ou as tintas
+  (`--accent-wash`, `--accent-line`, `--accent-glow`). Um bloco laranja sólido
+  fora do botão disputa com o CTA.
 
-### `--accent-soft` (#FFA8B7)
+### `--accent-soft` (#FFAD33)
 
-É uma tinta do vermelho, não um segundo acento. Vale para tinta de ícone dentro
-de superfície vermelha, ou ênfase inline pequena. **Não** vale para botão,
-badge, borda de destaque ou qualquer coisa que dispute atenção com o CTA — isso
-é a regra 4 sendo quebrada por outro caminho.
+É uma tinta do laranja, não um segundo acento. Hoje só existe como o fim do
+gradiente da ênfase do título do hero. **Não** vale para botão, badge, borda de
+destaque ou qualquer coisa que dispute atenção com o CTA — isso é a regra 4
+sendo quebrada por outro caminho.
 
 Escala de espaçamento: 8 / 16 / 24 / 40 / 64 / 96 / 144 px. Nada fora dela.
 
 Tipografia: uma grotesk, **dois pesos apenas** (400 e 700/800).
 Headline em clamp, corpo em 16–18px, eyebrow em 11–12px com `letter-spacing:
-0.14em; text-transform: uppercase; color: var(--text-3)`.
+0.14em; text-transform: uppercase; color: var(--accent)`.
 
-Botão primário: pill, fundo `--accent`, texto `--text`, glow via
+Botão primário: pill, fundo `--accent`, texto `--bg`, glow via
 `box-shadow: 0 0 40px -8px var(--accent)`. Um botão primário por viewport.
 
 ## Arquitetura de seções
@@ -146,17 +161,18 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 
 ## Referências visuais
 
-**Layout: LP v3 da Lord of Sales** (lord-of-sales.com/v3, da Growth Machine).
-Dela vêm a ordem das seções, o hero com vídeo, os cards, a grade 2x2, o card de
-próximo passo e o CTA fixo. Dela **não** vêm: preço, checkout, contagem
-regressiva, "últimas vagas", bônus e garantia (regra 2 e o tom), nem o laranja
-espalhado em títulos, ícones e números. Aqui o vermelho fica só nos botões.
+**Layout e paleta: LP v3 da Lord of Sales** (lord-of-sales.com/v3, da Growth
+Machine). Dela vêm a ordem das seções, o hero com vídeo, os cards, a grade 2x2,
+o card de próximo passo, o CTA fixo, as cores e o uso do laranja em eyebrows,
+títulos de card, ícones e na ênfase do título. Dela **não** vêm: preço,
+checkout, contagem regressiva, "últimas vagas", bônus e garantia (regra 2 e o
+tom), nem texto branco sobre o laranja, que reprova em contraste.
 
 `ref/` contém frames de uma LP usada como referência de estilo (agência Dr.
 Reels, capturada em vídeo de celular filmando um monitor).
 
 **Use para layout e hierarquia. Não use para cor.** A referência é verde sobre
-preto e a página é vermelho sobre petróleo — não há relação de cor entre as
+preto e a página é laranja sobre quase-preto — não há relação de cor entre as
 duas. Os tokens acima mandam.
 
 ## Antes de dar por pronto

@@ -2,15 +2,21 @@
    Tokens — nenhuma cor literal existe fora deste bloco.
    ========================================================================== */
 :root {
-  --bg:          #062D33;  /* petróleo escuro */
-  --surface:     #1B6070;  /* cards do bento */
-  --border:      #0E404A;  /* derivado: mesma sutileza da borda antiga (1.29:1) */
-  --accent:      #E32443;  /* ÚNICO acento */
-  --accent-dim:  #C00E2B;  /* hover e estados pressionados */
-  --accent-soft: #FFA8B7;  /* auxiliar. Tinta do vermelho, não um segundo acento */
-  --text:        #FEFEFE;  /* headline */
-  --text-2:      #B5D4D7;  /* corpo */
-  --text-3:      #729599;  /* derivado do --text-2: labels, eyebrow */
+  /* Paleta da LP v3 da Lord of Sales (Growth Machine): laranja sobre quase-preto. */
+  --bg:          #09090B;  /* quase-preto */
+  --surface:     #1D1D20;  /* cards */
+  --border:      #383838;  /* linhas e bordas neutras */
+  --accent:      #FA6400;  /* ÚNICO acento */
+  --accent-dim:  #D65600;  /* hover e estados pressionados */
+  --accent-soft: #FFAD33;  /* auxiliar: só o fim do gradiente da ênfase do título */
+  --text:        #FFFFFF;  /* headline */
+  --text-2:      #A9A9B1;  /* corpo */
+  --text-3:      #8A8A93;  /* derivado do --text-2: labels, notas */
+
+  /* Tintas do --accent. Ao trocar o acento, troque aqui também. */
+  --accent-wash: rgba(250, 100, 0, 0.12);  /* fundo de ícone */
+  --accent-line: rgba(250, 100, 0, 0.40);  /* bordas e linhas de destaque */
+  --accent-glow: rgba(250, 100, 0, 0.30);  /* luz ambiente e brilho */
 
   --radius:      16px;
   --radius-pill: 999px;
@@ -135,19 +141,16 @@ a { color: inherit; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-3);
+  /* Laranja como texto passa: 6.53:1 sobre --bg, 5.52:1 sobre --surface. */
+  color: var(--accent);
 }
 
+/* Vazado, com borda na tinta do acento. Preenchido, viraria um segundo botão. */
 .eyebrow--pill {
   display: inline-block;
   padding: var(--s1) var(--s2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius-pill);
-  /*
-   * Vazado, não preenchido com --surface. O surface da marca é um teal claro:
-   * preenchido, o eyebrow vira um bloco que compete com a headline, e --text-3
-   * sobre ele cai para 2.19:1. Sobre o --bg, --text-3 dá 4.52:1.
-   */
   background: transparent;
 }
 
@@ -214,11 +217,7 @@ a { color: inherit; }
   overflow: hidden;
 }
 
-/*
- * Luz ambiente no teal da marca, não no acento. Vermelho diluído sobre o
- * petróleo dá uma mancha arroxeada suja; e gastar o acento no fundo tira do
- * botão a exclusividade dele. Assim o único vermelho da viewport é o CTA.
- */
+/* Luz ambiente quente atrás do hero, como na referência. Só tinta, nunca o acento cheio. */
 .hero__glow {
   position: absolute;
   z-index: -1;
@@ -227,8 +226,8 @@ a { color: inherit; }
   width: 640px;
   height: 640px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--surface) 0%, transparent 62%);
-  opacity: 0.45;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 62%);
+  opacity: 0.55;
   filter: blur(60px);
   transform: translateX(-50%);
   pointer-events: none;
@@ -254,11 +253,22 @@ a { color: inherit; }
 }
 
 /*
- * Headline sem cor de acento, de propósito. O acento é do botão: dar acento à
- * headline também põe dois focos concorrendo na mesma viewport. `em` fica só
- * como ênfase semântica.
+ * Ênfase do título em laranja, como a referência. O gradiente só entra onde o
+ * navegador recorta fundo no texto; sem isso, texto transparente sumiria.
  */
-.hero__title em { font-style: normal; }
+.hero__title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__title em {
+    background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
 
 .hero__lede {
   max-width: 52ch;
@@ -296,14 +306,18 @@ a { color: inherit; }
 .hero__bullets .icon {
   width: 20px;
   height: 20px;
-  color: var(--text-3);
+  color: var(--accent);
 }
 
-/* Telas de 320–359px: os três bullets cabem numa linha sem quebrar o texto. */
-@media (max-width: 359px) {
+/* Telas de 320–374px: ícone em cima do texto, para os três bullets caberem numa linha. */
+@media (max-width: 374px) {
   .hero__bullets { gap: var(--s1); }
 
-  .hero__bullets li { font-size: 12px; }
+  .hero__bullets li {
+    flex-direction: column;
+    font-size: 12px;
+    text-align: center;
+  }
 
   .hero__bullets .icon {
     width: 16px;
@@ -312,7 +326,7 @@ a { color: inherit; }
 }
 
 /* ==========================================================================
-   Vídeo — moldura com luz teal atrás. Só a capa carrega antes do play.
+   Vídeo — moldura com luz laranja atrás. Só a capa carrega antes do play.
    ========================================================================== */
 .video {
   position: relative;
@@ -326,8 +340,8 @@ a { color: inherit; }
   z-index: -1;
   inset: calc(var(--s3) * -1);
   border-radius: var(--radius);
-  background: var(--surface);
-  opacity: 0.3;
+  background: var(--accent);
+  opacity: 0.22;
   filter: blur(40px);
   pointer-events: none;
 }
@@ -367,6 +381,7 @@ a { color: inherit; }
   align-items: flex-start;
   gap: var(--s2);
   padding: var(--s3);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -378,16 +393,18 @@ a { color: inherit; }
   width: 48px;
   height: 48px;
   border-radius: var(--s1);
-  background: var(--bg);
-  color: var(--text);
+  background: var(--accent-wash);
+  color: var(--accent);
 }
 
+/* Título do card em laranja: 5.52:1 sobre --surface. */
 .card__title {
   font-size: 18px;
   line-height: 1.3;
+  color: var(--accent);
 }
 
-/* Sobre --surface: --text-2 (4.52:1). --text-3 aqui reprova. */
+/* Sobre --surface: --text-2 dá 7.20:1. */
 .card__text {
   margin-top: var(--s1);
   font-size: 15px;
@@ -423,12 +440,13 @@ a { color: inherit; }
   flex: none;
   width: 56px;
   height: 56px;
-  border: 1px solid var(--surface);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius);
+  box-shadow: 0 0 20px var(--accent-glow);
   font-size: 28px;
   font-weight: 800;
   line-height: 1;
-  color: var(--text);
+  color: var(--accent);
 }
 
 .pillar__name {
@@ -574,21 +592,22 @@ a { color: inherit; }
   max-width: 40rem;
   margin-inline: auto;
   padding: var(--s4) var(--s3);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius);
   background: var(--surface);
   text-align: center;
 }
 
-/* Chip vazado. Sobre --surface, texto em --text-2: --text-3 cai para 2.19:1. */
+/* Chip vazado, como o eyebrow. Laranja sobre --surface: 5.52:1. */
 .next__tag {
   padding: var(--s1) var(--s2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-2);
+  color: var(--accent);
 }
 
 .steps {
@@ -692,8 +711,9 @@ a { color: inherit; }
   transition: border-color 200ms ease;
 }
 
-.faq__item:hover,
-.faq__item[open] { border-color: var(--text-3); }
+.faq__item:hover { border-color: var(--text-3); }
+
+.faq__item[open] { border-color: var(--accent-line); }
 
 .faq__q {
   display: flex;
@@ -719,7 +739,7 @@ a { color: inherit; }
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  color: var(--text-2);
+  color: var(--accent);
   transform: rotate(-90deg);
   transition: transform 200ms ease, background-color 200ms ease;
 }
@@ -729,9 +749,9 @@ a { color: inherit; }
   height: 20px;
 }
 
+/* Tinta, não laranja cheio: um círculo sólido disputaria com o CTA logo abaixo. */
 .faq__item[open] .faq__icon {
-  background: var(--surface);
-  color: var(--text);
+  background: var(--accent-wash);
   transform: none;
 }
 
@@ -752,7 +772,7 @@ a { color: inherit; }
 .final__icon {
   width: 28px;
   height: 28px;
-  color: var(--text-3);
+  color: var(--accent);
 }
 
 .final .btn { margin-top: var(--s2); }
@@ -797,10 +817,10 @@ a { color: inherit; }
 .btn--primary {
   background: var(--accent);
   /*
-   * Texto claro, ao contrário do lime anterior. O vermelho da marca é escuro:
-   * --bg sobre --accent dá 3.21:1 e reprova em AA; --text dá 4.53:1 e passa.
+   * Texto escuro. O laranja é claro: --text (branco) sobre --accent dá 3.05:1
+   * e reprova em AA nesse tamanho; --bg dá 6.53:1 (4.92:1 no hover).
    */
-  color: var(--text);
+  color: var(--bg);
   box-shadow: 0 0 40px -8px var(--accent);
 }
 
@@ -813,6 +833,14 @@ a { color: inherit; }
 .btn--primary:active { transform: translateY(0); }
 
 .btn--block { width: 100%; }
+
+/* Abaixo de 360px: menos respiro lateral, para o texto do botão não quebrar. */
+@media (max-width: 359px) {
+  .btn {
+    padding-inline: var(--s3);
+    font-size: 15px;
+  }
+}
 
 .btn__icon {
   width: 20px;
@@ -872,6 +900,7 @@ a { color: inherit; }
 .slot__icon {
   width: 32px;
   height: 32px;
+  color: var(--accent);
 }
 
 /* Ocupa a moldura inteira (vídeo do hero, depoimentos em vídeo). */
@@ -934,7 +963,7 @@ a { color: inherit; }
   .hero__glow {
     width: 900px;
     height: 900px;
-    opacity: 0.5;
+    opacity: 0.6;
   }
 
   .hero__bullets { gap: var(--s4); }
@@ -946,7 +975,7 @@ a { color: inherit; }
     gap: var(--s3);
   }
 
-  /* Linhas cruzadas da grade 2x2, em teal, sumindo nas pontas. */
+  /* Linhas cruzadas da grade 2x2, na tinta do acento, sumindo nas pontas. */
   .pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .pillars::before,
@@ -961,7 +990,7 @@ a { color: inherit; }
     bottom: 0;
     left: 50%;
     width: 1px;
-    background: linear-gradient(to bottom, transparent, var(--surface), transparent);
+    background: linear-gradient(to bottom, transparent, var(--accent-line), transparent);
   }
 
   .pillars::after {
@@ -969,7 +998,7 @@ a { color: inherit; }
     right: 0;
     left: 0;
     height: 1px;
-    background: linear-gradient(to right, transparent, var(--surface), transparent);
+    background: linear-gradient(to right, transparent, var(--accent-line), transparent);
   }
 
   .pillar {

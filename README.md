@@ -8,9 +8,11 @@ seções, spec do botão do SDR) está em `.claude/skills/lp-gavi/SKILL.md`.
 
 ## Estado atual
 
-Todas as seções estão montadas no layout da LP v3 da Lord of Sales, com os
-tokens e as regras da Gavi: hero com vídeo, para quem é, método M.O.V.E.,
-prova, próximo passo, quem conduz, perguntas, CTA final e CTA fixo no celular.
+Todas as seções estão montadas no layout e na paleta da LP v3 da Lord of Sales
+(laranja sobre quase-preto), com as regras da Gavi: hero com vídeo, para quem
+é, método M.O.V.E., prova, próximo passo, quem conduz, perguntas, CTA final e
+CTA fixo no celular. A paleta anterior (petróleo e vermelho da marca) está no
+commit `981b86d`.
 
 Onde falta material real, a página mostra um `.slot` tracejado dizendo o que
 precisa. Ver "Antes de publicar".
