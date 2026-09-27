@@ -228,6 +228,9 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
   comparar versões num teste A/B.
 - Todo botão da página aponta para o mesmo destino. Sem CTA secundário
   competindo.
+- Texto do botão: "Conversar no WhatsApp" (decisão do usuário em 27/09/2026: o
+  botão diz o que acontece no clique). O texto em volta não repete o WhatsApp:
+  os itens sob o botão do topo contam o que vem depois do clique.
 
 ## Referências visuais
 

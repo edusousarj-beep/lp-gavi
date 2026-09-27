@@ -726,6 +726,14 @@ a { color: inherit; }
   text-align: center;
 }
 
+/*
+ * Abaixo de 360px, o card aperta o botão: "Conversar no WhatsApp" só cabe
+ * numa linha com menos respiro no card (aqui) e no botão (ver .btn--block).
+ */
+@media (max-width: 359px) {
+  .next { padding-inline: var(--s2); }
+}
+
 /* Chip vazado, como o eyebrow. Acento sobre --surface: 9.62:1. */
 .next__tag {
   padding: var(--s1) var(--s2);
@@ -1079,6 +1087,10 @@ a { color: inherit; }
 .btn--block {
   width: 100%;
   padding-inline: var(--s2);
+}
+
+@media (max-width: 359px) {
+  .btn--block { padding-inline: var(--s1); }
 }
 
 .btn__icon {
