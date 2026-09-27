@@ -38,10 +38,11 @@ nas duas.
 
 Estas regras vêm de decisões já tomadas. Não as reverta sem o usuário pedir.
 
-1. **1. **Nomeie o método, não ensine.** O M.O.V.E. e seus pilares aparecem na
+1. **Nomeie o método, não ensine.** O M.O.V.E. e seus pilares aparecem na
    página pelo nome e pelo que cada um entrega. O como — exercícios, sequência,
    execução — é moeda da call e não vai para a página.
-   Analogia de referência: entregue o test drive, não a planta do motor.2. **Não coloque preço.** Preço só aparece depois do agendamento (Mensagem 3 do
+   Analogia de referência: entregue o test drive, não a planta do motor.
+2. **Não coloque preço.** Preço só aparece depois do agendamento (Mensagem 3 do
    playbook do SDR).
 3. **Não dispare `LeadQualificado` no clique do botão.** Esse evento é o sinal de
    renda qualificada usado para otimizar campanha no Meta. Sujar ele com clique
@@ -242,7 +243,7 @@ duas. Os tokens acima mandam.
 
 - [ ] Um só acento em toda a página (`--accent-soft` não conta como segundo)
 - [ ] Texto sobre `--accent` e sobre `--surface` conferido contra as regras de contraste
-- [ ] - [ ] Método nomeado sem explicar a execução de nenhum pilar; nenhuma menção a preço
+- [ ] Método nomeado sem explicar a execução de nenhum pilar; nenhuma menção a preço
 - [ ] Todos os CTAs no mesmo destino, com UTM sobrevivendo
 - [ ] Evento de clique separado de `LeadQualificado`
 - [ ] Testado em 390px de largura antes de testar em desktop
