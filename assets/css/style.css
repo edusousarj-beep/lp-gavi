@@ -1062,14 +1062,23 @@ a { color: inherit; }
   100%    { background-position: 0% 0, 0 0, 0 0; }
 }
 
-.btn--block { width: 100%; }
-
 /* Abaixo de 360px: menos respiro lateral, para o texto do botão não quebrar. */
 @media (max-width: 359px) {
   .btn {
     padding-inline: var(--s3);
     font-size: 15px;
   }
+}
+
+/*
+ * Botão na largura toda (card do próximo passo, CTA fixo). O texto fica
+ * centralizado, então basta um respiro lateral menor: com os 40px do .btn, o
+ * botão do card quebrava em duas linhas em 320 e 360px. Vem depois da regra
+ * de 360px para valer também abaixo dela.
+ */
+.btn--block {
+  width: 100%;
+  padding-inline: var(--s2);
 }
 
 .btn__icon {
