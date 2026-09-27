@@ -1,0 +1,912 @@
+/* ==========================================================================
+   Versão nova — gramática de sinalização. Plano em nova/PLANO.md.
+   Tokens — nenhuma cor literal existe fora deste bloco.
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /*
+   * Amarelo só como placa (fundo) ou como texto sobre preto: sobre o
+   * terminal ele dá 1.55:1 e reprova.
+   */
+  --sinal:        #F5B642;  /* amarelo da marca (página da bio) */
+  --preto:        #000000;  /* legenda das placas, botão, ladrilhos, rodapé */
+  --preto-hover:  #2B2B28;  /* botão no hover: amarelo sobre ele dá 7.88:1 */
+  --terminal:     #EDEEEA;  /* fundo da página: preto sobre ele dá 18.02:1 */
+  --grafite:      #4A4B46;  /* texto corrido: 7.55:1 no terminal, 4.88:1 no sinal */
+  --branco:       #FFFFFF;  /* painel dos logos, fundo dos prints */
+  --cinza-rodape: #A9AAA4;  /* texto secundário no rodapé: 8.97:1 no preto */
+
+  --brilho:       rgba(255, 255, 255, 0.22); /* reflexo que atravessa o botão */
+  --sombra-fixo:  rgba(0, 0, 0, 0.28);       /* o CTA fixo flutua sobre a página */
+  --veu:          rgba(0, 0, 0, 0.88);       /* fundo do print ampliado */
+
+  /* Canto por papel, não um raio para tudo. Placas sangram, sem canto. */
+  --r-ladrilho: 6px;
+  --r-midia:    4px;
+  --r-pilula:   999px;
+
+  /*
+   * Geometria do botão, não espaçamento de layout: a luz corre a 3px da
+   * beirada para não encostar na placa amarela.
+   */
+  --recuo-luz: 3px;
+
+  /* Escala de espaçamento. Nada fora dela. */
+  --s1:   8px;
+  --s2:  16px;
+  --s3:  24px;
+  --s4:  40px;
+  --s5:  64px;
+  --s6:  96px;
+  --s7: 144px;
+
+  /* Escala tipográfica da Elements of Typographic Style. */
+  --t14: 14px;
+  --t16: 16px;
+  --t18: 18px;
+  --t21: 21px;
+  --t24: 24px;
+  --t36: 36px;
+  --t48: 48px;
+  --t72: 72px;
+  --t96: 96px;
+
+  --fonte: "Overpass", "Helvetica Neue", Arial, sans-serif;
+  --largura: 1200px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--terminal);
+  color: var(--preto);
+  font-family: var(--fonte);
+  font-weight: 400;
+  font-size: var(--t18);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+figure { margin: 0; }
+
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--preto);
+  outline-offset: 3px;
+}
+
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--largura);
+  margin-inline: auto;
+  padding-inline: var(--s3);
+}
+
+/* ==========================================================================
+   Placas e seções
+   ========================================================================== */
+.placa {
+  background: var(--sinal);
+  color: var(--preto);
+}
+
+.secao { padding-block: var(--s6); }
+
+/* Seções claras em sequência: sem somar dois respiros inteiros. */
+.secao--colada { padding-top: 0; }
+
+.marca {
+  font-weight: 900;
+  font-size: var(--t18);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.h2 {
+  max-width: 20ch;
+  font-weight: 900;
+  font-size: var(--t36);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.h3 {
+  font-weight: 900;
+  font-size: var(--t24);
+  line-height: 1.2;
+}
+
+.lede {
+  max-width: 52ch;
+  margin-top: var(--s2);
+  color: var(--grafite);
+  font-size: var(--t21);
+  line-height: 1.45;
+}
+
+.dica {
+  margin-top: var(--s1);
+  color: var(--grafite);
+  font-size: var(--t16);
+}
+
+.nota {
+  margin-top: var(--s3);
+  color: var(--grafite);
+  font-size: var(--t14);
+}
+
+.acao { margin-top: var(--s5); }
+
+/* Ladrilho de pictograma: preto com o traço em amarelo, como no aeroporto. */
+.ladrilho {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-ladrilho);
+  background: var(--preto);
+  color: var(--sinal);
+}
+
+/* ==========================================================================
+   Topo — a placa
+   ========================================================================== */
+.topo { padding-block: var(--s3) var(--s5); }
+
+.topo__titulo {
+  max-width: 11ch;
+  margin-top: var(--s3);
+  font-weight: 900;
+  font-size: var(--t48);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.situacoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s3);
+  margin-top: var(--s3);
+}
+
+.situacoes li {
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
+  font-weight: 700;
+  font-size: var(--t16);
+  line-height: 1;
+}
+
+.topo__grade { margin-top: var(--s3); }
+
+.topo__acao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: var(--s3);
+}
+
+.topo__micro {
+  margin-top: var(--s2);
+  font-size: var(--t16);
+}
+
+.topo__lede {
+  max-width: 60ch;
+  margin-top: var(--s3);
+}
+
+/* Vídeo: moldura preta, a capa carrega e o player entra no clique. */
+.midia {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-midia);
+  background: var(--preto);
+}
+
+.midia__link {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.midia__link img,
+.midia > iframe,
+.short > iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--sinal);
+  color: var(--preto);
+  translate: -50% -50%;
+}
+
+/* Foco por dentro da moldura, em amarelo: o preto sumiria na capa escura. */
+.midia__link:focus-visible {
+  outline-color: var(--sinal);
+  outline-offset: -6px;
+}
+
+/* ==========================================================================
+   Botão do SDR — preto, texto amarelo, luz amarela girando por dentro da borda.
+   ========================================================================== */
+/*
+ * Mesmo mecanismo da versão atual: ângulo e preenchimento registrados. O
+ * ângulo base fica declarado no botão, nunca como reserva no var(): no
+ * Chromium 141, var(--sdr-angle, 0deg) trava o giro.
+ */
+@property --sdr-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --btn-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+.btn {
+  --sdr-angle: 0deg;
+  --btn-fill: var(--preto);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s1);
+  min-height: 56px;
+  padding: var(--s2) var(--s4);
+  border-radius: var(--r-pilula);
+  background: var(--btn-fill);
+  color: var(--sinal);
+  font-weight: 700;
+  font-size: var(--t18);
+  line-height: 1;
+  text-decoration: none;
+  transition: transform 180ms ease, --btn-fill 180ms ease;
+  animation: sdr-spin 4s linear infinite;
+}
+
+/*
+ * A luz corre num anel de 2px a 3px da beirada: sobre a placa amarela, uma
+ * luz amarela colada na borda abriria o contorno do botão.
+ */
+.btn::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: var(--recuo-luz);
+  border: 2px solid transparent;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, transparent 45%, var(--brilho) 50%, transparent 55%) padding-box,
+    linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
+    conic-gradient(from var(--sdr-angle), var(--btn-fill) 0 60%, var(--sinal) 85%, var(--btn-fill)) border-box;
+  background-repeat: no-repeat;
+  background-size: 300% 100%, auto, auto;
+  background-position: 100% 0, 0 0, 0 0;
+  animation: sdr-sweep 5s ease-in-out infinite;
+}
+
+.btn:hover {
+  --btn-fill: var(--preto-hover);
+  transform: translateY(-2px);
+}
+
+.btn:active { transform: translateY(0); }
+
+.btn--bloco { width: 100%; }
+
+.btn__icone {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: currentColor;
+}
+
+@keyframes sdr-spin {
+  to { --sdr-angle: 360deg; }
+}
+
+/* Parado 3,5s; atravessa da esquerda para a direita em 1,5s. */
+@keyframes sdr-sweep {
+  0%, 70% { background-position: 100% 0, 0 0, 0 0; }
+  100%    { background-position: 0% 0, 0 0, 0 0; }
+}
+
+/* Celular: botão na largura toda, fácil para o polegar. */
+@media (max-width: 599px) {
+  .btn {
+    width: 100%;
+    padding-inline: var(--s3);
+  }
+}
+
+/* ==========================================================================
+   Para quem é — as três situações
+   ========================================================================== */
+.momentos {
+  display: grid;
+  gap: var(--s4);
+  margin-top: var(--s5);
+}
+
+/* Barra preta em cima: a borda superior de uma placa. */
+.momento {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: center;
+  gap: var(--s2);
+  padding-top: var(--s3);
+  border-top: 4px solid var(--preto);
+}
+
+.momento__nome {
+  font-weight: 700;
+  font-size: var(--t24);
+  line-height: 1.2;
+}
+
+.momento__texto {
+  grid-column: 1 / -1;
+  color: var(--grafite);
+}
+
+.recado {
+  max-width: 36ch;
+  margin-top: var(--s5);
+  font-weight: 700;
+  font-size: var(--t24);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   Método M.O.V.E. — as letras são o marcador
+   ========================================================================== */
+.move {
+  display: grid;
+  gap: var(--s4);
+  margin-top: var(--s5);
+}
+
+.move__item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: var(--s3);
+}
+
+.move__letra {
+  display: grid;
+  grid-row: span 2;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-ladrilho);
+  background: var(--sinal);
+  font-weight: 900;
+  font-size: var(--t48);
+  line-height: 1;
+}
+
+.move__nome {
+  font-weight: 700;
+  font-size: var(--t24);
+  line-height: 1.2;
+}
+
+.move__texto {
+  margin-top: var(--s1);
+  color: var(--grafite);
+}
+
+/* ==========================================================================
+   Prova — vídeos, prints e empresas
+   ========================================================================== */
+.prova { margin-top: var(--s6); }
+
+.shorts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s2);
+  max-width: 600px;
+  margin-top: var(--s3);
+}
+
+.short {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--r-midia);
+  background: var(--preto);
+}
+
+.short__legenda {
+  margin-top: var(--s1);
+  font-weight: 700;
+  font-size: var(--t16);
+  line-height: 1.3;
+}
+
+/* Faixa que rola de lado e encosta na beirada da tela. */
+.prints {
+  display: flex;
+  gap: var(--s2);
+  margin-top: var(--s3);
+  margin-inline: calc(-1 * var(--s3));
+  padding: 0 var(--s3) var(--s2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--s3);
+}
+
+.prints li {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.prints__item {
+  display: block;
+  overflow: hidden;
+  height: 360px;
+  border: 2px solid var(--preto);
+  border-radius: var(--r-midia);
+  background: var(--branco);
+}
+
+.prints__item img {
+  width: auto;
+  max-width: none;
+  height: 100%;
+}
+
+.prints__item:focus-visible { outline-offset: -6px; }
+
+/* Logos nas cores originais, num painel branco só. */
+.logos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s3) var(--s2);
+  margin-top: var(--s3);
+  padding: var(--s3);
+  border-radius: var(--r-midia);
+  background: var(--branco);
+}
+
+.logos li {
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+}
+
+.logos img {
+  width: 100%;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* ==========================================================================
+   Próximo passo — a placa com o trajeto
+   ========================================================================== */
+.proximo { padding-block: var(--s6); }
+
+.trajeto {
+  display: grid;
+  gap: var(--s4);
+  margin-top: var(--s5);
+  counter-reset: parada;
+}
+
+.parada {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-content: start;
+  align-items: start;
+  gap: var(--s3);
+  font-size: var(--t18);
+}
+
+/* O número da parada: preto com o algarismo em amarelo. */
+.parada::before {
+  counter-increment: parada;
+  content: counter(parada);
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--preto);
+  color: var(--sinal);
+  font-weight: 900;
+  font-size: var(--t18);
+  line-height: 1;
+}
+
+/* A linha que liga uma parada à próxima. */
+.parada:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: var(--s4);
+  bottom: calc(-1 * var(--s4));
+  left: 18px;
+  width: 4px;
+  background: var(--preto);
+}
+
+.proximo__garantia {
+  margin-top: var(--s2);
+  font-weight: 700;
+  font-size: var(--t16);
+}
+
+/* ==========================================================================
+   Quem conduz
+   ========================================================================== */
+.fundadora {
+  display: grid;
+  gap: var(--s4);
+}
+
+.fundadora__foto {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-midia);
+  background: var(--branco);
+  object-fit: cover;
+}
+
+.fundadora__papel {
+  margin-top: var(--s2);
+  font-weight: 700;
+  font-size: var(--t21);
+  line-height: 1.3;
+}
+
+.fundadora__bio {
+  max-width: 60ch;
+  margin-top: var(--s2);
+  color: var(--grafite);
+}
+
+/* ==========================================================================
+   Perguntas
+   ========================================================================== */
+/* Coluna mais estreita, mas presa à mesma margem esquerda das outras seções. */
+.duvidas {
+  max-width: 800px;
+  margin-top: var(--s4);
+  border-top: 4px solid var(--preto);
+}
+
+.duvida { border-bottom: 2px solid var(--preto); }
+
+.duvida__q {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s2);
+  padding-block: var(--s3);
+  font-weight: 700;
+  font-size: var(--t21);
+  line-height: 1.3;
+  cursor: pointer;
+  list-style: none;
+}
+
+.duvida__q::-webkit-details-marker { display: none; }
+
+.duvida__icone { transition: transform 180ms ease; }
+
+.duvida[open] .duvida__icone { transform: rotate(180deg); }
+
+.duvida__r {
+  max-width: 65ch;
+  padding-bottom: var(--s3);
+  color: var(--grafite);
+}
+
+.duvida__r p + p { margin-top: var(--s2); }
+
+/* ==========================================================================
+   Final e rodapé
+   ========================================================================== */
+.final { padding-block: var(--s6); }
+
+.final__titulo {
+  font-weight: 900;
+  font-size: var(--t48);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Cada frase começa numa linha. */
+.final__titulo span { display: block; }
+
+.final__lede {
+  margin-top: var(--s3);
+  font-size: var(--t21);
+  line-height: 1.45;
+}
+
+.final .acao { margin-top: var(--s4); }
+
+.rodape {
+  padding-block: var(--s5);
+  background: var(--preto);
+  color: var(--cinza-rodape);
+}
+
+.rodape .marca {
+  color: var(--sinal);
+  font-size: var(--t24);
+}
+
+.rodape__copy {
+  margin-top: var(--s2);
+  font-size: var(--t14);
+}
+
+/* ==========================================================================
+   CTA fixo — só no celular. sticky.js decide quando aparece.
+   ========================================================================== */
+.fixo {
+  position: fixed;
+  z-index: 50;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--s2) var(--s3) calc(var(--s2) + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform 240ms ease, visibility 0s linear 240ms;
+}
+
+.fixo[data-state="on"] {
+  transform: none;
+  visibility: visible;
+  transition: transform 240ms ease, visibility 0s;
+}
+
+.fixo .btn {
+  pointer-events: auto;
+  box-shadow: 0 8px 24px var(--sombra-fixo);
+}
+
+/* ==========================================================================
+   Print ampliado
+   ========================================================================== */
+.lightbox {
+  width: auto;
+  max-width: min(92vw, 560px);
+  max-height: 92vh;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.lightbox::backdrop { background: var(--veu); }
+
+.lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: var(--r-midia);
+  object-fit: contain;
+}
+
+.lightbox__fechar {
+  position: absolute;
+  top: var(--s1);
+  right: var(--s1);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sinal);
+  color: var(--preto);
+  cursor: pointer;
+}
+
+.lightbox :focus-visible { outline-color: var(--sinal); }
+
+/* ==========================================================================
+   Tablet e desktop
+   ========================================================================== */
+@media (min-width: 600px) {
+  .topo__titulo { font-size: var(--t72); }
+
+  .final__titulo { font-size: var(--t72); }
+
+  .logos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1000px) {
+  .wrap { padding-inline: var(--s4); }
+
+  .prints {
+    margin-inline: calc(-1 * var(--s4));
+    padding-inline: var(--s4);
+    scroll-padding-inline: var(--s4);
+  }
+
+  .prints__item { height: 420px; }
+
+  .topo { padding-block: var(--s4) var(--s6); }
+
+  .topo__titulo {
+    max-width: 14ch;
+    margin-top: var(--s5);
+    font-size: var(--t96);
+  }
+
+  .topo__grade {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    align-items: start;
+    gap: var(--s5);
+    margin-top: var(--s5);
+  }
+
+  .topo__acao { margin-top: 0; }
+
+  /* No desktop, o texto vem antes do botão, ao lado do vídeo. */
+  .topo__lede {
+    order: -1;
+    margin-top: 0;
+    margin-bottom: var(--s3);
+  }
+
+  .h2 { font-size: var(--t48); }
+
+  .momentos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .momento { align-content: start; }
+
+  /* Lado a lado, as quatro letras leem "MOVE". */
+  .move { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .move__item {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    align-content: start;
+    row-gap: var(--s3);
+  }
+
+  .move__letra {
+    grid-row: auto;
+    width: 96px;
+    height: 96px;
+    font-size: var(--t72);
+  }
+
+  .move__texto { margin-top: 0; }
+
+  .logos {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--s4) var(--s3);
+    padding: var(--s4);
+  }
+
+  /* O trajeto vira uma linha horizontal com quatro paradas. */
+  .trajeto {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s3);
+  }
+
+  .parada {
+    grid-template-columns: 1fr;
+    gap: var(--s3);
+    padding-right: var(--s3);
+  }
+
+  .parada:not(:last-child)::after {
+    top: 18px;
+    right: calc(-1 * var(--s3));
+    bottom: auto;
+    left: var(--s4);
+    width: auto;
+    height: 4px;
+  }
+
+  .fundadora {
+    grid-template-columns: 5fr 7fr;
+    align-items: center;
+    gap: var(--s5);
+  }
+
+  .final__titulo { font-size: var(--t96); }
+
+  .fixo { display: none; }
+}
+
+/* ==========================================================================
+   Movimento reduzido
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* A luz fica parada na borda e o reflexo não passa. */
+  .btn,
+  .btn::after { animation: none; }
+
+  .btn:hover { transform: none; }
+}

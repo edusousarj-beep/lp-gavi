@@ -26,6 +26,14 @@ a frontend-design os aponte como padrão genérico. Ela mesma manda seguir o
 brief quando ele fixa uma direção. Só use a frontend-design nesta página se o
 usuário pedir para redesenhá-la.
 
+**Versão nova (`nova/`).** Em 27/09/2026 o usuário pediu o redesenho lado a
+lado. Ele está em `nova/`, feito com a frontend-design, e o plano está em
+`nova/PLANO.md`. Lá valem as regras invioláveis e a spec do botão do SDR desta
+skill, mas os tokens visuais são os de `nova/style.css`, não os daqui. A página
+atual (`index.html`) continua regida por esta skill. Enquanto as duas
+existirem, toda mudança de conteúdo (fato, garantia, FAQ, número do SDR) entra
+nas duas.
+
 ## Regras invioláveis
 
 Estas regras vêm de decisões já tomadas. Não as reverta sem o usuário pedir.

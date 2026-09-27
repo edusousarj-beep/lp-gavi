@@ -35,6 +35,9 @@ assets/js/video.js      vídeos do YouTube em fachada (player só no clique)
 assets/js/lightbox.js   print ampliado num <dialog>
 assets/js/reveal.js     reveals no scroll, IntersectionObserver
 assets/logos/           logos das empresas dos mentorados (SVG)
+nova/index.html         versão nova, em comparação (usa os mesmos assets/)
+nova/style.css          tokens e estilos da versão nova
+nova/PLANO.md           plano de design da versão nova
 ```
 
 HTML estático, sem build step. Para rodar local:
@@ -42,6 +45,25 @@ HTML estático, sem build step. Para rodar local:
 ```sh
 npx http-server -p 8000 .
 ```
+
+## Versão nova (em comparação)
+
+`nova/` é um redesenho da mesma página, pedido em 27/09/2026 para comparar lado
+a lado com a atual. Foi feito com a skill `frontend-design` e usa uma gramática
+de sinalização: placas amarelas nos pontos de decisão, página clara e a fonte
+Overpass. As escolhas e o porquê estão em `nova/PLANO.md`. Localmente, fica em
+`http://localhost:8000/nova/`.
+
+- **Mesmo conteúdo, mesmos botões.** Os 5 `data-sdr`, os mesmos `placement`,
+  os mesmos scripts (`../assets/js/`) e os mesmos logos. Sem `reveal.js`: nada
+  entra com fade.
+- **Mudança de conteúdo vale para as duas.** Garantia, FAQ, bio, número do SDR:
+  enquanto as duas versões existirem, edite `index.html` e `nova/index.html`.
+- **`noindex`.** A versão nova não aparece em busca. Tire se ela virar a
+  principal.
+- **Teste A/B ainda não dá.** As duas disparam `PageView` e `ClickSDR` no mesmo
+  pixel, mas o `ClickSDR` não diz de qual versão veio o clique. Para comparar
+  conversão, o `sdr.js` precisa mandar a versão junto.
 
 ## Skills
 
