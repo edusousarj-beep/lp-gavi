@@ -219,6 +219,9 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 - UTMs da URL têm que sobreviver do anúncio até o Kommo. Leia os parâmetros na
   chegada, guarde, e injete no link do WhatsApp.
 - Dispare um evento de clique próprio no pixel. **Não** `LeadQualificado`.
+- O `ClickSDR` leva o `placement` do botão e a versão da página em
+  `lp_version`, lida de `<html data-lp-version="...">`. Toda página com botão
+  do SDR declara a sua versão: é o que permite comparar versões (A/B).
 - Todo botão da página aponta para o mesmo destino. Sem CTA secundário
   competindo.
 

@@ -61,9 +61,9 @@ Overpass. As escolhas e o porquê estão em `nova/PLANO.md`. Localmente, fica em
   enquanto as duas versões existirem, edite `index.html` e `nova/index.html`.
 - **`noindex`.** A versão nova não aparece em busca. Tire se ela virar a
   principal.
-- **Teste A/B ainda não dá.** As duas disparam `PageView` e `ClickSDR` no mesmo
-  pixel, mas o `ClickSDR` não diz de qual versão veio o clique. Para comparar
-  conversão, o `sdr.js` precisa mandar a versão junto.
+- **Pronta para teste A/B.** As duas disparam `PageView` e `ClickSDR` no mesmo
+  pixel, e o `ClickSDR` diz de qual versão veio o clique (`lp_version`). Falta
+  dividir o tráfego entre as duas URLs, no anúncio.
 
 ## Skills
 
@@ -98,7 +98,9 @@ que vale quando o JS não carrega.
    estava guardado (last touch); visita direta reaproveita o guardado.
 3. Injeta a origem na mensagem pré-preenchida do WhatsApp, para o SDR saber de
    onde o lead veio sem perguntar e a atribuição chegar ao Kommo.
-4. No clique, dispara `ClickSDR` via `fbq('trackCustom', ...)`.
+4. No clique, dispara `ClickSDR` via `fbq('trackCustom', ...)`, com o
+   `placement` do botão e a versão da página em `lp_version` (lida de
+   `<html data-lp-version="...">`: `atual` ou `nova`).
 
 **`LeadQualificado` não é disparado por esta página.** É o sinal de renda
 qualificada usado para otimizar campanha no Meta; enchê-lo de clique de página
