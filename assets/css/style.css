@@ -975,8 +975,11 @@ a { color: inherit; }
  *
  * O ângulo e o preenchimento são propriedades registradas: é o que deixa o
  * navegador animar o conic-gradient e suavizar a troca de cor do hover. Sem
- * suporte a @property, o brilho fica parado e o botão continua o mesmo; para
- * isso, todo var(--sdr-angle) precisa do reserva 0deg, senão o brilho pisca.
+ * suporte a @property, o brilho fica parado e o botão continua o mesmo.
+ *
+ * O ângulo base é declarado no botão (--sdr-angle: 0deg), não como reserva
+ * no var(). Sem @property, é ele que impede o brilho de piscar a cada 2s; e
+ * var(--sdr-angle, 0deg) trava o giro no Chromium 141 (testado).
  */
 @property --sdr-angle {
   syntax: "<angle>";
@@ -991,6 +994,7 @@ a { color: inherit; }
 }
 
 .btn--primary {
+  --sdr-angle: 0deg;
   --btn-fill: var(--accent);
   position: relative;
   /* As camadas do efeito (z-index -1) ficam dentro do botão, atrás do texto. */
@@ -1014,7 +1018,7 @@ a { color: inherit; }
   z-index: -1;
   inset: calc(-1 * var(--s1));
   border-radius: inherit;
-  background: conic-gradient(from var(--sdr-angle, 0deg), transparent 0 45%, var(--accent) 80%, transparent);
+  background: conic-gradient(from var(--sdr-angle), transparent 0 45%, var(--accent) 80%, transparent);
   filter: blur(16px);
 }
 
@@ -1032,7 +1036,7 @@ a { color: inherit; }
   background:
     linear-gradient(105deg, transparent 45%, var(--shine) 50%, transparent 55%) padding-box,
     linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
-    conic-gradient(from var(--sdr-angle, 0deg), var(--btn-fill) 0 60%, var(--text) 80%, var(--btn-fill)) border-box;
+    conic-gradient(from var(--sdr-angle), var(--btn-fill) 0 60%, var(--text) 80%, var(--btn-fill)) border-box;
   background-repeat: no-repeat;
   /* O reflexo mede 3x a largura do botão e espera fora dele, à esquerda. */
   background-size: 300% 100%, auto, auto;

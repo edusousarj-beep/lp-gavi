@@ -119,9 +119,12 @@ texto, então o contraste não muda.
 - O brilho usa `--text` e `--shine`, nunca `--accent-soft` (ver abaixo).
 - Com `prefers-reduced-motion`, nada anima: o brilho fica parado na borda e
   o reflexo não passa.
-- O giro depende de `@property` (`--sdr-angle`, `--btn-fill`). Navegador sem
-  suporte mostra o brilho parado, e o botão funciona igual, desde que todo
-  `var(--sdr-angle)` leve o reserva `0deg`. Sem ele, o brilho pisca a cada 2s.
+- O giro depende de `@property` (`--sdr-angle`, `--btn-fill`). O ângulo base
+  vem declarado no botão (`--sdr-angle: 0deg`): em navegador sem suporte, é
+  ele que deixa o brilho parado em vez de piscar a cada 2s. Não troque isso
+  por reserva no `var()` (`var(--sdr-angle, 0deg)`): no Chromium 141 o giro
+  trava, embora a propriedade continue andando. Para testar o giro, confira o
+  gradiente calculado do `::after`, não o valor de `--sdr-angle`.
 
 ## Arquitetura de seções
 
