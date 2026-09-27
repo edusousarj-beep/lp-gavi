@@ -5,24 +5,28 @@
   /* Página escura: barras de rolagem e controles nativos seguem o tema. */
   color-scheme: dark;
 
-  /* Paleta da LP v3 da Lord of Sales (Growth Machine): laranja sobre quase-preto. */
-  --bg:          #09090B;  /* quase-preto */
-  --surface:     #1D1D20;  /* cards */
-  --border:      #383838;  /* linhas e bordas neutras */
-  --accent:      #FA6400;  /* ÚNICO acento */
-  --accent-dim:  #D65600;  /* hover e estados pressionados */
-  --accent-soft: #FFAD33;  /* auxiliar: só o fim do gradiente da ênfase do título */
+  /*
+   * Paleta da página atual da Gavi (link da bio): amarelo "school bus" sobre
+   * quase-preto quente. --surface, --border, --text-3 e --accent-dim são
+   * derivados para contraste; não os troque no olho.
+   */
+  --bg:          #0B0908;  /* quase-preto quente (página da bio) */
+  --surface:     #1C1A19;  /* cards: branco a 7% sobre o --bg */
+  --border:      #3A3530;  /* linhas e bordas neutras (1.64:1) */
+  --accent:      #F5B642;  /* ÚNICO acento (página da bio) */
+  --accent-dim:  #DDA033;  /* hover e estados pressionados */
+  --accent-soft: #FFD479;  /* auxiliar: só o fim do gradiente da ênfase do título */
   --text:        #FFFFFF;  /* headline */
-  --text-2:      #A9A9B1;  /* corpo */
-  --text-3:      #8A8A93;  /* derivado do --text-2: labels, notas */
+  --text-2:      #A59C8E;  /* corpo (página da bio) */
+  --text-3:      #928A7D;  /* derivado do --text-2: labels, notas */
 
   /* Tintas do --accent. Ao trocar o acento, troque aqui também. */
-  --accent-wash: rgba(250, 100, 0, 0.12);  /* fundo de ícone */
-  --accent-line: rgba(250, 100, 0, 0.40);  /* bordas e linhas de destaque */
-  --accent-glow: rgba(250, 100, 0, 0.30);  /* luz ambiente e brilho */
+  --accent-wash: rgba(245, 182, 66, 0.12);  /* fundo de ícone */
+  --accent-line: rgba(245, 182, 66, 0.40);  /* bordas e linhas de destaque */
+  --accent-glow: rgba(245, 182, 66, 0.30);  /* luz ambiente e brilho */
 
-  --tile:        #FFFFFF;                  /* fundo dos logos: marcas nas cores originais */
-  --scrim:       rgba(9, 9, 11, 0.88);     /* fundo do print ampliado e da legenda do vídeo */
+  --tile:        #FFFFFF;                   /* fundo dos logos: marcas nas cores originais */
+  --scrim:       rgba(11, 9, 8, 0.88);      /* fundo do print ampliado e da legenda do vídeo */
 
   --radius:      16px;
   --radius-pill: 999px;
@@ -147,7 +151,7 @@ a { color: inherit; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  /* Laranja como texto passa: 6.53:1 sobre --bg, 5.52:1 sobre --surface. */
+  /* O acento como texto passa: 11.03:1 sobre --bg, 9.62:1 sobre --surface. */
   color: var(--accent);
 }
 
@@ -259,7 +263,7 @@ a { color: inherit; }
 }
 
 /*
- * Ênfase do título em laranja, como a referência. O gradiente só entra onde o
+ * Ênfase do título no acento, como a referência. O gradiente só entra onde o
  * navegador recorta fundo no texto; sem isso, texto transparente sumiria.
  */
 .hero__title em {
@@ -332,7 +336,7 @@ a { color: inherit; }
 }
 
 /* ==========================================================================
-   Vídeo — moldura com luz laranja atrás. Só a capa carrega antes do play.
+   Vídeo — moldura com luz do acento atrás. Só a capa carrega antes do play.
    ========================================================================== */
 .video {
   position: relative;
@@ -399,7 +403,7 @@ a { color: inherit; }
 /* A moldura corta o que passa da borda: o foco fica por dentro. */
 .video__facade:focus-visible { outline-offset: -4px; }
 
-/* Play em tinta, não laranja cheio: laranja sólido é só do botão do SDR. */
+/* Play em tinta, não acento cheio: acento sólido é só do botão do SDR. */
 .video__play {
   position: absolute;
   z-index: 1;
@@ -468,7 +472,7 @@ a { color: inherit; }
   color: var(--accent);
 }
 
-/* Título do card em laranja: 5.52:1 sobre --surface. */
+/* Título do card no acento: 9.62:1 sobre --surface. */
 .card__title {
   font-size: 18px;
   line-height: 1.3;
@@ -721,7 +725,7 @@ a { color: inherit; }
   text-align: center;
 }
 
-/* Chip vazado, como o eyebrow. Laranja sobre --surface: 5.52:1. */
+/* Chip vazado, como o eyebrow. Acento sobre --surface: 9.62:1. */
 .next__tag {
   padding: var(--s1) var(--s2);
   border: 1px solid var(--accent-line);
@@ -892,7 +896,7 @@ a { color: inherit; }
   height: 20px;
 }
 
-/* Tinta, não laranja cheio: um círculo sólido disputaria com o CTA logo abaixo. */
+/* Tinta, não acento cheio: um círculo sólido disputaria com o CTA logo abaixo. */
 .faq__item[open] .faq__icon {
   background: var(--accent-wash);
   transform: none;
@@ -965,8 +969,8 @@ a { color: inherit; }
 .btn--primary {
   background: var(--accent);
   /*
-   * Texto escuro. O laranja é claro: --text (branco) sobre --accent dá 3.05:1
-   * e reprova em AA nesse tamanho; --bg dá 6.53:1 (4.92:1 no hover).
+   * Texto escuro. O amarelo é claro: --text (branco) sobre --accent dá 1.80:1
+   * e reprova em AA; --bg dá 11.03:1 (8.66:1 no hover).
    */
   color: var(--bg);
   box-shadow: 0 0 40px -8px var(--accent);

@@ -8,11 +8,12 @@ seções, spec do botão do SDR) está em `.claude/skills/lp-gavi/SKILL.md`.
 
 ## Estado atual
 
-Todas as seções estão montadas no layout e na paleta da LP v3 da Lord of Sales
-(laranja sobre quase-preto), com as regras da Gavi: hero com vídeo, para quem
-é, método M.O.V.E., prova, próximo passo, quem conduz, perguntas, CTA final e
-CTA fixo no celular. A paleta anterior (petróleo e vermelho da marca) está no
-commit `981b86d`.
+Todas as seções estão montadas no layout da LP v3 da Lord of Sales, com a
+paleta da página atual da Gavi (amarelo sobre quase-preto quente, a do link da
+bio) e as regras da skill: hero com vídeo, para quem é, método M.O.V.E., prova,
+próximo passo, quem conduz, perguntas, CTA final e CTA fixo no celular. As
+paletas anteriores estão no histórico: laranja da Growth (até `4aef10b`) e
+petróleo com vermelho (`981b86d`).
 
 O conteúdo (pilares do M.O.V.E., bio da Bruna, vídeos, prints, respostas do
 FAQ e empresas) vem da página atual, inglescomgavi.com/vip/oferta/?v=3. Hoje não
