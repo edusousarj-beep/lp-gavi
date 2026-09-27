@@ -15,6 +15,10 @@ próximo passo, quem conduz, perguntas, CTA final e CTA fixo no celular. As
 paletas anteriores estão no histórico: laranja da Growth (até `4aef10b`) e
 petróleo com vermelho (`981b86d`).
 
+Os botões do SDR têm um brilho que gira em volta e um reflexo que passa a
+cada 5s (regras na skill, em "Efeito do botão do SDR"). Para quem ativa
+"reduzir movimento" no aparelho, ficam parados.
+
 O conteúdo (pilares do M.O.V.E., bio da Bruna, vídeos, prints, respostas do
 FAQ e empresas) vem da página atual, inglescomgavi.com/vip/oferta/?v=3. Hoje não
 há nenhum `.slot` na página; se faltar material no futuro, ele entra como

@@ -56,6 +56,7 @@ Definidos em `:root`. Nunca escreva cor literal fora daqui.
 
   --tile:        #FFFFFF;                   /* fundo dos logos: marcas nas cores originais */
   --scrim:       rgba(11, 9, 8, 0.88);      /* fundo do print ampliado e da legenda do vídeo */
+  --shine:       rgba(255, 255, 255, 0.50); /* reflexo que atravessa o botão do SDR */
 
   --radius:      16px;
   --radius-pill: 999px;
@@ -100,8 +101,27 @@ Tipografia: uma grotesk, **dois pesos apenas** (400 e 700/800).
 Headline em clamp, corpo em 16–18px, eyebrow em 11–12px com `letter-spacing:
 0.14em; text-transform: uppercase; color: var(--accent)`.
 
-Botão primário: pill, fundo `--accent`, texto `--bg`, glow via
-`box-shadow: 0 0 40px -8px var(--accent)`. Um botão primário por viewport.
+Botão primário: pill, fundo `--accent`, texto `--bg`, brilho fixo via
+`box-shadow: 0 0 24px -8px var(--accent)`. Um botão primário por viewport.
+
+### Efeito do botão do SDR
+
+Pedido do usuário em 27/09/2026 ("brilho girando"). Uma luz dá uma volta no
+botão a cada 4s: um brilho branco (`--text`) corre pela borda de 2px e um
+halo `--accent` desfocado acompanha por fora. A cada 5s, um reflexo
+(`--shine`) atravessa o botão da esquerda para a direita. Tudo fica atrás do
+texto, então o contraste não muda.
+
+- Só os botões do SDR (`.btn--primary`) têm efeito. Se outro elemento girar
+  ou brilhar, o botão perde o destaque.
+- Sem pulsar, tremer, crescer ou piscar: o tom é sóbrio. Se o usuário pedir
+  mais movimento, avise do risco antes de fazer.
+- O brilho usa `--text` e `--shine`, nunca `--accent-soft` (ver abaixo).
+- Com `prefers-reduced-motion`, nada anima: o brilho fica parado na borda e
+  o reflexo não passa.
+- O giro depende de `@property` (`--sdr-angle`, `--btn-fill`). Navegador sem
+  suporte mostra o brilho parado, e o botão funciona igual, desde que todo
+  `var(--sdr-angle)` leve o reserva `0deg`. Sem ele, o brilho pisca a cada 2s.
 
 ## Arquitetura de seções
 
@@ -207,3 +227,4 @@ duas. Os tokens acima mandam.
 - [ ] Nenhum depoimento fictício no HTML
 - [ ] Nenhum `.slot` visível na página publicada
 - [ ] CTA fixo nunca aparece junto de outro CTA
+- [ ] Efeito do botão parado com `prefers-reduced-motion`

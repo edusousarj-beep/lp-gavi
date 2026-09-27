@@ -27,6 +27,7 @@
 
   --tile:        #FFFFFF;                   /* fundo dos logos: marcas nas cores originais */
   --scrim:       rgba(11, 9, 8, 0.88);      /* fundo do print ampliado e da legenda do vídeo */
+  --shine:       rgba(255, 255, 255, 0.50); /* reflexo que atravessa o botão do SDR */
 
   --radius:      16px;
   --radius-pill: 999px;
@@ -966,23 +967,96 @@ a { color: inherit; }
   transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
+/*
+ * Efeito do botão do SDR. Uma luz gira em volta do botão (4s por volta):
+ * um brilho branco corre pela borda e um halo amarelo desfocado acompanha
+ * por fora. A cada 5s, um reflexo atravessa o botão. Tudo fica atrás do
+ * texto, então o contraste do texto não muda.
+ *
+ * O ângulo e o preenchimento são propriedades registradas: é o que deixa o
+ * navegador animar o conic-gradient e suavizar a troca de cor do hover. Sem
+ * suporte a @property, o brilho fica parado e o botão continua o mesmo; para
+ * isso, todo var(--sdr-angle) precisa do reserva 0deg, senão o brilho pisca.
+ */
+@property --sdr-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --btn-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
 .btn--primary {
-  background: var(--accent);
+  --btn-fill: var(--accent);
+  position: relative;
+  /* As camadas do efeito (z-index -1) ficam dentro do botão, atrás do texto. */
+  isolation: isolate;
+  background: var(--btn-fill);
   /*
    * Texto escuro. O amarelo é claro: --text (branco) sobre --accent dá 1.80:1
    * e reprova em AA; --bg dá 11.03:1 (8.66:1 no hover).
    */
   color: var(--bg);
-  box-shadow: 0 0 40px -8px var(--accent);
+  /* Brilho fixo mais curto que o halo, para o halo girando aparecer. */
+  box-shadow: 0 0 24px -8px var(--accent);
+  transition: transform 180ms ease, box-shadow 180ms ease, --btn-fill 180ms ease;
+  animation: sdr-spin 4s linear infinite;
+}
+
+/* Halo: a luz que gira por fora, desfocada contra o fundo escuro. */
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--s1));
+  border-radius: inherit;
+  background: conic-gradient(from var(--sdr-angle, 0deg), transparent 0 45%, var(--accent) 80%, transparent);
+  filter: blur(16px);
+}
+
+/*
+ * Por cima do halo: o preenchimento, a borda de 2px com o brilho branco e o
+ * reflexo. O preenchimento cobre o halo por dentro; o halo só aparece fora.
+ */
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, transparent 45%, var(--shine) 50%, transparent 55%) padding-box,
+    linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
+    conic-gradient(from var(--sdr-angle, 0deg), var(--btn-fill) 0 60%, var(--text) 80%, var(--btn-fill)) border-box;
+  background-repeat: no-repeat;
+  /* O reflexo mede 3x a largura do botão e espera fora dele, à esquerda. */
+  background-size: 300% 100%, auto, auto;
+  background-position: 100% 0, 0 0, 0 0;
+  animation: sdr-sweep 5s ease-in-out infinite;
 }
 
 .btn--primary:hover {
-  background: var(--accent-dim);
+  --btn-fill: var(--accent-dim);
   transform: translateY(-2px);
-  box-shadow: 0 0 56px -6px var(--accent);
+  box-shadow: 0 0 40px -6px var(--accent);
 }
 
 .btn--primary:active { transform: translateY(0); }
+
+@keyframes sdr-spin {
+  to { --sdr-angle: 360deg; }
+}
+
+/* Parado 3,5s fora do botão; atravessa da esquerda para a direita em 1,5s. */
+@keyframes sdr-sweep {
+  0%, 70% { background-position: 100% 0, 0 0, 0 0; }
+  100%    { background-position: 0% 0, 0 0, 0 0; }
+}
 
 .btn--block { width: 100%; }
 
@@ -1195,4 +1269,8 @@ a { color: inherit; }
   }
 
   .btn--primary:hover { transform: none; }
+
+  /* O brilho fica parado na borda e o reflexo não passa. */
+  .btn--primary,
+  .btn--primary::after { animation: none; }
 }
