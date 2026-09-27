@@ -43,6 +43,15 @@ HTML estático, sem build step. Para rodar local:
 npx http-server -p 8000 .
 ```
 
+## Skills
+
+- `.claude/skills/lp-gavi/`: a especificação desta LP.
+- `.claude/skills/frontend-design/`: skill de design da Anthropic, copiada sem
+  alterações de [anthropics/skills](https://github.com/anthropics/skills)
+  (commit `3337550`, 24/09/2026), com a licença Apache 2.0 no `LICENSE.txt` da
+  pasta. Serve para os próximos sites; nesta LP, a `lp-gavi` vale mais. Para
+  atualizar, copie a pasta de novo do repositório original.
+
 ## Antes de publicar
 
 Nenhum `.slot` pode ficar visível. Pendências:

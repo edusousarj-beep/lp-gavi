@@ -15,6 +15,17 @@ por dentro para que o lead **queira falar com o SDR**. Não existe checkout aqui
   campanha, não o tom da página.
 - Tom: sóbrio, adulto, profissional. Sem gíria, sem emoji, sem informalidade de
   rede social. Nunca cite objeções que o leitor não levantou.
+
+## Esta skill e a frontend-design
+
+O repositório também tem a `frontend-design`, cópia da skill da Anthropic que o
+usuário trouxe em 27/09/2026 para os próximos sites dele. Nesta LP, esta skill
+é o brief e vale mais. Tokens, fonte (Inter), eyebrow em caixa alta, ênfase no
+título do hero, cards, reveals e o efeito do botão ficam como estão, mesmo que
+a frontend-design os aponte como padrão genérico. Ela mesma manda seguir o
+brief quando ele fixa uma direção. Só use a frontend-design nesta página se o
+usuário pedir para redesenhá-la.
+
 ## Regras invioláveis
 
 Estas regras vêm de decisões já tomadas. Não as reverta sem o usuário pedir.
