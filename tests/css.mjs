@@ -27,10 +27,6 @@ const FOLHAS = {
     ['text', 'surface'], ['text-2', 'surface'], ['text-3', 'surface'], ['accent', 'surface'],
     ['bg', 'accent'], ['bg', 'accent-dim'],
   ],
-  'nova/style.css': [
-    ['preto', 'sinal'], ['preto', 'terminal'], ['grafite', 'terminal'], ['grafite', 'branco'],
-    ['grafite', 'sinal'], ['sinal', 'preto'], ['sinal', 'preto-hover'], ['cinza-rodape', 'preto'],
-  ],
 };
 
 for (const [arquivo, pares] of Object.entries(FOLHAS)) {

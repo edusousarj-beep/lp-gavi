@@ -6,7 +6,7 @@
  * (botão em 1 linha, nada fora da tela) mediriam outra letra. O curl confia
  * no proxy, então ele baixa as fontes uma vez e o teste serve do disco.
  *
- * Os links vêm do próprio HTML das páginas: trocou a fonte na página, o teste
+ * Os links vêm do próprio HTML da página: trocou a fonte na página, o teste
  * baixa a nova sozinho.
  */
 import { execFileSync } from 'node:child_process';
@@ -17,7 +17,7 @@ import path from 'node:path';
 const RAIZ = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
 const CACHE = path.join(RAIZ, 'tests', '.fontes');
 const MAPA = path.join(CACHE, 'mapa.json');
-const PAGINAS = ['index.html', 'nova/index.html'];
+const PAGINAS = ['index.html'];
 
 // O Google Fonts só entrega woff2 para navegador moderno.
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36';

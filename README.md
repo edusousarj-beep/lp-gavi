@@ -13,7 +13,9 @@ paleta da página atual da Gavi (amarelo sobre quase-preto quente, a do link da
 bio) e as regras da skill: hero com vídeo, para quem é, método M.O.V.E., prova,
 próximo passo, quem conduz, perguntas, CTA final e CTA fixo no celular. As
 paletas anteriores estão no histórico: laranja da Growth (até `4aef10b`) e
-petróleo com vermelho (`981b86d`).
+petróleo com vermelho (`981b86d`). Em 27/09/2026, uma versão clara feita com a
+skill `frontend-design` foi comparada lado a lado e descartada; ela está no
+histórico do git (commit `4c09634`).
 
 Os botões do SDR têm um brilho que gira em volta e um reflexo que passa a
 cada 5s (regras na skill, em "Efeito do botão do SDR"). Para quem ativa
@@ -35,10 +37,7 @@ assets/js/video.js      vídeos do YouTube em fachada (player só no clique)
 assets/js/lightbox.js   print ampliado num <dialog>
 assets/js/reveal.js     reveals no scroll, IntersectionObserver
 assets/logos/           logos das empresas dos mentorados (SVG)
-nova/index.html         versão nova, em comparação (usa os mesmos assets/)
-nova/style.css          tokens e estilos da versão nova
-nova/PLANO.md           plano de design da versão nova
-tests/                  testes das duas versões (npm test)
+tests/                  testes da página (npm test)
 package.json            só para os testes: Playwright preso em 1.56.1
 ```
 
@@ -65,10 +64,7 @@ servidor de Python lota o buffer e trava os testes no meio.
 | Suíte | O que confere |
 | --- | --- |
 | `tests/css.mjs` | cores só nos tokens, espaçamento da escala, contraste dos pares de tokens, nenhum `var(--sdr-angle, …)` |
-| `tests/atual.mjs`, `tests/nova.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
-
-`npm run lado-a-lado` gera capturas das duas versões lado a lado em
-`tests/.capturas/`.
+| `tests/pagina.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
 
 As fontes do Google são baixadas uma vez com `curl` para `tests/.fontes/`. O
 Chromium do ambiente de nuvem não confia no proxy de rede e, sem a fonte certa,
@@ -77,29 +73,6 @@ YouTube viram marcadores com as mesmas dimensões.
 
 Fora do ambiente de nuvem, depois do `npm install`, rode uma vez
 `npx playwright install chromium`.
-
-## Versão nova (em comparação)
-
-`nova/` é um redesenho da mesma página, pedido em 27/09/2026 para comparar lado
-a lado com a atual. Foi feito com a skill `frontend-design` e usa uma gramática
-de sinalização: placas amarelas nos pontos de decisão, página clara e a fonte
-Overpass. As escolhas e o porquê estão em `nova/PLANO.md`. Localmente, fica em
-`http://localhost:8000/nova/`.
-
-- **Mesmo conteúdo, mesmos botões.** Os 5 `data-sdr`, os mesmos `placement`,
-  os mesmos scripts (`../assets/js/`) e os mesmos logos. Sem `reveal.js`: nada
-  entra com fade.
-- **Mudança de conteúdo vale para as duas.** Garantia, FAQ, bio, número do SDR:
-  enquanto as duas versões existirem, edite `index.html` e `nova/index.html`.
-- **`noindex`.** A versão nova não aparece em busca. Tire se ela virar a
-  principal.
-- **Texto do botão diferente.** Na nova, o botão diz "Conversar no WhatsApp";
-  na atual, "Quero ver por dentro". Um A/B entre as duas mede o visual e o
-  texto juntos: se a nova ganhar, não dá para saber qual dos dois fez a
-  diferença.
-- **Pronta para teste A/B.** As duas disparam `PageView` e `ClickSDR` no mesmo
-  pixel, e o `ClickSDR` diz de qual versão veio o clique (`lp_version`). Falta
-  dividir o tráfego entre as duas URLs, no anúncio.
 
 ## Skills
 
@@ -136,7 +109,8 @@ que vale quando o JS não carrega.
    onde o lead veio sem perguntar e a atribuição chegar ao Kommo.
 4. No clique, dispara `ClickSDR` via `fbq('trackCustom', ...)`, com o
    `placement` do botão e a versão da página em `lp_version` (lida de
-   `<html data-lp-version="...">`: `atual` ou `nova`).
+   `<html data-lp-version="...">`; hoje, `atual`). Serve para um teste A/B com
+   uma variante futura da página.
 
 **`LeadQualificado` não é disparado por esta página.** É o sinal de renda
 qualificada usado para otimizar campanha no Meta; enchê-lo de clique de página

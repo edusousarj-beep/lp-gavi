@@ -1,6 +1,5 @@
 # Dependências (npm install)
 node_modules/
 
-# Cache dos testes: fontes baixadas e capturas de tela
+# Cache dos testes: fontes baixadas
 tests/.fontes/
-tests/.capturas/

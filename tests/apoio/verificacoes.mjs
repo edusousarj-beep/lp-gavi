@@ -1,7 +1,7 @@
 /*
- * Verificações comuns às versões da página. Cada suíte passa um perfil com
- * o que muda de uma versão para a outra (seletores, cor do texto do botão,
- * arquivo de CSS). Versão nova da página = perfil novo, mesma bateria.
+ * Verificações da página, por perfil (seletores, cor do texto do botão,
+ * arquivo de CSS). Uma variante nova da página, para um teste A/B, ganha a
+ * bateria inteira com um perfil novo em tests/.
  */
 import fs from 'node:fs';
 import path from 'node:path';

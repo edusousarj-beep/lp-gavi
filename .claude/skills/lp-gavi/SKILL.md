@@ -26,13 +26,11 @@ a frontend-design os aponte como padrão genérico. Ela mesma manda seguir o
 brief quando ele fixa uma direção. Só use a frontend-design nesta página se o
 usuário pedir para redesenhá-la.
 
-**Versão nova (`nova/`).** Em 27/09/2026 o usuário pediu o redesenho lado a
-lado. Ele está em `nova/`, feito com a frontend-design, e o plano está em
-`nova/PLANO.md`. Lá valem as regras invioláveis e a spec do botão do SDR desta
-skill, mas os tokens visuais são os de `nova/style.css`, não os daqui. A página
-atual (`index.html`) continua regida por esta skill. Enquanto as duas
-existirem, toda mudança de conteúdo (fato, garantia, FAQ, número do SDR) entra
-nas duas.
+**Redesenho claro, recusado.** Em 27/09/2026 o usuário comparou lado a lado um
+redesenho claro feito com a frontend-design (placas amarelas, fonte Overpass,
+página clara) e ficou com esta versão escura. O redesenho saiu do repositório
+e está no histórico do git (commit `4c09634`). Não proponha de novo o fundo
+claro sem o usuário pedir.
 
 ## Regras invioláveis
 
@@ -211,8 +209,8 @@ fato (pilar, número, garantia) sem o usuário pedir. O público são
 - Testes: `npm test` (Playwright em Node, pasta `tests/`). A skill
   webapp-testing dá o método e o `with_server.py`, mas os testes daqui são em
   Node: escreva os novos junto dos que existem, não comece uma suíte em
-  Python. Verificação que vale para as duas versões entra em
-  `tests/apoio/verificacoes.mjs`.
+  Python. As verificações ficam em `tests/apoio/verificacoes.mjs`, por perfil
+  de página: uma variante para A/B ganha a bateria inteira com um perfil novo.
 
 ## Botão do SDR — especificação
 
@@ -226,7 +224,8 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 - Dispare um evento de clique próprio no pixel. **Não** `LeadQualificado`.
 - O `ClickSDR` leva o `placement` do botão e a versão da página em
   `lp_version`, lida de `<html data-lp-version="...">`. Toda página com botão
-  do SDR declara a sua versão: é o que permite comparar versões (A/B).
+  do SDR declara a sua versão (hoje só existe `atual`): é o que permite
+  comparar versões num teste A/B.
 - Todo botão da página aponta para o mesmo destino. Sem CTA secundário
   competindo.
 
