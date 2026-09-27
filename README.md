@@ -38,6 +38,8 @@ assets/logos/           logos das empresas dos mentorados (SVG)
 nova/index.html         versão nova, em comparação (usa os mesmos assets/)
 nova/style.css          tokens e estilos da versão nova
 nova/PLANO.md           plano de design da versão nova
+tests/                  testes das duas versões (npm test)
+package.json            só para os testes: Playwright preso em 1.56.1
 ```
 
 HTML estático, sem build step. Para rodar local:
@@ -45,6 +47,36 @@ HTML estático, sem build step. Para rodar local:
 ```sh
 npx http-server -p 8000 .
 ```
+
+## Testes
+
+Os testes ficam em `tests/` e rodam num Chromium de verdade, pelo Playwright.
+
+```sh
+npm install     # só na primeira vez
+npm test
+```
+
+O `npm test` usa o `with_server.py` da skill webapp-testing: sobe um servidor
+local na porta 8765, roda as suítes e desliga o servidor. A saída do servidor
+é descartada de propósito: o script guarda essa saída sem ler, e o log do
+servidor de Python lota o buffer e trava os testes no meio.
+
+| Suíte | O que confere |
+| --- | --- |
+| `tests/css.mjs` | cores só nos tokens, espaçamento da escala, contraste dos pares de tokens, nenhum `var(--sdr-angle, …)` |
+| `tests/atual.mjs`, `tests/nova.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
+
+`npm run lado-a-lado` gera capturas das duas versões lado a lado em
+`tests/.capturas/`.
+
+As fontes do Google são baixadas uma vez com `curl` para `tests/.fontes/`. O
+Chromium do ambiente de nuvem não confia no proxy de rede e, sem a fonte certa,
+os testes de quebra de linha medem outra letra. Imagens do WordPress e capas do
+YouTube viram marcadores com as mesmas dimensões.
+
+Fora do ambiente de nuvem, depois do `npm install`, rode uma vez
+`npx playwright install chromium`.
 
 ## Versão nova (em comparação)
 

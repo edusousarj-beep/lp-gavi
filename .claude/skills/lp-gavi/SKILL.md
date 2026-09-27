@@ -208,6 +208,11 @@ fato (pilar, número, garantia) sem o usuário pedir. O público são
   o efeito realmente exigir timeline.
 - Deploy: Netlify ou Vercel, a partir deste repositório.
 - Respeite `prefers-reduced-motion` em qualquer animação.
+- Testes: `npm test` (Playwright em Node, pasta `tests/`). A skill
+  webapp-testing dá o método e o `with_server.py`, mas os testes daqui são em
+  Node: escreva os novos junto dos que existem, não comece uma suíte em
+  Python. Verificação que vale para as duas versões entra em
+  `tests/apoio/verificacoes.mjs`.
 
 ## Botão do SDR — especificação
 
@@ -254,3 +259,4 @@ duas. Os tokens acima mandam.
 - [ ] Nenhum `.slot` visível na página publicada
 - [ ] CTA fixo nunca aparece junto de outro CTA
 - [ ] Efeito do botão parado com `prefers-reduced-motion`
+- [ ] `npm test` passou
