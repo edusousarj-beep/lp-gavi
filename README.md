@@ -61,6 +61,10 @@ Overpass. As escolhas e o porquê estão em `nova/PLANO.md`. Localmente, fica em
   enquanto as duas versões existirem, edite `index.html` e `nova/index.html`.
 - **`noindex`.** A versão nova não aparece em busca. Tire se ela virar a
   principal.
+- **Texto do botão diferente.** Na nova, o botão diz "Conversar no WhatsApp";
+  na atual, "Quero ver por dentro". Um A/B entre as duas mede o visual e o
+  texto juntos: se a nova ganhar, não dá para saber qual dos dois fez a
+  diferença.
 - **Pronta para teste A/B.** As duas disparam `PageView` e `ClickSDR` no mesmo
   pixel, e o `ClickSDR` diz de qual versão veio o clique (`lp_version`). Falta
   dividir o tráfego entre as duas URLs, no anúncio.

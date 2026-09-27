@@ -140,10 +140,16 @@ próximo passo vira uma linha horizontal com quatro paradas.
 Conteúdo e fatos (pilares, bio, garantia, respostas), os 5 botões com
 `data-sdr` e os mesmos `placement`, pixel com `PageView` e `ClickSDR` (nunca
 `LeadQualificado`), CTA fixo no celular, um botão por tela, fachada do vídeo,
-prints ampliáveis e os 14 logos. O texto do botão continua "Quero ver por
-dentro", para a comparação medir só o visual.
+prints ampliáveis e os 14 logos.
 
 Mudanças de texto, só as que a skill pede:
 - O título perde o destaque em "por dentro".
 - Saem os rótulos acima dos títulos ("Para quem é", "O método", "Em vídeo"...).
 - Os três itens sob o botão do topo viram uma frase só.
+- O botão diz o que acontece no clique: "Conversar no WhatsApp" (pedido do
+  usuário em 27/09/2026, só nesta versão). O texto em volta não repete o
+  WhatsApp: "Com uma pessoa da equipe." sob o botão do topo e "Direto com uma
+  pessoa da equipe." no final.
+
+Com o texto do botão diferente, a comparação com a atual mede o visual e o
+texto juntos.

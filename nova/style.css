@@ -377,11 +377,15 @@ a { color: inherit; }
   100%    { background-position: 0% 0, 0 0, 0 0; }
 }
 
-/* Celular: botão na largura toda, fácil para o polegar. */
+/*
+ * Celular: botão na largura toda, fácil para o polegar. O texto fica
+ * centralizado, então o respiro lateral é curto: com 24px, "Conversar no
+ * WhatsApp" quebrava em duas linhas em 320px.
+ */
 @media (max-width: 599px) {
   .btn {
     width: 100%;
-    padding-inline: var(--s3);
+    padding-inline: var(--s2);
   }
 }
 
