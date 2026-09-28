@@ -5,6 +5,8 @@ import {EditorialRoom} from './editorial/EditorialRoom';
 import {GaviAd} from './GaviAd';
 import {ConversaAd} from './conversa/ConversaAd';
 import {NoticiaAd} from './noticia/NoticiaAd';
+import {PorDentroAd} from './pordentro/PorDentroAd';
+import {PD_DURATION} from './pordentro/timeline';
 import {PostAd} from './post/PostAd';
 import {DURATION, FPS, HEIGHT, WIDTH} from './timeline';
 
@@ -33,6 +35,8 @@ export const RemotionRoot: React.FC = () => (
         height={HEIGHT}
         defaultProps={{tema: 'escuro' as const, aviso: null as string | null}}
       />
+      {/* Modelada no anúncio de diagnóstico da turaCRM: 4 blocos, 16 s, 120 BPM. */}
+      <Composition id="GaviPorDentro" component={PorDentroAd} durationInFrames={PD_DURATION} fps={FPS} width={WIDTH} height={HEIGHT} />
     </Folder>
 
     {/* Imagem editorial: gerada para public/editorial (npm run editorial). */}

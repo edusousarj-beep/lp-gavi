@@ -13,6 +13,7 @@ import {at, BEAT, FPS} from '../src/timeline';
 import {POST_EVENTS as P, TOKEN_FRAMES} from '../src/post/timeline';
 import {NOTICIA_EVENTS as N} from '../src/noticia/timeline';
 import {CONVERSA_EVENTS as C, ticks, TIMING, typedFrames} from '../src/conversa/timeline';
+import {MOVES, PD, PD_GRID, pat} from '../src/pordentro/timeline';
 
 const t0 = (frame: number) => Math.max(0, T(frame));
 
@@ -221,5 +222,72 @@ const MOVE_NOTES = [72, 76, 79, 83];
     ],
   }, toWav);
   console.log(JSON.stringify({trilha: 'conversa', seconds: bus.length / samples(1), integratedLufs: +loudness.toFixed(2), gainDb: +gainDb.toFixed(2)}));
+}
+
+/* ------------------------------------------------------------ Por dentro */
+{
+  // Grade própria: 120 BPM, 16 s. Como na referência, o primeiro compasso é
+  // só ambiência e a batida entra no compasso 2.
+  const s = new Studio(404, PD_GRID);
+  s.pad(0, 'Am9', 4, -11, {attack: 0.7, cutoff: 900});
+  s.fx(0, X.riser(s.next(), T(pat(2))), -17);
+  s.fx(0, X.whoosh(s.next(), 0.6, {from: 200, to: 2400, peak: 0.6, q: 1.0, panFrom: 0, panTo: 0}), -18);
+  const plan: BarPlan = [
+    {bar: 2, chord: 'Am9', pattern: FULL},
+    {bar: 3, chord: 'Fmaj9', pattern: FULL},
+    {bar: 4, chord: 'G6', pattern: LIGHT},
+    {bar: 5, chord: 'Am9', pattern: FULL},
+    {bar: 6, chord: 'Fmaj9', pattern: HALF},
+    {bar: 7, chord: 'Cmaj7', pattern: FULL},
+  ];
+  s.groove(plan);
+  for (const {bar, chord} of plan) s.pad(T(pat(bar)), chord, 4, -17);
+  s.snareRoll(T(pat(6, 1)));
+  s.finalChord(T(PD.finalHit), 'Cmaj9');
+  s.pad(T(PD.finalHit), 'Cmaj9', 4, -12);
+
+  // A: texto acendendo, selo, drop.
+  PD.aLines.forEach((f, i) => s.fx(T(f), X.tick(s.next(), {pitch: 2600 + i * 300}), -26, i % 2 ? 0.2 : -0.2));
+  s.fx(T(PD.drop), X.impact(s.next()), -7, 0, 0.3);
+  s.fx(T(PD.tag), X.pop(s.next(), {pitch: 1.2}), -16, 0.3);
+
+  // Trocas de página: rolagem sobe (sem pan), deslize atravessa o estéreo.
+  const [r1, r1d] = MOVES.scroll1;
+  const [s2, s2d] = MOVES.slide2;
+  const [r3, r3d] = MOVES.scroll3;
+  s.fx(T(r1), X.whoosh(s.next(), r1d / 30 + 0.1, {from: 250, to: 3200, peak: 0.55, q: 1.1, panFrom: 0, panTo: 0}), -12);
+  s.fx(T(s2), X.whoosh(s.next(), s2d / 30 + 0.1, {from: 500, to: 3800, peak: 0.5, q: 1.2, panFrom: 0.8, panTo: -0.8}), -12);
+  s.fx(T(r3), X.whoosh(s.next(), r3d / 30 + 0.1, {from: 250, to: 3200, peak: 0.55, q: 1.1, panFrom: 0, panTo: 0}), -12);
+  s.fx(T(pat(7)), X.impact(s.next()), -8, 0, 0.3);
+
+  // B: cada trava acende com uma nota; o retrato entra girando.
+  PD.items.forEach((f, i) => {
+    s.fx(T(f), X.tick(s.next(), {pitch: 2400}), -22);
+    s.pluck(T(f) + 0.05, [69, 72, 76][i], -12, -0.3 + i * 0.3);
+  });
+  s.fx(T(PD.card), X.whoosh(s.next(), 0.35, {from: 700, to: 4200, peak: 0.3, q: 1.4, panFrom: 0.7, panTo: 0}), -16);
+  s.fx(T(PD.card) + 0.1, X.pop(s.next(), {pitch: 0.9}), -14);
+
+  // C: número grande, caixa, barras subindo nota a nota.
+  s.fx(T(PD.cBig[0]), X.impact(s.next()), -13);
+  s.fx(T(PD.cBox), X.pop(s.next(), {pitch: 0.8}), -12);
+  PD.bars.forEach((f, i) => s.pluck(T(f), [69, 72, 76, 79, 84][i], i === 4 ? -8 : -12, -0.4 + i * 0.2));
+  s.fx(T(PD.cSub), X.tick(s.next(), {pitch: 3000}), -22);
+
+  // D: pílula e brilho final.
+  s.fx(T(PD.dCascade[5]), X.pop(s.next(), {pitch: 0.75}), -12);
+  s.fx(T(PD.finalHit), I.bell(88, {decay: 1.2}), -18, -0.2, 0.5);
+  s.fx(T(PD.finalHit) + 0.12, I.bell(95, {decay: 1.4}), -21, 0.2, 0.5);
+
+  const {bus, loudness, gainDb} = s.master();
+  writeTrack('pordentro', bus, {
+    sync: {drop: T(PD.drop), rolagem: T(pat(3)), cartão: T(pat(7))},
+    marks: [
+      ['drop', T(PD.drop), PD.drop],
+      ['rolagem', T(pat(3)), pat(3)],
+      ['cartão', T(pat(7)), pat(7)],
+    ],
+  }, toWav);
+  console.log(JSON.stringify({trilha: 'pordentro', seconds: bus.length / samples(1), integratedLufs: +loudness.toFixed(2), gainDb: +gainDb.toFixed(2)}));
 }
 

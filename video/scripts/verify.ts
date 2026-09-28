@@ -20,6 +20,7 @@ const file = path.resolve(process.argv[2] ?? 'out/gavi-anuncio-24s-claro.mp4');
 const cuesPath = path.resolve(process.argv[3] ?? 'public/audio/trilha.cues.json');
 const wavPath = path.resolve(process.argv[4] ?? cuesPath.replace(/\.cues\.json$/, '.wav'));
 type Cues = {
+  duration?: number; // segundos (a trilha grava); define quantos quadros o vídeo deve ter
   freeze?: [number, number];
   cuts?: Record<string, number>;
   silence?: [number, number];
@@ -29,6 +30,10 @@ type Cues = {
   expectedKeys?: number;
 };
 const cues: Cues = JSON.parse(fs.readFileSync(cuesPath, 'utf8'));
+// Duração esperada: a da trilha (cada peça tem a sua); sem ela, a da peça principal.
+const FRAMES = cues.duration ? Math.round(cues.duration * FPS) : DURATION;
+const SECONDS = FRAMES / FPS;
+const secs = SECONDS.toFixed(3).replace('.', ',');
 
 function tool(name: 'ffmpeg' | 'ffprobe', args: string[]): Buffer {
   const r = spawnSync('npx', ['remotion', name, ...args], {maxBuffer: 1 << 30});
@@ -52,14 +57,14 @@ const audio: Stream | undefined = probe.streams.find((s: Stream) => s.codec_type
 check('Vídeo H.264', video.codec_name === 'h264', video.codec_name);
 check('Resolução 1080×1920 (vertical)', video.width === WIDTH && video.height === HEIGHT, `${video.width}×${video.height}`);
 check('30 fps constantes', video.r_frame_rate === '30/1' && video.avg_frame_rate === '30/1', `${video.r_frame_rate} · média ${video.avg_frame_rate}`);
-check('720 quadros no fluxo (ffprobe -count_frames)', Number(video.nb_read_frames) === DURATION, video.nb_read_frames);
-check('Duração do vídeo = 24,000 s', Math.abs(Number(video.duration) - DURATION / FPS) < 0.0005, video.duration);
+check(`${FRAMES} quadros no fluxo (ffprobe -count_frames)`, Number(video.nb_read_frames) === FRAMES, video.nb_read_frames);
+check(`Duração do vídeo = ${secs} s`, Math.abs(Number(video.duration) - SECONDS) < 0.0005, video.duration);
 check('Pixel yuv420p (compatível com redes sociais)', video.pix_fmt === 'yuv420p', video.pix_fmt);
 check('Cor marcada BT.709', video.color_space === 'bt709' && video.color_primaries === 'bt709', `${video.color_space}/${video.color_primaries}/${video.color_transfer}`);
 check('Tem faixa de áudio', Boolean(audio), audio ? 'sim' : 'não');
 if (audio) {
   check('Áudio AAC, estéreo, 48 kHz', audio.codec_name === 'aac' && audio.channels === 2 && Number(audio.sample_rate) === 48000, `${audio.codec_name} · ${audio.channels} canais · ${audio.sample_rate} Hz`);
-  check('Duração do áudio ≈ 24 s (±1 quadro)', Math.abs(Number(audio.duration) - DURATION / FPS) <= 1 / FPS, audio.duration);
+  check(`Duração do áudio ≈ ${SECONDS} s (±1 quadro)`, Math.abs(Number(audio.duration) - SECONDS) <= 1 / FPS, audio.duration);
 }
 
 /* --------------------------------------------------------------- quadros */
@@ -72,7 +77,7 @@ const FH = 240;
 const raw = tool('ffmpeg', ['-v', 'error', '-i', file, '-map', '0:v:0', '-vf', `scale=${FW}:${FH}`, '-f', 'image2pipe', '-c:v', 'rawvideo', '-pix_fmt', 'gray', '-']);
 const frameSize = FW * FH;
 const decoded = raw.length / frameSize;
-check('720 quadros decodificados um a um', decoded === DURATION, decoded);
+check(`${FRAMES} quadros decodificados um a um`, decoded === FRAMES, decoded);
 
 const frameAt = (i: number) => raw.subarray(i * frameSize, (i + 1) * frameSize);
 const diff = (a: number, b: number) => {
@@ -154,7 +159,7 @@ if (cues.silence) {
 }
 
 const quiet: string[] = [];
-for (let t = 0.3; t + 0.5 <= DURATION / FPS; t += 0.5) {
+for (let t = 0.3; t + 0.5 <= SECONDS; t += 0.5) {
   if (cues.silence && t + 0.5 > sil0 && t < sil1) continue;
   const v = rms(mp4Audio, t, t + 0.5);
   if (v < -45) quiet.push(`${t.toFixed(1)}s:${v.toFixed(0)}dB`);

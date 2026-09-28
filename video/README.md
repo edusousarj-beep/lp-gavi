@@ -39,11 +39,26 @@ E duas **variações de layout** com a copy do post que a Gavi já veicula
   Se a conversa for encenada, rotule: prop `aviso` (ex. `"Conversa
   ilustrativa"`) — `npx remotion render GaviConversa … --props='{"tema":"escuro","aviso":"Conversa ilustrativa"}'`.
 
+E uma peça **modelada em outro anúncio** (formato próprio, 16 s):
+
+- **Por dentro** (`GaviPorDentro`, `src/pordentro/`): modelada no anúncio de
+  diagnóstico da turaCRM — 4 blocos de 4 s trocados por rolagem vertical e
+  deslize lateral, texto que entra apagado e acende, barra vertical, itens
+  com alerta acendendo, retrato em perspectiva, número grande com caixa
+  ("20 MINUTOS. POR DIA."), barras crescendo e cartão final em cascata. A
+  oferta de lá (diagnóstico grátis) não foi copiada: o CTA é o da LP. Toda
+  frase já existe em material da marca (origem anotada em `copy.ts`).
+  Fotos em `public/pordentro/`: **`aula.jpg` foi gerada por IA** (manifesto
+  C2PA do Google no arquivo original, `trainedAlgorithmicMedia`) — troque
+  por um quadro real de aula antes de veicular algo que diga "por dentro";
+  `perfil.jpg` é a foto de perfil recortada acima do texto que vinha
+  embutido; `retrato.jpg` sem alteração.
+
 | | |
 | --- | --- |
-| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
+| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` (720 quadros), `out/gavi-pordentro-16s.mp4` (480 quadros) — H.264, 1080×1920, 30 fps |
 | Áudio | AAC 320 kbps, 48 kHz estéreo, −14 LUFS, pico real ≤ −1 dBTP |
-| Grade | 100 BPM = 18 quadros por tempo; cenas cortam no tempo da música |
+| Grade | 100 BPM = 18 quadros por tempo (Por dentro: 120 BPM = 15); cenas cortam no tempo da música |
 
 ## Rodar
 
@@ -55,7 +70,7 @@ npm run build    # gera tudo, renderiza as duas versões e verifica as duas
 ```
 
 Só uma versão: `npm run assets && npm run render:claro` (ou `render:escuro`,
-`render:post`, `render:noticia`, `render:conversa`).
+`render:post`, `render:noticia`, `render:conversa`, `render:pordentro`).
 
 O avatar das variações Post e Conversa (`public/post/avatar-bruna.png`) foi
 recortado do próprio post e tem resolução baixa: troque pela foto original no
@@ -92,8 +107,9 @@ src/
   editorial/         imagem editorial procedural (cidade + sala, 2 camadas)
 scripts/
   compose-audio.ts   arranjo + mix + master → public/audio/trilha.wav
-  compose-variations.ts  partituras de Post, Notícia e Conversa → public/audio/{post,noticia,conversa}.wav
+  compose-variations.ts  partituras de Post, Notícia, Conversa e Por dentro → public/audio/*.wav
   audio/studio.ts    grooves, acordes, mix e master compartilhados pelas variações
+                     (grade parametrizável: andamento, compasso 1, duração)
   audio/dsp.ts       osciladores, filtros, reverb, compressor, limitador,
                      medidor de loudness BS.1770
   audio/*.ts         instrumentos e efeitos
