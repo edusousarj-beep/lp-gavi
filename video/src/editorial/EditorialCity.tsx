@@ -1,10 +1,13 @@
 /*
- * Camada de fundo da imagem editorial: céu ao entardecer e cidade.
+ * Camada de fundo da imagem editorial: céu e cidade, de manhã ou à noite
+ * conforme a paleta (palette.ts).
  * Renderizada uma vez como PNG (npm run editorial) e usada no vídeo como
  * imagem — textos e interface entram por cima, em camadas próprias.
  */
 import {AbsoluteFill} from 'remotion';
-import {alpha, DERIVED, mix, TOKENS} from '../brand/tokens';
+import type {Mood} from '../brand/theme';
+import {alpha, TOKENS} from '../brand/tokens';
+import {CITY} from './palette';
 import {buildingPath, skyline} from './skyline';
 
 export const EDITORIAL_W = 2000;
@@ -59,40 +62,38 @@ const near = skyline({
   window: {w: 9, h: 12, pitchX: 22, pitchY: 30},
 });
 
-export const EditorialCity: React.FC = () => {
+export const EditorialCity: React.FC<{mood: Mood}> = ({mood}) => {
+  const c = CITY[mood];
   return (
-    <AbsoluteFill style={{background: DERIVED.night}}>
+    <AbsoluteFill style={{background: c.background}}>
       <svg width={EDITORIAL_W} height={EDITORIAL_H} viewBox={`0 0 ${EDITORIAL_W} ${EDITORIAL_H}`}>
         <defs>
           <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={DERIVED.night} />
-            <stop offset="0.34" stopColor={TOKENS.bg} />
-            <stop offset="0.58" stopColor={mix(TOKENS.bg, TOKENS.surface, 0.6)} />
-            <stop offset="0.72" stopColor={mix(TOKENS.surface, TOKENS.text2, 0.42)} />
-            <stop offset="0.8" stopColor={mix(TOKENS.surface, TOKENS.text2, 0.2)} />
-            <stop offset="1" stopColor={TOKENS.surface} />
+            {c.sky.map(([offset, color]) => (
+              <stop key={offset} offset={offset} stopColor={color} />
+            ))}
           </linearGradient>
           <radialGradient id="sunGlow" cx={SUN.x} cy={SUN.y} r={620} gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor={TOKENS.text2} stopOpacity={0.55} />
-            <stop offset="0.25" stopColor={TOKENS.text2} stopOpacity={0.18} />
-            <stop offset="1" stopColor={TOKENS.text2} stopOpacity={0} />
+            <stop offset="0" stopColor={c.sunGlow} stopOpacity={c.sunGlowOpacity} />
+            <stop offset="0.25" stopColor={c.sunGlow} stopOpacity={c.sunGlowOpacity * 0.33} />
+            <stop offset="1" stopColor={c.sunGlow} stopOpacity={0} />
           </radialGradient>
           <linearGradient id="farFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={mix(TOKENS.surface, TOKENS.text2, 0.3)} />
-            <stop offset="1" stopColor={mix(TOKENS.surface, TOKENS.bg, 0.2)} />
+            <stop offset="0" stopColor={c.far[0]} />
+            <stop offset="1" stopColor={c.far[1]} />
           </linearGradient>
           <linearGradient id="midFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={mix(TOKENS.bg, TOKENS.surface, 0.45)} />
-            <stop offset="1" stopColor={mix(TOKENS.bg, TOKENS.surface, 0.2)} />
+            <stop offset="0" stopColor={c.mid[0]} />
+            <stop offset="1" stopColor={c.mid[1]} />
           </linearGradient>
           <linearGradient id="nearFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={mix(TOKENS.bg, TOKENS.surface, 0.12)} />
-            <stop offset="1" stopColor={DERIVED.deep} />
+            <stop offset="0" stopColor={c.near[0]} />
+            <stop offset="1" stopColor={c.near[1]} />
           </linearGradient>
           <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={TOKENS.text2} stopOpacity={0} />
-            <stop offset="0.6" stopColor={TOKENS.text2} stopOpacity={0.16} />
-            <stop offset="1" stopColor={TOKENS.text2} stopOpacity={0} />
+            <stop offset="0" stopColor={c.haze} stopOpacity={0} />
+            <stop offset="0.6" stopColor={c.haze} stopOpacity={c.hazeOpacity} />
+            <stop offset="1" stopColor={c.haze} stopOpacity={0} />
           </linearGradient>
           <filter id="soft" x="-10%" y="-10%" width="120%" height="120%">
             <feGaussianBlur stdDeviation="1.4" />
@@ -108,7 +109,7 @@ export const EditorialCity: React.FC = () => {
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={4} stitchTiles="stitch" />
             <feColorMatrix type="saturate" values="0" />
             <feComponentTransfer>
-              <feFuncA type="table" tableValues="0 0.09" />
+              <feFuncA type="table" tableValues={`0 ${c.grain}`} />
             </feComponentTransfer>
           </filter>
         </defs>
@@ -117,17 +118,17 @@ export const EditorialCity: React.FC = () => {
 
         {/* Nuvens altas, finas, pegando a última luz. */}
         <g filter="url(#cloud)" opacity={0.9}>
-          <ellipse cx={520} cy={420} rx={520} ry={34} fill={alpha(TOKENS.text2, 0.1)} />
-          <ellipse cx={1500} cy={330} rx={620} ry={28} fill={alpha(TOKENS.text2, 0.08)} />
-          <ellipse cx={1100} cy={560} rx={760} ry={40} fill={alpha(TOKENS.text2, 0.12)} />
-          <ellipse cx={300} cy={640} rx={420} ry={30} fill={alpha(TOKENS.text2, 0.1)} />
+          <ellipse cx={520} cy={420} rx={520} ry={34} fill={alpha(c.cloud, c.cloudAlpha[0])} />
+          <ellipse cx={1500} cy={330} rx={620} ry={28} fill={alpha(c.cloud, c.cloudAlpha[1])} />
+          <ellipse cx={1100} cy={560} rx={760} ry={40} fill={alpha(c.cloud, c.cloudAlpha[2])} />
+          <ellipse cx={300} cy={640} rx={420} ry={30} fill={alpha(c.cloud, c.cloudAlpha[3])} />
         </g>
 
-        {/* Sol baixo, frio, no teal da marca — o vermelho fica para o foco de cada cena. */}
+        {/* Sol baixo, no teal/branco da marca — o vermelho fica para o foco de cada cena. */}
         <rect width={EDITORIAL_W} height={EDITORIAL_H} fill="url(#sunGlow)" />
-        <circle cx={SUN.x} cy={SUN.y} r={SUN.r} fill={mix(TOKENS.text2, TOKENS.text, 0.55)} />
+        <circle cx={SUN.x} cy={SUN.y} r={SUN.r} fill={c.sunCore} />
 
-        <g filter="url(#soft)" opacity={0.75}>
+        <g filter="url(#soft)" opacity={c.farOpacity}>
           {far.map((b, i) => (
             <path key={i} d={buildingPath(b)} fill="url(#farFill)" />
           ))}
@@ -140,14 +141,14 @@ export const EditorialCity: React.FC = () => {
             <g key={i}>
               <path d={buildingPath(b)} fill="url(#midFill)" />
               {b.windows.map((w, j) => (
-                <rect key={j} x={w.x} y={w.y} width={w.w} height={w.h} fill={alpha(TOKENS.text2, w.a)} />
+                <rect key={j} x={w.x} y={w.y} width={w.w} height={w.h} fill={alpha(c.midWindow, w.a * c.midWindowScale)} />
               ))}
             </g>
           ))}
         </g>
 
         {/* Balizamento: pontos mínimos, a única tinta quente da imagem. */}
-        {mid
+        {(c.beacons ? mid : [])
           .filter((b) => b.beacon)
           .map((b, i) => (
             <g key={i}>
@@ -161,13 +162,13 @@ export const EditorialCity: React.FC = () => {
             <g key={i}>
               <path d={buildingPath(b)} fill="url(#nearFill)" />
               {b.windows.map((w, j) => (
-                <rect key={j} x={w.x} y={w.y} width={w.w} height={w.h} fill={alpha(TOKENS.text2, w.a * 0.8)} />
+                <rect key={j} x={w.x} y={w.y} width={w.w} height={w.h} fill={alpha(c.nearWindow, w.a * c.nearWindowScale)} />
               ))}
             </g>
           ))}
         </g>
 
-        <rect y={HORIZON + 90} width={EDITORIAL_W} height={EDITORIAL_H - HORIZON - 90} fill={DERIVED.deep} />
+        <rect y={HORIZON + 90} width={EDITORIAL_W} height={EDITORIAL_H - HORIZON - 90} fill={c.ground} />
 
         <rect width={EDITORIAL_W} height={EDITORIAL_H} filter="url(#grain)" />
       </svg>

@@ -1,4 +1,5 @@
 import {AbsoluteFill, spring} from 'remotion';
+import {useTheme} from '../brand/theme';
 import {alpha, FONT, TOKENS, WEIGHT} from '../brand/tokens';
 import {COPY} from '../copy';
 import {ClickRipple, Cursor} from '../components/Cursor';
@@ -18,6 +19,7 @@ const CLICK_AT = {x: 866, y: BUTTON_TOP + BUTTON_H / 2 + 8};
  */
 export const EndCardScene: React.FC = () => {
   const frame = useSceneFrame('endCard');
+  const t = useTheme();
   const {kicker, wordmark, button, micro, cursorIn, cursorArrive, click} = EVENTS.endCard;
 
   const kickerIn = blurIn(frame, kicker, 10, 18, 12);
@@ -36,7 +38,7 @@ export const EndCardScene: React.FC = () => {
 
   return (
     <AbsoluteFill style={{fontFamily: FONT}}>
-      <div style={{position: 'absolute', left: 60, right: 60, top: 694, textAlign: 'center', fontSize: 36, color: TOKENS.text2, ...fade(kickerIn)}}>
+      <div style={{position: 'absolute', left: 60, right: 60, top: 694, textAlign: 'center', fontSize: 36, color: t.body, ...fade(kickerIn)}}>
         {COPY.endCard.kicker}
       </div>
 
@@ -51,7 +53,7 @@ export const EndCardScene: React.FC = () => {
           fontWeight: WEIGHT.heavy,
           letterSpacing: '-0.03em',
           lineHeight: 1,
-          color: TOKENS.text,
+          color: t.headline,
           whiteSpace: 'pre',
         }}
       >
@@ -76,18 +78,18 @@ export const EndCardScene: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: 24,
-            background: pressed ? TOKENS.accentDim : TOKENS.accent,
-            color: TOKENS.text,
+            background: pressed ? t.accentDim : t.accent,
+            color: t.onAccent,
             fontSize: 50,
             fontWeight: WEIGHT.heavy,
             letterSpacing: '-0.01em',
-            // Mesmo glow da LP (0 0 40px -8px), na escala do quadro.
-            boxShadow: `0 0 100px -20px ${TOKENS.accent}`,
+            // Glow da LP (0 0 40px -8px) na escala do quadro; no claro vira sombra colorida.
+            boxShadow: t.buttonGlow,
             transform: `scale(${lerp(0.6, 1, pop) * (pressed ? 0.96 : 1)})`,
             opacity: progress(frame, button, 4),
           }}
         >
-          <WhatsAppIcon size={58} color={TOKENS.text} />
+          <WhatsAppIcon size={58} color={t.onAccent} />
           {COPY.endCard.cta}
           {frame >= click + 2 ? (
             <div
@@ -105,11 +107,11 @@ export const EndCardScene: React.FC = () => {
         </div>
       </div>
 
-      <div style={{position: 'absolute', left: 60, right: 60, top: BUTTON_TOP + BUTTON_H + 44, textAlign: 'center', fontSize: 31, color: TOKENS.text3, ...fade(microIn)}}>
+      <div style={{position: 'absolute', left: 60, right: 60, top: BUTTON_TOP + BUTTON_H + 44, textAlign: 'center', fontSize: 31, color: t.micro, ...fade(microIn)}}>
         {COPY.endCard.micro}
       </div>
 
-      <ClickRipple frame={frame} click={click} x={CLICK_AT.x} y={CLICK_AT.y} color={alpha(TOKENS.text, 0.55)} />
+      <ClickRipple frame={frame} click={click} x={CLICK_AT.x} y={CLICK_AT.y} color={t.ripple} />
       <Cursor frame={frame} from={{x: 1150, y: 1640}} to={CLICK_AT} start={cursorIn} arrive={cursorArrive} click={click} />
     </AbsoluteFill>
   );

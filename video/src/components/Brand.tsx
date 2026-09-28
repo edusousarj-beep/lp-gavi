@@ -1,5 +1,6 @@
 import {useCurrentFrame} from 'remotion';
-import {alpha, FONT, mix, TOKENS, WEIGHT} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {alpha, FONT, mix, WEIGHT} from '../brand/tokens';
 import {COPY} from '../copy';
 import {blurIn, EASE_IN_OUT, lerp, progress} from '../lib/anim';
 import {DURATION, EVENTS, FPS, WIDTH} from '../timeline';
@@ -17,6 +18,7 @@ const INTRO_Y = 900;
 
 export const Brand: React.FC = () => {
   const frame = useCurrentFrame();
+  const t = useTheme();
   const {charsStart, charStagger, underline, toHeader, toHeaderEnd} = EVENTS.logo;
 
   const fly = progress(frame, toHeader, toHeaderEnd - toHeader, EASE_IN_OUT);
@@ -24,8 +26,8 @@ export const Brand: React.FC = () => {
   const left = lerp(WIDTH / 2, HEADER_X, fly);
   const top = lerp(INTRO_Y, HEADER_Y, fly);
   const shift = lerp(-50, 0, fly);
-  // Do branco da headline ao --text-3 do cabeçalho durante o voo.
-  const color = mix(TOKENS.text, TOKENS.text3, fly);
+  // Da cor de título à cor de cabeçalho durante o voo.
+  const color = mix(t.headline, t.header, fly);
 
   const underlineIn = progress(frame, underline, 10);
   const underlineOut = progress(frame, toHeader, 8);
@@ -84,11 +86,11 @@ export const Brand: React.FC = () => {
                     bottom: -18,
                     height: 12,
                     borderRadius: 6,
-                    background: TOKENS.accent,
+                    background: t.accent,
                     transform: `scaleX(${underlineIn})`,
                     transformOrigin: 'left center',
                     opacity: 1 - underlineOut,
-                    boxShadow: `0 0 28px ${alpha(TOKENS.accent, 0.55)}`,
+                    boxShadow: `0 0 28px ${alpha(t.accent, 0.55)}`,
                   }}
                 />
               ) : null}
@@ -105,6 +107,7 @@ export const Brand: React.FC = () => {
 /* Contagem regressiva do canto, como a da referência: 0:24 → 0:01. */
 const Countdown: React.FC = () => {
   const frame = useCurrentFrame();
+  const t = useTheme();
   const {toHeader, toHeaderEnd} = EVENTS.logo;
   const seconds = Math.ceil((DURATION - frame) / FPS);
   const show = progress(frame, toHeader + 6, toHeaderEnd - toHeader);
@@ -118,7 +121,7 @@ const Countdown: React.FC = () => {
         fontFamily: FONT,
         fontWeight: WEIGHT.regular,
         fontSize: HEADER_SIZE,
-        color: TOKENS.text3,
+        color: t.header,
         fontVariantNumeric: 'tabular-nums',
         opacity: show,
       }}

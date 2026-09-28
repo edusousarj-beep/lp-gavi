@@ -4,12 +4,11 @@
  * camadas é o que permite a paralaxe no vídeo (a sala anda mais que a cidade).
  */
 import {AbsoluteFill} from 'remotion';
-import {alpha, DERIVED, mix, TOKENS} from '../brand/tokens';
+import type {Mood} from '../brand/theme';
 import {EDITORIAL_H, EDITORIAL_W} from './EditorialCity';
+import {ROOM, type RoomPalette} from './palette';
 
 const TABLE_TOP = 905;
-const FRAME = DERIVED.night;
-const RIM = alpha(TOKENS.text2, 0.22);
 
 /* Tela do notebook: quadrilátero em perspectiva. */
 const SCREEN = {tl: [1236, 918], tr: [1596, 902], bl: [1248, 1104], w: 360, h: 190};
@@ -22,14 +21,14 @@ const screenMatrix = (() => {
   return `matrix(${a} ${b} ${c} ${d} ${tl[0]} ${tl[1]})`;
 })();
 
-const Chair: React.FC<{x: number; w: number; h: number}> = ({x, w, h}) => {
+const Chair: React.FC<{x: number; w: number; h: number; p: RoomPalette}> = ({x, w, h, p}) => {
   const top = TABLE_TOP - h + 30;
   return (
     <g>
-      <rect x={x - w / 2} y={top} width={w} height={h} rx={w * 0.28} fill={FRAME} />
+      <rect x={x - w / 2} y={top} width={w} height={h} rx={w * 0.28} fill={p.frame} />
       <path
         d={`M${x - w / 2 + 14},${top + 22} Q${x},${top - 4} ${x + w / 2 - 14},${top + 22}`}
-        stroke={RIM}
+        stroke={p.rim}
         strokeWidth={4}
         fill="none"
         strokeLinecap="round"
@@ -38,33 +37,36 @@ const Chair: React.FC<{x: number; w: number; h: number}> = ({x, w, h}) => {
   );
 };
 
-export const EditorialRoom: React.FC = () => {
+export const EditorialRoom: React.FC<{mood: Mood}> = ({mood}) => {
+  const p = ROOM[mood];
+  const FRAME = p.frame;
+  const RIM = p.rim;
   return (
     <AbsoluteFill>
       <svg width={EDITORIAL_W} height={EDITORIAL_H} viewBox={`0 0 ${EDITORIAL_W} ${EDITORIAL_H}`}>
         <defs>
           <linearGradient id="glare" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor={TOKENS.text} stopOpacity={0} />
-            <stop offset="0.5" stopColor={TOKENS.text} stopOpacity={0.07} />
-            <stop offset="1" stopColor={TOKENS.text} stopOpacity={0} />
+            <stop offset="0" stopColor={p.rim} stopOpacity={0} />
+            <stop offset="0.5" stopColor={p.windowOnTable} stopOpacity={p.glareOpacity} />
+            <stop offset="1" stopColor={p.rim} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="table" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={mix(DERIVED.night, TOKENS.bg, 0.55)} />
-            <stop offset="0.35" stopColor={DERIVED.night} />
-            <stop offset="1" stopColor={mix(DERIVED.night, DERIVED.shadow, 0.5)} />
+            <stop offset="0" stopColor={p.table[0]} />
+            <stop offset="0.35" stopColor={p.table[1]} />
+            <stop offset="1" stopColor={p.table[2]} />
           </linearGradient>
           <radialGradient id="tableShine" cx={1180} cy={960} r={560} gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor={TOKENS.text2} stopOpacity={0.2} />
-            <stop offset="1" stopColor={TOKENS.text2} stopOpacity={0} />
+            <stop offset="0" stopColor={p.tableShine} stopOpacity={p.tableShineOpacity} />
+            <stop offset="1" stopColor={p.tableShine} stopOpacity={0} />
           </radialGradient>
           {/* A janela refletida na mesa, mais forte junto à borda de lá. */}
           <linearGradient id="windowOnTable" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={TOKENS.text2} stopOpacity={0.18} />
-            <stop offset="1" stopColor={TOKENS.text2} stopOpacity={0} />
+            <stop offset="0" stopColor={p.windowOnTable} stopOpacity={p.windowOnTableOpacity} />
+            <stop offset="1" stopColor={p.windowOnTable} stopOpacity={0} />
           </linearGradient>
           <radialGradient id="vignette" cx="50%" cy="48%" r="75%">
-            <stop offset="0.55" stopColor={DERIVED.night} stopOpacity={0} />
-            <stop offset="1" stopColor={DERIVED.night} stopOpacity={0.7} />
+            <stop offset="0.55" stopColor={p.vignette} stopOpacity={0} />
+            <stop offset="1" stopColor={p.vignette} stopOpacity={p.vignetteOpacity} />
           </radialGradient>
           <filter id="screenGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="28" />
@@ -86,25 +88,25 @@ export const EditorialRoom: React.FC = () => {
         <rect x={1350} y={176} width={2} height={TABLE_TOP - 176} fill={RIM} />
         <rect x={0} y={872} width={EDITORIAL_W} height={40} fill={FRAME} />
         {/* Parede sob o peitoril: a cidade só aparece através do vidro. */}
-        <rect x={0} y={900} width={EDITORIAL_W} height={EDITORIAL_H - 900} fill={mix(DERIVED.night, TOKENS.bg, 0.25)} />
+        <rect x={0} y={900} width={EDITORIAL_W} height={EDITORIAL_H - 900} fill={p.wall} />
 
         {/* Cadeiras do outro lado da mesa, contra a luz. */}
-        <Chair x={560} w={150} h={230} />
-        <Chair x={820} w={160} h={250} />
-        <Chair x={1100} w={160} h={250} />
-        <Chair x={1440} w={150} h={230} />
+        <Chair x={560} w={150} h={230} p={p} />
+        <Chair x={820} w={160} h={250} p={p} />
+        <Chair x={1100} w={160} h={250} p={p} />
+        <Chair x={1440} w={150} h={230} p={p} />
 
         {/* Mesa em perspectiva, com o reflexo do céu. */}
         <polygon points={`420,${TABLE_TOP} 1580,${TABLE_TOP} 2300,${EDITORIAL_H} -300,${EDITORIAL_H}`} fill="url(#table)" />
         <polygon points={`420,${TABLE_TOP} 1580,${TABLE_TOP} 2300,${EDITORIAL_H} -300,${EDITORIAL_H}`} fill="url(#tableShine)" />
         <polygon points={`420,${TABLE_TOP} 1580,${TABLE_TOP} 1700,1010 300,1010`} fill="url(#windowOnTable)" />
-        <line x1={420} y1={TABLE_TOP} x2={1580} y2={TABLE_TOP} stroke={alpha(TOKENS.text2, 0.4)} strokeWidth={3} />
+        <line x1={420} y1={TABLE_TOP} x2={1580} y2={TABLE_TOP} stroke={p.tableEdge} strokeWidth={3} />
 
         {/* Xícara. */}
         <g>
-          <ellipse cx={600} cy={1080} rx={62} ry={14} fill={alpha(DERIVED.shadow, 0.5)} />
+          <ellipse cx={600} cy={1080} rx={62} ry={14} fill={p.cupShadow} />
           <path d="M548,985 L556,1072 Q600,1090 644,1072 L652,985 Z" fill={FRAME} />
-          <ellipse cx={600} cy={985} rx={52} ry={12} fill={mix(DERIVED.night, TOKENS.bg, 0.6)} />
+          <ellipse cx={600} cy={985} rx={52} ry={12} fill={p.cupTop} />
           <path d="M652,1004 Q690,1010 682,1040 Q676,1060 648,1056" stroke={FRAME} strokeWidth={12} fill="none" />
           <path d="M556,990 L562,1060" stroke={RIM} strokeWidth={3} />
         </g>
@@ -112,12 +114,12 @@ export const EditorialRoom: React.FC = () => {
         {/* Notebook aberto na call: a tela é a única fonte de luz da mesa. */}
         <polygon
           points={`${SCREEN.tl.join(',')} ${SCREEN.tr.join(',')} 1606,1090 ${SCREEN.bl.join(',')}`}
-          fill={alpha(TOKENS.surface, 0.8)}
+          fill={p.screenGlow}
           filter="url(#screenGlow)"
         />
         <g transform={screenMatrix}>
           <rect x={-8} y={-8} width={SCREEN.w + 16} height={SCREEN.h + 16} rx={10} fill={FRAME} />
-          <rect x={0} y={0} width={SCREEN.w} height={SCREEN.h} rx={4} fill={mix(TOKENS.bg, TOKENS.surface, 0.35)} />
+          <rect x={0} y={0} width={SCREEN.w} height={SCREEN.h} rx={4} fill={p.screenBg} />
           {[0, 1].map((row) =>
             [0, 1].map((col) => {
               const x = 10 + col * 175;
@@ -131,18 +133,18 @@ export const EditorialRoom: React.FC = () => {
                     width={165}
                     height={80}
                     rx={6}
-                    fill={mix(TOKENS.bg, TOKENS.surface, 0.62)}
-                    stroke={speaking ? TOKENS.text2 : 'none'}
+                    fill={p.tile}
+                    stroke={speaking ? p.tileSpeaking : 'none'}
                     strokeWidth={3}
                   />
-                  <circle cx={x + 82} cy={y + 34} r={15} fill={alpha(TOKENS.text2, 0.55)} />
-                  <path d={`M${x + 58},${y + 72} Q${x + 82},${y + 44} ${x + 106},${y + 72} Z`} fill={alpha(TOKENS.text2, 0.55)} />
+                  <circle cx={x + 82} cy={y + 34} r={15} fill={p.avatar} />
+                  <path d={`M${x + 58},${y + 72} Q${x + 82},${y + 44} ${x + 106},${y + 72} Z`} fill={p.avatar} />
                 </g>
               );
             }),
           )}
         </g>
-        <polygon points={`${SCREEN.bl.join(',')} 1606,1090 1720,1172 1150,1196`} fill={mix(DERIVED.night, TOKENS.bg, 0.4)} />
+        <polygon points={`${SCREEN.bl.join(',')} 1606,1090 1720,1172 1150,1196`} fill={p.keyboard} />
         <line x1={SCREEN.bl[0]} y1={SCREEN.bl[1]} x2={1606} y2={1090} stroke={RIM} strokeWidth={3} />
 
         <rect width={EDITORIAL_W} height={EDITORIAL_H} fill="url(#vignette)" />

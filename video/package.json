@@ -6,11 +6,13 @@
   "type": "module",
   "scripts": {
     "dev": "npm run assets && remotion studio",
-    "editorial": "remotion still EditorialCity public/editorial/cidade.png --image-format=png && remotion still EditorialRoom public/editorial/sala.png --image-format=png",
+    "editorial": "remotion still CidadeDia public/editorial/cidade-dia.png --image-format=png && remotion still SalaDia public/editorial/sala-dia.png --image-format=png && remotion still CidadeNoite public/editorial/cidade-noite.png --image-format=png && remotion still SalaNoite public/editorial/sala-noite.png --image-format=png",
     "audio": "tsx scripts/compose-audio.ts",
     "assets": "npm run editorial && npm run audio",
-    "render": "npm run assets && remotion render GaviAd out/.video-sem-audio.mp4 --muted && tsx scripts/mux.ts",
-    "verify": "tsx scripts/verify.ts out/gavi-anuncio-24s.mp4",
+    "render": "npm run assets && npm run render:claro && npm run render:escuro",
+    "render:claro": "remotion render GaviAdClaro out/.video-claro.mp4 --muted && tsx scripts/mux.ts out/.video-claro.mp4 public/audio/trilha.wav out/gavi-anuncio-24s-claro.mp4",
+    "render:escuro": "remotion render GaviAdEscuro out/.video-escuro.mp4 --muted && tsx scripts/mux.ts out/.video-escuro.mp4 public/audio/trilha.wav out/gavi-anuncio-24s-escuro.mp4",
+    "verify": "tsx scripts/verify.ts out/gavi-anuncio-24s-claro.mp4 && tsx scripts/verify.ts out/gavi-anuncio-24s-escuro.mp4",
     "build": "npm run render && npm run verify",
     "preview": "tsx scripts/preview-frames.ts",
     "typecheck": "tsc --noEmit"

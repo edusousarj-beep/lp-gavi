@@ -13,7 +13,7 @@ import path from 'node:path';
 import {Bus, gainToDb, integratedLoudness, SR, Svf, truePeakEnvelope} from './audio/dsp';
 import {DURATION, EVENTS, FPS, FREEZE, HEIGHT, SCENES, WIDTH} from '../src/timeline';
 
-const file = path.resolve(process.argv[2] ?? 'out/gavi-anuncio-24s.mp4');
+const file = path.resolve(process.argv[2] ?? 'out/gavi-anuncio-24s-claro.mp4');
 const wavPath = path.resolve('public/audio/trilha.wav');
 const cuesPath = path.resolve('public/audio/trilha.cues.json');
 
@@ -199,5 +199,7 @@ const failed = checks.filter((c) => !c.ok);
 console.log(failed.length ? `\n${failed.length} checagem(ns) falharam.` : `\nTodas as ${checks.length} checagens passaram.`);
 
 fs.mkdirSync(path.dirname(file), {recursive: true});
-fs.writeFileSync(path.join(path.dirname(file), 'verify-report.json'), JSON.stringify({file: path.basename(file), checks}, null, 2));
+// Um relatório por vídeo: <nome>.verify.json ao lado do MP4.
+const report = path.join(path.dirname(file), `${path.basename(file, '.mp4')}.verify.json`);
+fs.writeFileSync(report, JSON.stringify({file: path.basename(file), checks}, null, 2));
 process.exit(failed.length ? 1 : 0);

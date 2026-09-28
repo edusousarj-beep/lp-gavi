@@ -2,6 +2,7 @@
  * Revisão rápida: empacota uma vez e renderiza quadros avulsos em PNG.
  *   npx tsx scripts/preview-frames.ts 40 130 200 ...
  * Sem argumentos, renderiza um quadro-chave por cena.
+ * PREVIEW_COMP escolhe a versão (GaviAdClaro, padrão, ou GaviAdEscuro).
  */
 import path from 'node:path';
 import {bundle} from '@remotion/bundler';
@@ -27,10 +28,11 @@ const frames = process.argv.length > 2 ? process.argv.slice(2).map(Number) : DEF
 const outDir = path.resolve(process.env.PREVIEW_DIR ?? 'out/preview');
 const scale = Number(process.env.PREVIEW_SCALE ?? 0.5);
 const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE ?? null;
+const id = process.env.PREVIEW_COMP ?? 'GaviAdClaro';
 
 const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
 const browser = await openBrowser('chrome', {browserExecutable});
-const composition = await selectComposition({serveUrl, id: 'GaviAd', puppeteerInstance: browser, browserExecutable});
+const composition = await selectComposition({serveUrl, id, puppeteerInstance: browser, browserExecutable});
 
 for (const frame of frames) {
   const output = path.join(outDir, `f${String(frame).padStart(3, '0')}.png`);

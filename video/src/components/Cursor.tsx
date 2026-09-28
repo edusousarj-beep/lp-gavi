@@ -1,4 +1,4 @@
-import {alpha, DERIVED, TOKENS} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
 import {EASE_IN_OUT, lerp, progress} from '../lib/anim';
 import {CursorArrow} from './Icons';
 
@@ -17,6 +17,7 @@ export const Cursor: React.FC<{
   click: number;
   fadeIn?: number;
 }> = ({frame, from, to, start, arrive, click, fadeIn = 6}) => {
+  const theme = useTheme();
   const t = progress(frame, start, arrive - start, EASE_IN_OUT);
   // Curva quadrática: o cursor chega por um arco, não em linha reta.
   const ctrl = {x: lerp(from.x, to.x, 0.2) + 120, y: lerp(from.y, to.y, 0.75) + 60};
@@ -36,10 +37,10 @@ export const Cursor: React.FC<{
         transform: `translate(-6px, -4px) scale(${scale})`,
         transformOrigin: '6px 4px',
         opacity: progress(frame, start, fadeIn),
-        filter: `drop-shadow(0 10px 18px ${alpha(DERIVED.shadow, 0.55)})`,
+        filter: `drop-shadow(0 10px 18px ${theme.cursorShadow})`,
       }}
     >
-      <CursorArrow size={62} fill={TOKENS.text} stroke={DERIVED.night} />
+      <CursorArrow size={62} fill={theme.cursorFill} stroke={theme.cursorStroke} />
     </div>
   );
 };

@@ -10,7 +10,7 @@
  */
 import {spawnSync} from 'node:child_process';
 
-const [video = 'out/.video-sem-audio.mp4', audio = 'public/audio/trilha.wav', output = 'out/gavi-anuncio-24s.mp4'] = process.argv.slice(2);
+const [video = 'out/.video-claro.mp4', audio = 'public/audio/trilha.wav', output = 'out/gavi-anuncio-24s-claro.mp4'] = process.argv.slice(2);
 
 const args = [
   'remotion', 'ffmpeg', '-hide_banner', '-v', 'error', '-y',

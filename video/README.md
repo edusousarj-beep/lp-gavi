@@ -10,9 +10,16 @@ card de missão → digitação → "pensando" → documento em 3D → rotina �
 fechamento → CTA), reescrito para a marca: petróleo + um acento vermelho,
 Inter 400/800 e as regras da skill `lp-gavi`.
 
+Saem **duas versões do mesmo anúncio**, que só mudam a luz — linha do tempo,
+animação e trilha são idênticas:
+
+- **claro** (`GaviAdClaro`): fundo quase branco, como o vídeo de referência;
+  texto em petróleo, destaques em teal, imagem editorial de manhã.
+- **escuro** (`GaviAdEscuro`): petróleo, como a LP; imagem editorial à noite.
+
 | | |
 | --- | --- |
-| Saída | `out/gavi-anuncio-24s.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
+| Saída | `out/gavi-anuncio-24s-claro.mp4` e `out/gavi-anuncio-24s-escuro.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
 | Áudio | AAC 320 kbps, 48 kHz estéreo, −14 LUFS, pico real ≤ −1 dBTP |
 | Grade | 100 BPM = 18 quadros por tempo; cenas cortam no tempo da música |
 
@@ -22,8 +29,10 @@ Inter 400/800 e as regras da skill `lp-gavi`.
 cd video
 npm install
 npm run dev      # gera imagem + trilha e abre o Remotion Studio
-npm run build    # gera tudo, renderiza o MP4 e roda a verificação
+npm run build    # gera tudo, renderiza as duas versões e verifica as duas
 ```
+
+Só uma versão: `npm run assets && npm run render:claro` (ou `render:escuro`).
 
 Em máquina sem o Chrome que o Remotion baixa (CI, container), aponte um
 Chromium: `REMOTION_BROWSER_EXECUTABLE=/caminho/do/headless_shell npm run build`.
@@ -34,9 +43,10 @@ Chromium: `REMOTION_BROWSER_EXECUTABLE=/caminho/do/headless_shell npm run build`
 | --- | --- |
 | Qualquer texto | `src/copy.ts` |
 | Tempo de qualquer coisa | `src/timeline.ts` — cenas e eventos, em quadros |
-| Cores, fonte, espaçamento | `src/brand/tokens.ts` (mesmos tokens da LP) |
+| Cores da marca, fonte, espaçamento | `src/brand/tokens.ts` (mesmos tokens da LP) |
+| Qual cor faz cada papel em cada versão | `src/brand/theme.ts` (claro/escuro) |
 | Uma cena | `src/scenes/*.tsx` |
-| A imagem editorial | `src/editorial/*` (seed, prédios, sala) |
+| A imagem editorial | `src/editorial/*` (seed, prédios, sala; luz em `palette.ts`) |
 | Música e efeitos | `scripts/compose-audio.ts` (arranjo), `scripts/audio/*` (síntese) |
 
 **Mudou texto digitado ou tempo? Rode `npm run audio`** (o `dev`/`build` já
@@ -79,13 +89,16 @@ falha se qualquer item não bater: codec, resolução, 30 fps, 720 quadros
 contados um a um, duração, BT.709, faixa AAC estéreo 48 kHz, loudness,
 pico real, o congelamento da palavra "travar" (quadros 126–134 idênticos),
 o silêncio planejado, ausência de buracos na trilha e o desvio A/V nos
-pontos de sincronia. O relatório vai para `out/verify-report.json`.
+pontos de sincronia. Cada vídeo ganha um relatório ao lado:
+`out/<nome>.verify.json`.
 
 ## Regras da marca respeitadas
 
 - Um acento só, e no máximo **um elemento vermelho por quadro** (a palavra
   "travar", o botão de enviar, "M.O.V.E." no dossiê, o CTA). Luz ambiente no
   teal, como o `.hero__glow` da LP.
+- Versão clara com contraste conferido sobre o fundo: título 14,2:1, corpo
+  6,9:1; o `--text-3` (3,1:1) só aparece em texto grande, no cabeçalho.
 - M.O.V.E. aparece pelo nome, sem explicar pilar nenhum (regra 1).
 - Sem preço, sem número, sem depoimento. Todo fato do dossiê está na LP ou
   na skill.

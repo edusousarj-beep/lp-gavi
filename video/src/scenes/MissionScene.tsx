@@ -1,5 +1,6 @@
 import {AbsoluteFill, Img, spring, staticFile} from 'remotion';
-import {alpha, DERIVED, FONT, RADIUS, TOKENS, WEIGHT} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {FONT, RADIUS, WEIGHT} from '../brand/tokens';
 import {COPY} from '../copy';
 import {TargetIcon} from '../components/Icons';
 import {blurIn, blurOut, lerp, progress, EASE_IN_OUT} from '../lib/anim';
@@ -16,6 +17,7 @@ const IMAGE_H = 540;
  */
 export const MissionScene: React.FC = () => {
   const frame = useSceneFrame('mission');
+  const t = useTheme();
   const {enter, chip, titleStart, titleCharsPerFrame, description, exit} = EVENTS.mission;
 
   const pop = spring({frame: frame - enter, fps: FPS, config: {damping: 16, stiffness: 140, mass: 0.9}});
@@ -45,9 +47,9 @@ export const MissionScene: React.FC = () => {
           marginTop: -30,
           borderRadius: RADIUS,
           overflow: 'hidden',
-          background: DERIVED.raised,
-          border: `2px solid ${alpha(TOKENS.text2, 0.14)}`,
-          boxShadow: `0 50px 120px ${alpha(DERIVED.shadow, 0.7)}, 0 0 90px ${alpha(TOKENS.surface, 0.55)}`,
+          background: t.card,
+          border: `2px solid ${t.cardBorder}`,
+          boxShadow: `${t.cardShadow}, 0 0 90px ${t.cardGlow}`,
           transform: `translateY(${lerp(90, 0, pop)}px) rotateX(${lerp(16, 0, pop)}deg) scale(${lerp(0.86, 1, pop) * out.scale})`,
           opacity: Math.min(progress(frame, enter, 6), out.opacity),
           filter: blur + out.blur > 0.05 ? `blur(${blur + out.blur}px)` : undefined,
@@ -55,7 +57,7 @@ export const MissionScene: React.FC = () => {
       >
         <div style={{position: 'relative', height: IMAGE_H, overflow: 'hidden'}}>
           <Img
-            src={staticFile('editorial/cidade.png')}
+            src={staticFile(`editorial/cidade-${t.mood}.png`)}
             style={{
               position: 'absolute',
               inset: 0,
@@ -66,7 +68,7 @@ export const MissionScene: React.FC = () => {
             }}
           />
           <Img
-            src={staticFile('editorial/sala.png')}
+            src={staticFile(`editorial/sala-${t.mood}.png`)}
             style={{
               position: 'absolute',
               inset: 0,
@@ -87,13 +89,13 @@ export const MissionScene: React.FC = () => {
               gap: 14,
               padding: '14px 26px',
               borderRadius: 999,
-              background: alpha(DERIVED.night, 0.62),
-              border: `2px solid ${alpha(TOKENS.text2, 0.22)}`,
+              background: t.imageChipBg,
+              border: `2px solid ${t.imageChipBorder}`,
               fontFamily: FONT,
               fontWeight: WEIGHT.heavy,
               fontSize: 30,
               letterSpacing: '0.02em',
-              color: TOKENS.text2,
+              color: t.imageChipText,
               opacity: chipIn.opacity,
               transform: `translateY(${chipIn.y}px)`,
               filter: chipIn.blur > 0.05 ? `blur(${chipIn.blur}px)` : undefined,
@@ -104,7 +106,7 @@ export const MissionScene: React.FC = () => {
                 width: 14,
                 height: 14,
                 borderRadius: '50%',
-                background: TOKENS.text2,
+                background: t.imageChipText,
                 opacity: 0.55 + 0.45 * Math.abs(Math.sin(frame / 5)),
               }}
             />
@@ -119,20 +121,20 @@ export const MissionScene: React.FC = () => {
               height: 92,
               flex: 'none',
               borderRadius: 26,
-              border: `2px solid ${alpha(TOKENS.text2, 0.24)}`,
-              background: alpha(TOKENS.surface, 0.35),
+              border: `2px solid ${t.iconBoxBorder}`,
+              background: t.iconBoxBg,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <TargetIcon size={54} color={TOKENS.text2} />
+            <TargetIcon size={54} color={t.iconColor} />
           </div>
           <div style={{fontFamily: FONT}}>
             <div style={{fontSize: 56, lineHeight: 1.12, letterSpacing: '-0.02em', minHeight: 63}}>
-              <span style={{fontWeight: WEIGHT.regular, color: TOKENS.text2}}>{COPY.mission.label} </span>
-              <span style={{fontWeight: WEIGHT.heavy, color: TOKENS.text}}>{title}</span>
-              <Caret visible={typing || (typed === 0 && frame >= titleStart - 4)} />
+              <span style={{fontWeight: WEIGHT.regular, color: t.body}}>{COPY.mission.label} </span>
+              <span style={{fontWeight: WEIGHT.heavy, color: t.headline}}>{title}</span>
+              <Caret color={t.body} visible={typing || (typed === 0 && frame >= titleStart - 4)} />
             </div>
             <div
               style={{
@@ -140,7 +142,7 @@ export const MissionScene: React.FC = () => {
                 fontSize: 40,
                 lineHeight: 1.35,
                 fontWeight: WEIGHT.regular,
-                color: TOKENS.text2,
+                color: t.body,
                 opacity: descIn.opacity,
                 transform: `translateY(${descIn.y}px)`,
                 filter: descIn.blur > 0.05 ? `blur(${descIn.blur}px)` : undefined,
@@ -155,7 +157,7 @@ export const MissionScene: React.FC = () => {
   );
 };
 
-const Caret: React.FC<{visible: boolean}> = ({visible}) =>
+const Caret: React.FC<{visible: boolean; color: string}> = ({visible, color}) =>
   visible ? (
     <span
       style={{
@@ -164,7 +166,7 @@ const Caret: React.FC<{visible: boolean}> = ({visible}) =>
         height: '0.9em',
         marginLeft: 4,
         verticalAlign: '-0.1em',
-        background: TOKENS.text2,
+        background: color,
       }}
     />
   ) : null;

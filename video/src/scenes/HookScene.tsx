@@ -1,5 +1,6 @@
 import {AbsoluteFill} from 'remotion';
-import {alpha, TOKENS} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {alpha} from '../brand/tokens';
 import {COPY} from '../copy';
 import {KineticText} from '../components/KineticText';
 import {blurOut, seeded} from '../lib/anim';
@@ -49,6 +50,7 @@ export const HookScene: React.FC = () => {
 
 /* Linhas de "rasgo" horizontais, como sinal de vídeo que falhou. */
 const TearLines: React.FC<{frame: number}> = ({frame}) => {
+  const t = useTheme();
   const rand = seeded(700 + Math.floor(frame / 2));
   const bands = Array.from({length: 4}, () => ({
     y: 640 + rand() * 640,
@@ -67,7 +69,7 @@ const TearLines: React.FC<{frame: number}> = ({frame}) => {
             top: b.y,
             width: WIDTH,
             height: b.h,
-            background: alpha(TOKENS.text2, b.a),
+            background: alpha(t.tear, b.a),
           }}
         />
       ))}

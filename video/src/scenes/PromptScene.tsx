@@ -1,6 +1,7 @@
 import {AbsoluteFill, interpolate} from 'remotion';
 import {measureText, useFontsReady} from '../brand/fonts';
-import {alpha, DERIVED, FONT, TOKENS, WEIGHT} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {FONT, WEIGHT} from '../brand/tokens';
 import {COPY} from '../copy';
 import {ClickRipple, Cursor} from '../components/Cursor';
 import {ArrowUpIcon, CheckIcon, DocIcon, MicIcon, PlusIcon} from '../components/Icons';
@@ -25,6 +26,7 @@ const CARET_SCREEN_X = 760; // onde a câmera mantém o cursor de texto
  */
 export const PromptScene: React.FC = () => {
   const frame = useSceneFrame('prompt');
+  const t = useTheme();
   useFontsReady();
   const {enter, keys, zoomOut, zoomOutEnd, cursorIn, click, exit} = EVENTS.prompt;
   const text = COPY.prompt.text;
@@ -79,9 +81,9 @@ export const PromptScene: React.FC = () => {
             width: boxW,
             height: BOX_H,
             borderRadius: 48,
-            background: DERIVED.raised,
-            border: `3px solid ${alpha(TOKENS.text2, 0.5)}`,
-            boxShadow: `0 0 0 10px ${alpha(TOKENS.surface, 0.18)}, 0 0 110px ${alpha(TOKENS.surface, 0.55)}, 0 40px 90px ${alpha(DERIVED.shadow, 0.55)}`,
+            background: t.card,
+            border: `3px solid ${t.inputBorder}`,
+            boxShadow: `0 0 0 10px ${t.inputRing}, 0 0 110px ${t.cardGlow}, ${t.cardShadow}`,
             fontFamily: FONT,
           }}
         >
@@ -96,14 +98,14 @@ export const PromptScene: React.FC = () => {
                   height: 64,
                   padding: '0 26px',
                   borderRadius: 999,
-                  border: `2px solid ${alpha(TOKENS.text2, i === 0 ? 0.6 : 0.22)}`,
-                  color: i === 0 ? TOKENS.text : TOKENS.text2,
+                  border: `2px solid ${i === 0 ? t.chipBorderActive : t.chipBorder}`,
+                  color: i === 0 ? t.chipTextActive : t.chipText,
                   fontSize: 30,
                   fontWeight: i === 0 ? WEIGHT.heavy : WEIGHT.regular,
                   whiteSpace: 'nowrap',
                 }}
               >
-                {i === 0 ? <CheckIcon size={30} color={TOKENS.text} /> : null}
+                {i === 0 ? <CheckIcon size={30} color={t.chipTextActive} /> : null}
                 {chip}
               </div>
             ))}
@@ -117,7 +119,7 @@ export const PromptScene: React.FC = () => {
               fontSize: TEXT_SIZE,
               lineHeight: '84px',
               fontWeight: WEIGHT.regular,
-              color: TOKENS.text,
+              color: t.headline,
               whiteSpace: 'pre',
               display: 'flex',
               alignItems: 'center',
@@ -130,7 +132,7 @@ export const PromptScene: React.FC = () => {
                 width: 5,
                 height: 76,
                 marginLeft: 4,
-                background: TOKENS.text,
+                background: t.headline,
                 opacity: caretOn ? 1 : 0,
               }}
             />
@@ -147,8 +149,8 @@ export const PromptScene: React.FC = () => {
               gap: 34,
             }}
           >
-            <PlusIcon size={50} color={alpha(TOKENS.text2, 0.75)} />
-            <DocIcon size={48} color={alpha(TOKENS.text2, 0.75)} />
+            <PlusIcon size={50} color={t.icon} />
+            <DocIcon size={48} color={t.icon} />
           </div>
 
           <div
@@ -162,14 +164,14 @@ export const PromptScene: React.FC = () => {
               gap: 36,
             }}
           >
-            <MicIcon size={52} color={alpha(TOKENS.text2, 0.75)} />
+            <MicIcon size={52} color={t.icon} />
             <div
               style={{
                 width: SEND,
                 height: SEND,
                 borderRadius: '50%',
-                background: pressed ? TOKENS.accentDim : TOKENS.accent,
-                boxShadow: `0 0 50px -6px ${TOKENS.accent}`,
+                background: pressed ? t.accentDim : t.accent,
+                boxShadow: t.sendGlow,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -177,13 +179,13 @@ export const PromptScene: React.FC = () => {
                 opacity: typed > 0 ? 1 : 0.45,
               }}
             >
-              <ArrowUpIcon size={56} color={TOKENS.text} />
+              <ArrowUpIcon size={56} color={t.onAccent} />
             </div>
           </div>
         </div>
       </div>
 
-      <ClickRipple frame={frame} click={click} x={sendScreen.x} y={sendScreen.y} color={alpha(TOKENS.text, 0.6)} />
+      <ClickRipple frame={frame} click={click} x={sendScreen.x} y={sendScreen.y} color={t.ripple} />
       <Cursor
         frame={frame}
         from={{x: 1160, y: 1620}}

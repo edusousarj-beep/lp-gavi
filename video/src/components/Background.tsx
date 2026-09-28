@@ -1,5 +1,6 @@
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {alpha, DERIVED, TOKENS} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {TOKENS} from '../brand/tokens';
 import {DURATION, HEIGHT, WIDTH} from '../timeline';
 
 /*
@@ -8,6 +9,7 @@ import {DURATION, HEIGHT, WIDTH} from '../timeline';
  */
 export const Background: React.FC = () => {
   const frame = useCurrentFrame();
+  const theme = useTheme();
   const t = frame / DURATION;
 
   // A luz deriva devagar: o fundo nunca fica parado, mas não chama atenção.
@@ -15,10 +17,10 @@ export const Background: React.FC = () => {
   const glowY = -560 + Math.sin(t * Math.PI) * 90;
 
   return (
-    <AbsoluteFill style={{background: TOKENS.bg, overflow: 'hidden'}}>
+    <AbsoluteFill style={{background: theme.bg, overflow: 'hidden'}}>
       <AbsoluteFill
         style={{
-          background: `linear-gradient(180deg, ${alpha(TOKENS.surface, 0.18)} 0%, ${alpha(TOKENS.surface, 0)} 26%)`,
+          background: `linear-gradient(180deg, ${theme.band} 0%, transparent 26%)`,
         }}
       />
       <div
@@ -29,7 +31,7 @@ export const Background: React.FC = () => {
           width: 1500,
           height: 1500,
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${alpha(TOKENS.surface, 0.55)} 0%, ${alpha(TOKENS.surface, 0.22)} 34%, ${alpha(TOKENS.surface, 0)} 68%)`,
+          background: `radial-gradient(circle, ${theme.glowA} 0%, ${theme.glowB} 34%, transparent 68%)`,
         }}
       />
       <div
@@ -40,14 +42,14 @@ export const Background: React.FC = () => {
           width: 1400,
           height: 1400,
           borderRadius: '50%',
-          background: `radial-gradient(circle, ${alpha(TOKENS.surface, 0.28)} 0%, ${alpha(TOKENS.surface, 0)} 65%)`,
+          background: `radial-gradient(circle, ${theme.glow2} 0%, transparent 65%)`,
         }}
       />
 
       <svg width={WIDTH} height={HEIGHT} style={{position: 'absolute', inset: 0}}>
         <defs>
           <pattern id="dots" width={60} height={60} patternUnits="userSpaceOnUse">
-            <circle cx={30} cy={30} r={2.4} fill={alpha(TOKENS.text3, 0.3)} />
+            <circle cx={30} cy={30} r={2.4} fill={theme.dot} />
           </pattern>
           <radialGradient id="dotsFade" cx="50%" cy="46%" r="62%">
             <stop offset="0" stopColor={TOKENS.text} stopOpacity={1} />
@@ -63,20 +65,20 @@ export const Background: React.FC = () => {
 
       <AbsoluteFill
         style={{
-          background: `radial-gradient(ellipse 80% 70% at 50% 46%, ${alpha(DERIVED.night, 0)} 55%, ${alpha(DERIVED.night, 0.7)} 100%)`,
+          background: `radial-gradient(ellipse 80% 70% at 50% 46%, transparent 55%, ${theme.vignette} 100%)`,
         }}
       />
-      <Grain />
+      <Grain opacity={theme.grainOpacity} />
     </AbsoluteFill>
   );
 };
 
 /* Grão de filme que muda a cada 2 quadros. Evita banding no degradê escuro. */
-const Grain: React.FC = () => {
+const Grain: React.FC<{opacity: number}> = ({opacity}) => {
   const frame = useCurrentFrame();
   const seed = Math.floor(frame / 2);
   return (
-    <svg width={WIDTH} height={HEIGHT} style={{position: 'absolute', inset: 0, mixBlendMode: 'overlay', opacity: 0.55}}>
+    <svg width={WIDTH} height={HEIGHT} style={{position: 'absolute', inset: 0, mixBlendMode: 'overlay', opacity}}>
       <filter id={`grain-${seed}`} x="0" y="0" width="100%" height="100%">
         <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={seed} stitchTiles="stitch" />
         <feColorMatrix type="saturate" values="0" />

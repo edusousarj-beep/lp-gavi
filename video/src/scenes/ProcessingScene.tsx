@@ -1,5 +1,6 @@
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {alpha, DERIVED, FONT, TOKENS, WEIGHT} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {FONT, WEIGHT} from '../brand/tokens';
 import {COPY} from '../copy';
 import {blurIn, blurOut, EASE_IN_OUT, progress} from '../lib/anim';
 import {useSceneFrame} from '../lib/scene';
@@ -11,6 +12,7 @@ import {EVENTS, FPS} from '../timeline';
  */
 export const ProcessingScene: React.FC = () => {
   const frame = useSceneFrame('processing');
+  const t = useTheme();
   const local = useCurrentFrame();
   const {enter, step2, progressStart, progressEnd, exit} = EVENTS.processing;
 
@@ -30,9 +32,9 @@ export const ProcessingScene: React.FC = () => {
           marginTop: -40,
           padding: '40px 46px 0',
           borderRadius: 40,
-          background: DERIVED.raised,
-          border: `2px solid ${alpha(TOKENS.text2, 0.16)}`,
-          boxShadow: `0 0 90px ${alpha(TOKENS.surface, 0.45)}, 0 40px 90px ${alpha(DERIVED.shadow, 0.55)}`,
+          background: t.card,
+          border: `2px solid ${t.cardBorder}`,
+          boxShadow: `0 0 90px ${t.cardGlow}, ${t.cardShadow}`,
           overflow: 'hidden',
           fontFamily: FONT,
           opacity: Math.min(inAnim.opacity, out.opacity),
@@ -41,19 +43,19 @@ export const ProcessingScene: React.FC = () => {
         }}
       >
         <div style={{display: 'flex', alignItems: 'center', gap: 32}}>
-          <Spinner frame={frame} />
+          <Spinner frame={frame} color={t.spinner} track={t.spinnerTrack} />
           <div style={{flex: 1}}>
             <div style={{display: 'flex', alignItems: 'baseline', gap: 18}}>
-              <span style={{fontSize: 46, fontWeight: WEIGHT.heavy, color: TOKENS.text, letterSpacing: '-0.02em'}}>
+              <span style={{fontSize: 46, fontWeight: WEIGHT.heavy, color: t.headline, letterSpacing: '-0.02em'}}>
                 {COPY.processing.title}
               </span>
-              <span style={{fontSize: 34, color: TOKENS.text2, fontVariantNumeric: 'tabular-nums'}}>{elapsed}s</span>
+              <span style={{fontSize: 34, color: t.body, fontVariantNumeric: 'tabular-nums'}}>{elapsed}s</span>
             </div>
             <div
               style={{
                 marginTop: 6,
                 fontSize: 34,
-                color: TOKENS.text2,
+                color: t.body,
                 whiteSpace: 'nowrap',
                 opacity: firstStep ? 1 : swap.opacity,
                 filter: !firstStep && swap.blur > 0.05 ? `blur(${swap.blur}px)` : undefined,
@@ -63,8 +65,8 @@ export const ProcessingScene: React.FC = () => {
             </div>
           </div>
         </div>
-        <div style={{height: 8, marginTop: 38, marginLeft: -46, marginRight: -46, background: alpha(TOKENS.text2, 0.14)}}>
-          <div style={{height: '100%', width: `${bar * 100}%`, background: TOKENS.text2}} />
+        <div style={{height: 8, marginTop: 38, marginLeft: -46, marginRight: -46, background: t.progressTrack}}>
+          <div style={{height: '100%', width: `${bar * 100}%`, background: t.progressFill}} />
         </div>
       </div>
     </AbsoluteFill>
@@ -72,15 +74,15 @@ export const ProcessingScene: React.FC = () => {
 };
 
 /* Anel com uma abertura girando — o carregador da referência. */
-export const Spinner: React.FC<{frame: number; size?: number}> = ({frame, size = 92}) => (
+export const Spinner: React.FC<{frame: number; color: string; track: string; size?: number}> = ({frame, color, track, size = 92}) => (
   <svg width={size} height={size} viewBox="0 0 48 48" style={{flex: 'none', transform: `rotate(${frame * 14}deg)`}}>
-    <circle cx="24" cy="24" r="19" fill="none" stroke={alpha(TOKENS.text2, 0.18)} strokeWidth="4" />
+    <circle cx="24" cy="24" r="19" fill="none" stroke={track} strokeWidth="4" />
     <circle
       cx="24"
       cy="24"
       r="19"
       fill="none"
-      stroke={TOKENS.text2}
+      stroke={color}
       strokeWidth="4"
       strokeLinecap="round"
       strokeDasharray="70 120"

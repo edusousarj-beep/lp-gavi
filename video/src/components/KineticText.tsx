@@ -1,12 +1,10 @@
-import {alpha, FONT, TOKENS, WEIGHT} from '../brand/tokens';
+import {useTheme, type Theme} from '../brand/theme';
+import {FONT, WEIGHT} from '../brand/tokens';
 import type {Tone, Word} from '../copy';
 import {blurIn, seeded} from '../lib/anim';
 
-const TONE_COLOR: Record<Tone, string> = {
-  muted: TOKENS.text2,
-  strong: TOKENS.text,
-  accent: TOKENS.accent,
-};
+const toneColor = (t: Theme, tone: Tone): string =>
+  tone === 'accent' ? t.accent : tone === 'strong' ? t.headline : t.body;
 
 export type Glitch = {from: number; to: number};
 
@@ -24,6 +22,7 @@ export const KineticText: React.FC<{
   /** Índices de linha que abrem uma frase nova: ganham respiro acima. */
   breakBefore?: readonly number[];
 }> = ({frame, lines, frames, fontSize, glitch, lineHeight = 1.06, breakBefore = []}) => {
+  const t = useTheme();
   return (
     <div
       style={{
@@ -56,11 +55,11 @@ export const KineticText: React.FC<{
                 style={{
                   position: 'relative',
                   display: 'inline-block',
-                  color: TONE_COLOR[word.tone],
+                  color: toneColor(t, word.tone),
                   opacity: a.opacity,
                   transform: `translateY(${a.y}px) scale(${a.scale})`,
                   filter: a.blur > 0.05 ? `blur(${a.blur}px)` : undefined,
-                  textShadow: word.tone === 'accent' ? `0 0 40px ${alpha(TOKENS.accent, 0.35)}` : undefined,
+                  textShadow: word.tone === 'accent' && t.accentTextGlow !== 'none' ? t.accentTextGlow : undefined,
                 }}
               >
                 {glitching ? <GlitchWord text={word.text} frame={frame} /> : word.text}
@@ -78,6 +77,7 @@ export const KineticText: React.FC<{
  * vermelho — o quadro de uma call que congelou. Muda a cada 2 quadros.
  */
 const GlitchWord: React.FC<{text: string; frame: number}> = ({text, frame}) => {
+  const t = useTheme();
   const rand = seeded(9000 + Math.floor(frame / 2));
   const slices = [
     [0, 64],
@@ -93,10 +93,10 @@ const GlitchWord: React.FC<{text: string; frame: number}> = ({text, frame}) => {
         style={{
           position: 'absolute',
           inset: 0,
-          color: TOKENS.text2,
+          color: t.glitchGhost,
           opacity: 0.55,
           transform: `translateX(${-10 - rand() * 12}px)`,
-          mixBlendMode: 'screen',
+          mixBlendMode: t.glitchBlend,
         }}
       >
         {text}

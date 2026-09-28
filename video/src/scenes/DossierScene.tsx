@@ -1,12 +1,10 @@
 import {AbsoluteFill} from 'remotion';
-import {alpha, DERIVED, FONT, TOKENS, WEIGHT} from '../brand/tokens';
+import {useTheme} from '../brand/theme';
+import {FONT, WEIGHT} from '../brand/tokens';
 import {COPY} from '../copy';
 import {blurIn, EASE_IN_OUT, EASE_OUT, lerp, progress} from '../lib/anim';
 import {useSceneFrame} from '../lib/scene';
 import {EVENTS, SCENES} from '../timeline';
-
-const INK = DERIVED.ink;
-const LABEL = TOKENS.surface; // 6.7:1 sobre o papel
 
 /* Saída em rampa (12 quadros, curva suave): a folha clara não pode sumir no tranco. */
 function fadeOut(frame: number, start: number) {
@@ -20,6 +18,7 @@ function fadeOut(frame: number, start: number) {
  */
 export const DossierScene: React.FC = () => {
   const frame = useSceneFrame('dossier');
+  const t = useTheme();
   const {bubble, doc, header, sections, footer, exit} = EVENTS.dossier;
   const scene = SCENES.dossier;
 
@@ -58,17 +57,17 @@ export const DossierScene: React.FC = () => {
           width: 610,
           padding: '26px 34px',
           borderRadius: 30,
-          background: DERIVED.raised,
-          border: `2px solid ${alpha(TOKENS.text2, 0.16)}`,
-          boxShadow: `0 30px 70px ${alpha(DERIVED.shadow, 0.5)}`,
+          background: t.card,
+          border: `2px solid ${t.cardBorder}`,
+          boxShadow: t.cardShadow,
           opacity: Math.min(bubbleIn.opacity, out.opacity),
           transform: `translateX(${bubbleX}px)`,
           filter: bubbleIn.blur + out.blur > 0.05 ? `blur(${bubbleIn.blur + out.blur}px)` : undefined,
           zIndex: 2,
         }}
       >
-        <div style={{fontSize: 26, color: TOKENS.text2}}>{COPY.dossier.askedLabel}</div>
-        <div style={{marginTop: 4, fontSize: 36, lineHeight: 1.25, color: TOKENS.text, fontWeight: WEIGHT.heavy, letterSpacing: '-0.01em'}}>
+        <div style={{fontSize: 26, color: t.body}}>{COPY.dossier.askedLabel}</div>
+        <div style={{marginTop: 4, fontSize: 36, lineHeight: 1.25, color: t.headline, fontWeight: WEIGHT.heavy, letterSpacing: '-0.01em'}}>
           {COPY.prompt.text}
         </div>
       </div>
@@ -82,9 +81,9 @@ export const DossierScene: React.FC = () => {
             width: 860,
             padding: '56px 60px 40px',
             borderRadius: 28,
-            background: DERIVED.paper,
-            color: INK,
-            boxShadow: `0 60px 140px ${alpha(DERIVED.shadow, 0.75)}, 0 0 0 1px ${alpha(TOKENS.text2, 0.3)}`,
+            background: t.paper,
+            color: t.ink,
+            boxShadow: t.paperShadow,
             transform: `translateY(${y}px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg) scale(${scale})`,
             transformOrigin: '50% 30%',
             opacity: Math.min(progress(frame, doc, 10, EASE_IN_OUT), out.opacity),
@@ -95,7 +94,7 @@ export const DossierScene: React.FC = () => {
             <div style={{fontSize: 54, fontWeight: WEIGHT.heavy, letterSpacing: '-0.03em', lineHeight: 1.05}}>
               {COPY.dossier.title}
             </div>
-            <div style={{marginTop: 10, fontSize: 30, color: LABEL}}>{COPY.dossier.subtitle}</div>
+            <div style={{marginTop: 10, fontSize: 30, color: t.paperLabel}}>{COPY.dossier.subtitle}</div>
           </div>
 
           {COPY.dossier.sections.map((s, i) => (
@@ -105,7 +104,7 @@ export const DossierScene: React.FC = () => {
                 ...line(sections[i]),
                 marginTop: 30,
                 paddingTop: 26,
-                borderTop: `2px solid ${alpha(INK, 0.09)}`,
+                borderTop: `2px solid ${t.paperRule}`,
               }}
             >
               <div
@@ -114,7 +113,7 @@ export const DossierScene: React.FC = () => {
                   fontWeight: WEIGHT.heavy,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
-                  color: LABEL,
+                  color: t.paperLabel,
                 }}
               >
                 {s.label}
@@ -127,7 +126,7 @@ export const DossierScene: React.FC = () => {
                       style={{
                         padding: '10px 24px',
                         borderRadius: 999,
-                        border: `2px solid ${alpha(INK, 0.2)}`,
+                        border: `2px solid ${t.paperChipBorder}`,
                         fontSize: 32,
                         whiteSpace: 'nowrap',
                       }}
@@ -140,7 +139,7 @@ export const DossierScene: React.FC = () => {
                 <div
                   style={
                     s.value === 'M.O.V.E.'
-                      ? {marginTop: 8, fontSize: 52, fontWeight: WEIGHT.heavy, letterSpacing: '0.02em', color: TOKENS.accent}
+                      ? {marginTop: 8, fontSize: 52, fontWeight: WEIGHT.heavy, letterSpacing: '0.02em', color: t.accent}
                       : {marginTop: 8, fontSize: 40, lineHeight: 1.25}
                   }
                 >
@@ -155,11 +154,11 @@ export const DossierScene: React.FC = () => {
               ...line(footer),
               marginTop: 34,
               paddingTop: 22,
-              borderTop: `2px solid ${alpha(INK, 0.09)}`,
+              borderTop: `2px solid ${t.paperRule}`,
               display: 'flex',
               justifyContent: 'space-between',
               fontSize: 24,
-              color: LABEL,
+              color: t.paperLabel,
             }}
           >
             <span>{COPY.brand}</span>

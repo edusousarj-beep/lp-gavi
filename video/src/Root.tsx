@@ -7,14 +7,21 @@ import {DURATION, FPS, HEIGHT, WIDTH} from './timeline';
 
 ensureFonts();
 
+const video = {component: GaviAd, durationInFrames: DURATION, fps: FPS, width: WIDTH, height: HEIGHT};
+const still = {width: EDITORIAL_W, height: EDITORIAL_H};
+
 export const RemotionRoot: React.FC = () => (
   <>
-    <Composition id="GaviAd" component={GaviAd} durationInFrames={DURATION} fps={FPS} width={WIDTH} height={HEIGHT} />
+    {/* Mesmo anúncio, duas luzes: claro (como a referência) e escuro (como a LP). */}
+    <Composition id="GaviAdClaro" {...video} defaultProps={{tema: 'claro' as const}} />
+    <Composition id="GaviAdEscuro" {...video} defaultProps={{tema: 'escuro' as const}} />
 
-    {/* Imagem editorial: gerada uma vez para public/editorial (npm run editorial). */}
+    {/* Imagem editorial: gerada para public/editorial (npm run editorial). */}
     <Folder name="Imagem-editorial">
-      <Still id="EditorialCity" component={EditorialCity} width={EDITORIAL_W} height={EDITORIAL_H} />
-      <Still id="EditorialRoom" component={EditorialRoom} width={EDITORIAL_W} height={EDITORIAL_H} />
+      <Still id="CidadeDia" component={EditorialCity} {...still} defaultProps={{mood: 'dia' as const}} />
+      <Still id="SalaDia" component={EditorialRoom} {...still} defaultProps={{mood: 'dia' as const}} />
+      <Still id="CidadeNoite" component={EditorialCity} {...still} defaultProps={{mood: 'noite' as const}} />
+      <Still id="SalaNoite" component={EditorialRoom} {...still} defaultProps={{mood: 'noite' as const}} />
     </Folder>
   </>
 );
