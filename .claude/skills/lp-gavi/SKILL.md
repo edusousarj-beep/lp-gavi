@@ -174,8 +174,10 @@ mais o CTA fixo no celular.
    acontece depois do clique (WhatsApp, conversa, call, decisão).
 
 6. **Quem conduz** — Bruna Gavioli, rosto e voz. Autoridade, não currículo.
-   Números só com dado real conferido. Hoje: foto, função e bio curta tirada
-   da página atual.
+   Números só com dado real conferido. Hoje: foto, função, bio curta e o
+   podcast (vídeo `RVVP-Ze6JVA`, "A história por trás do método"), tudo da
+   página atual. O podcast usa a mesma fachada dos outros vídeos, sem a luz
+   do vídeo do topo.
 
 7. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes" e
    garantia. A garantia é real e está em contrato (confirmada em 26/09/2026):

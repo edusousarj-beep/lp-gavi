@@ -89,7 +89,8 @@ Nenhum `.slot` pode ficar visível. Pendências:
 
 | Onde | O quê |
 | --- | --- |
-| Foto da Bruna e os 9 prints | apontam para o WordPress (`inglescomgavi.com/wp-content/uploads`). Funcionam, mas a LP fica dependente dele. Para trazer ao repositório, libere `inglescomgavi.com` na rede do ambiente ou copie os arquivos para `assets/`. |
+| Foto da Bruna e os 9 prints | apontam para o WordPress (`inglescomgavi.com/wp-content/uploads`). Aparecem na página publicada, não na prévia, e deixam a LP dependente do WordPress. Para trazer ao repositório, libere `inglescomgavi.com` na rede do ambiente ou copie os arquivos para `assets/`. |
+| Capas dos 4 vídeos | vêm do YouTube (`i.ytimg.com`), como a da página atual. Para trazer ao repositório, libere `i.ytimg.com` na rede do ambiente. O player continua sendo o do YouTube, no clique. |
 | Vídeo do hero | é o `LFGi4Th1iJo` da página atual. A skill pede 30–60s; confira a duração. |
 | Logos | marcas de terceiros, usadas porque há mentorados nessas empresas (confirmado em 26/09/2026). Empresa nova só com mentorado real lá. |
 | `index.html` → `og:image`, `og:url` | quando o domínio estiver definido |

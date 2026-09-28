@@ -404,6 +404,9 @@ a { color: inherit; }
 /* A moldura corta o que passa da borda: o foco fica por dentro. */
 .video__facade:focus-visible { outline-offset: -4px; }
 
+/* Sem a luz atrás: ela marca o vídeo do topo como o principal da página. */
+.video--plain::before { content: none; }
+
 /* Play em tinta, não acento cheio: acento sólido é só do botão do SDR. */
 .video__play {
   position: absolute;
@@ -812,6 +815,16 @@ a { color: inherit; }
   max-width: 36rem;
   color: var(--text-2);
 }
+
+/* O podcast ocupa a largura toda da seção, abaixo do texto e da foto. */
+.founder__podcast {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: start;
+  gap: var(--s2);
+}
+
+.founder__podcast .video { margin-top: var(--s1); }
 
 .founder__photo {
   order: -1;

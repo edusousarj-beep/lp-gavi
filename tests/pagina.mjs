@@ -21,6 +21,20 @@ await v.destinoEClique(t, browser, PAGINA);
 await v.midia(t, browser, PAGINA);
 await v.semJs(t, browser, PAGINA);
 
+// Os 4 vídeos da página atual estão na LP, em fachada; o do podcast abre o player no clique.
+{
+  const { ctx, page, erros } = await novaPagina(browser, { reducedMotion: 'reduce' });
+  await page.goto(BASE + PAGINA.caminho, { waitUntil: 'load' }); await pronta(page);
+  const ids = await page.$$eval('[data-youtube]', els => els.map(e => e.dataset.youtube).sort());
+  t.check(ids.join() === 'LFGi4Th1iJo,Mq2io3x4xwc,RVVP-Ze6JVA,ZmF9XccavNE', `os 4 vídeos da página atual, em fachada (${ids.join(', ')})`);
+  await page.locator('[data-youtube="RVVP-Ze6JVA"]').scrollIntoViewIfNeeded();
+  await page.click('[data-youtube="RVVP-Ze6JVA"]');
+  const src = await page.$eval('.founder__podcast iframe', f => f.src).catch(() => null);
+  t.check(!!src && src.startsWith('https://www.youtube-nocookie.com/embed/RVVP-Ze6JVA?autoplay=1'), 'podcast abre o player no clique (youtube-nocookie)');
+  t.check(erros.length === 0, `sem erro de JS (${erros.join(' | ') || 'nenhum'})`);
+  await ctx.close();
+}
+
 // Se o reveal.js não carregar, a página não pode sumir.
 {
   const { ctx, page } = await novaPagina(browser);
