@@ -3,6 +3,8 @@ import {ensureFonts} from './brand/fonts';
 import {EDITORIAL_H, EDITORIAL_W, EditorialCity} from './editorial/EditorialCity';
 import {EditorialRoom} from './editorial/EditorialRoom';
 import {GaviAd} from './GaviAd';
+import {NoticiaAd} from './noticia/NoticiaAd';
+import {PostAd} from './post/PostAd';
 import {DURATION, FPS, HEIGHT, WIDTH} from './timeline';
 
 ensureFonts();
@@ -15,6 +17,12 @@ export const RemotionRoot: React.FC = () => (
     {/* Mesmo anúncio, duas luzes: claro (como a referência) e escuro (como a LP). */}
     <Composition id="GaviAdClaro" {...video} defaultProps={{tema: 'claro' as const}} />
     <Composition id="GaviAdEscuro" {...video} defaultProps={{tema: 'escuro' as const}} />
+
+    {/* Variações de layout, com a copy do post que a Gavi já veicula. */}
+    <Folder name="Variacoes">
+      <Composition id="GaviPost" component={PostAd} durationInFrames={DURATION} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{tema: 'escuro' as const}} />
+      <Composition id="GaviNoticia" component={NoticiaAd} durationInFrames={DURATION} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{tema: 'escuro' as const}} />
+    </Folder>
 
     {/* Imagem editorial: gerada para public/editorial (npm run editorial). */}
     <Folder name="Imagem-editorial">

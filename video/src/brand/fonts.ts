@@ -21,6 +21,13 @@ export function ensureFonts(): Promise<void> {
     new FontFace('Inter', `url(${staticFile('fonts/inter-latin-800-normal.woff2')}) format('woff2')`, {
       weight: '800',
     }),
+    // Serifada da variação "Post": o card imita o post que a Gavi já roda.
+    new FontFace('Source Serif 4', `url(${staticFile('fonts/source-serif-4-latin-400-normal.woff2')}) format('woff2')`, {
+      weight: '400',
+    }),
+    new FontFace('Source Serif 4', `url(${staticFile('fonts/source-serif-4-latin-700-normal.woff2')}) format('woff2')`, {
+      weight: '700',
+    }),
   ];
 
   fontsPromise = Promise.all(faces.map((face) => face.load())).then((loaded) => {
@@ -54,11 +61,17 @@ export function useFontsReady(): boolean {
 
 let ctx: CanvasRenderingContext2D | null = null;
 
-/** Largura do texto em px na Inter, com o mesmo letter-spacing do CSS. */
-export function measureText(text: string, sizePx: number, weight: 400 | 800, letterSpacingEm = 0): number {
+/** Largura do texto em px (Inter por padrão), com o mesmo letter-spacing do CSS. */
+export function measureText(
+  text: string,
+  sizePx: number,
+  weight: 400 | 700 | 800,
+  letterSpacingEm = 0,
+  family = 'Inter',
+): number {
   if (typeof document === 'undefined') return 0;
   if (!ctx) ctx = document.createElement('canvas').getContext('2d');
   if (!ctx) return 0;
-  ctx.font = `${weight} ${sizePx}px Inter`;
+  ctx.font = `${weight} ${sizePx}px "${family}"`;
   return ctx.measureText(text).width + [...text].length * letterSpacingEm * sizePx;
 }

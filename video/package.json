@@ -7,12 +7,14 @@
   "scripts": {
     "dev": "npm run assets && remotion studio",
     "editorial": "remotion still CidadeDia public/editorial/cidade-dia.png --image-format=png && remotion still SalaDia public/editorial/sala-dia.png --image-format=png && remotion still CidadeNoite public/editorial/cidade-noite.png --image-format=png && remotion still SalaNoite public/editorial/sala-noite.png --image-format=png",
-    "audio": "tsx scripts/compose-audio.ts",
+    "audio": "tsx scripts/compose-audio.ts && tsx scripts/compose-variations.ts",
     "assets": "npm run editorial && npm run audio",
-    "render": "npm run assets && npm run render:claro && npm run render:escuro",
+    "render": "npm run assets && npm run render:claro && npm run render:escuro && npm run render:post && npm run render:noticia",
     "render:claro": "remotion render GaviAdClaro out/.video-claro.mp4 --muted && tsx scripts/mux.ts out/.video-claro.mp4 public/audio/trilha.wav out/gavi-anuncio-24s-claro.mp4",
     "render:escuro": "remotion render GaviAdEscuro out/.video-escuro.mp4 --muted && tsx scripts/mux.ts out/.video-escuro.mp4 public/audio/trilha.wav out/gavi-anuncio-24s-escuro.mp4",
-    "verify": "tsx scripts/verify.ts out/gavi-anuncio-24s-claro.mp4 && tsx scripts/verify.ts out/gavi-anuncio-24s-escuro.mp4",
+    "render:post": "remotion render GaviPost out/.video-post.mp4 --muted && tsx scripts/mux.ts out/.video-post.mp4 public/audio/post.wav out/gavi-post-24s.mp4",
+    "render:noticia": "remotion render GaviNoticia out/.video-noticia.mp4 --muted && tsx scripts/mux.ts out/.video-noticia.mp4 public/audio/noticia.wav out/gavi-noticia-24s.mp4",
+    "verify": "tsx scripts/verify.ts out/gavi-anuncio-24s-claro.mp4 && tsx scripts/verify.ts out/gavi-anuncio-24s-escuro.mp4 && tsx scripts/verify.ts out/gavi-post-24s.mp4 public/audio/post.cues.json && tsx scripts/verify.ts out/gavi-noticia-24s.mp4 public/audio/noticia.cues.json",
     "build": "npm run render && npm run verify",
     "preview": "tsx scripts/preview-frames.ts",
     "typecheck": "tsc --noEmit"
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@fontsource/inter": "5.3.0",
+    "@fontsource/source-serif-4": "5.3.0",
     "@remotion/bundler": "4.0.529",
     "@remotion/renderer": "4.0.529",
     "@types/react": "19.3.0",

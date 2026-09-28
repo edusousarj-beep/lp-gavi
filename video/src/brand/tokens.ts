@@ -54,6 +54,9 @@ export const RADIUS_PILL = 999;
 
 export const FONT = '"Inter", "Helvetica Neue", Helvetica, Arial, sans-serif';
 
+/* Só na variação "Post", que reproduz o post serifado que a Gavi já veicula. */
+export const FONT_SERIF = '"Source Serif 4", Georgia, "Times New Roman", serif';
+
 /* Dois pesos apenas, como na LP. */
 export const WEIGHT = {regular: 400, heavy: 800} as const;
 

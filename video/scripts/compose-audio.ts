@@ -12,7 +12,7 @@ import path from 'node:path';
 import {Biquad, Bus, compress, dbToGain, eq, freeverb, integratedLoudness, limit, pingPong, samples, SR, Svf, toWav} from './audio/dsp';
 import * as I from './audio/instruments';
 import * as X from './audio/sfx';
-import {at, BEAT, DURATION, EVENTS, FPS, SCENES} from '../src/timeline';
+import {at, BEAT, DURATION, EVENTS, FPS, FREEZE, SCENES} from '../src/timeline';
 
 const T = (frame: number) => frame / FPS; // quadro → segundos
 const STEP = BEAT / 4 / FPS; // semicolcheia: 0,15 s
@@ -215,7 +215,7 @@ const addFx = (t: number, s: I.Stereo | Float32Array, db: number, pan = 0, verb 
   }
 };
 
-const cues: Record<string, number | number[]> = {};
+const cues: Record<string, unknown> & {drop?: number; slam?: number; clickSend?: number; clickCta?: number} = {};
 
 // 1 · Logo: sopro subindo até o drop, sino no sublinhado, whoosh do voo.
 addFx(0, X.whoosh(next(), T(SCENES.logo.to), {from: 120, to: 2600, peak: 0.95, q: 0.9, panFrom: 0, panTo: 0}), -16);
@@ -431,6 +431,18 @@ for (let iter = 0; iter < 8; iter++) {
 const outDir = path.resolve('public/audio');
 fs.mkdirSync(outDir, {recursive: true});
 fs.writeFileSync(path.join(outDir, 'trilha.wav'), toWav(finalBus));
+// Marcações lidas pelo verify.ts: o que conferir neste vídeo.
+Object.assign(cues, {
+  freeze: [FREEZE.from, FREEZE.to],
+  cuts: Object.fromEntries(Object.entries(SCENES).slice(1).map(([name, s]) => [name, s.from])),
+  sync: {drop: cues.drop, tranco: cues.slam, 'clique enviar': cues.clickSend, 'clique CTA': cues.clickCta},
+  marks: [
+    ['clique enviar', cues.clickSend, EVENTS.prompt.click],
+    ['clique CTA', cues.clickCta, EVENTS.endCard.click],
+    ['tranco', cues.slam, EVENTS.hook.slam],
+  ],
+  expectedKeys: EVENTS.prompt.keys.length,
+});
 fs.writeFileSync(path.join(outDir, 'trilha.cues.json'), JSON.stringify({fps: FPS, sampleRate: SR, duration: LENGTH, ...cues}, null, 2));
 
 console.log(

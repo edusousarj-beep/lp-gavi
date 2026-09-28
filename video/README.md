@@ -17,9 +17,21 @@ animação e trilha são idênticas:
   texto em petróleo, destaques em teal, imagem editorial de manhã.
 - **escuro** (`GaviAdEscuro`): petróleo, como a LP; imagem editorial à noite.
 
+E duas **variações de layout** com a copy do post que a Gavi já veicula
+(mesma grade de 100 BPM, trilha própria, movimentos próprios):
+
+- **Post** (`GaviPost`, `src/post/`): o post da Bruna vira vídeo — o card vira
+  em 3D e cresce com o texto, câmera de leitura bloco a bloco, carimbo em
+  "PROPOSTA:", marca-texto em "90 dias", sublinhado à mão em "garantia de
+  resultado", staccato nos "sem…" e seta pulando para o "Saiba mais".
+- **Notícia** (`GaviNoticia`, `src/noticia/`): layout de card de manchete — a
+  manchete bate no tempo, "90" conta de 0 a 90, sublinhados se desenham, o
+  artigo rola e a pílula leva um toque de dedo. O topo do card diz
+  "Mentoria", não "Notícias": anúncio não se passa por reportagem.
+
 | | |
 | --- | --- |
-| Saída | `out/gavi-anuncio-24s-claro.mp4` e `out/gavi-anuncio-24s-escuro.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
+| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-post-24s.mp4`, `out/gavi-noticia-24s.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
 | Áudio | AAC 320 kbps, 48 kHz estéreo, −14 LUFS, pico real ≤ −1 dBTP |
 | Grade | 100 BPM = 18 quadros por tempo; cenas cortam no tempo da música |
 
@@ -32,7 +44,11 @@ npm run dev      # gera imagem + trilha e abre o Remotion Studio
 npm run build    # gera tudo, renderiza as duas versões e verifica as duas
 ```
 
-Só uma versão: `npm run assets && npm run render:claro` (ou `render:escuro`).
+Só uma versão: `npm run assets && npm run render:claro` (ou `render:escuro`,
+`render:post`, `render:noticia`).
+
+O avatar da variação Post (`public/post/avatar-bruna.png`) foi recortado do
+próprio post e tem resolução baixa: troque pela foto original no mesmo caminho.
 
 Em máquina sem o Chrome que o Remotion baixa (CI, container), aponte um
 Chromium: `REMOTION_BROWSER_EXECUTABLE=/caminho/do/headless_shell npm run build`.
@@ -65,6 +81,8 @@ src/
   editorial/         imagem editorial procedural (cidade + sala, 2 camadas)
 scripts/
   compose-audio.ts   arranjo + mix + master → public/audio/trilha.wav
+  compose-variations.ts  partituras de Post e Notícia → public/audio/{post,noticia}.wav
+  audio/studio.ts    grooves, acordes, mix e master compartilhados pelas variações
   audio/dsp.ts       osciladores, filtros, reverb, compressor, limitador,
                      medidor de loudness BS.1770
   audio/*.ts         instrumentos e efeitos
@@ -87,9 +105,11 @@ ficam fora do git: saem do código a cada `npm run assets`.
 `npm run verify` decodifica o MP4 inteiro — não confia em metadado — e
 falha se qualquer item não bater: codec, resolução, 30 fps, 720 quadros
 contados um a um, duração, BT.709, faixa AAC estéreo 48 kHz, loudness,
-pico real, o congelamento da palavra "travar" (quadros 126–134 idênticos),
-o silêncio planejado, ausência de buracos na trilha e o desvio A/V nos
-pontos de sincronia. Cada vídeo ganha um relatório ao lado:
+pico real, imagem em movimento em todo segundo, ausência de buracos na
+trilha, desvio A/V nos pontos de sincronia e sons caindo no quadro exato do
+evento. O que é específico de cada vídeo (o congelamento de "travar", o
+silêncio planejado, os cortes, as teclas) vem do `.cues.json` que a trilha
+grava ao lado do WAV. Cada vídeo ganha um relatório ao lado:
 `out/<nome>.verify.json`.
 
 ## Regras da marca respeitadas
@@ -109,4 +129,4 @@ pontos de sincronia. Cada vídeo ganha um relatório ao lado:
 
 - Remotion: gratuito para pessoa física e empresa com até 3 funcionários;
   acima disso exige licença paga (ver `node_modules/remotion/LICENSE.md`).
-- Inter: SIL Open Font License 1.1.
+- Inter e Source Serif 4 (serifada da variação Post): SIL Open Font License 1.1.

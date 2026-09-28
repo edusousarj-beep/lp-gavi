@@ -168,3 +168,52 @@ export function glitch(seed: number, dur: number): Stereo {
   }
   return {l, r};
 }
+
+/** Caneta riscando papel: ruído agudo em passa-banda, com a aspereza do traço. */
+export function scratch(seed: number, dur: number): Float32Array {
+  const rand = rng(seed);
+  const n = samples(dur);
+  const out = new Float32Array(n);
+  const bp = new Svf(3200, 1.3);
+  let grain = 0;
+  for (let i = 0; i < n; i++) {
+    const x = i / n;
+    if (i % samples(0.012) === 0) grain = 0.55 + rand() * 0.45; // atrito irregular
+    bp.set(2600 + 1400 * x + rand() * 300, 1.3);
+    bp.process(rand() * 2 - 1);
+    const env = Math.min(1, x / 0.08) * Math.min(1, (1 - x) / 0.2);
+    out[i] = bp.band * env * grain * 1.6;
+  }
+  return out;
+}
+
+/** Marca-texto: chiado macio subindo, mais grave que a caneta. */
+export function marker(seed: number, dur: number): Float32Array {
+  const rand = rng(seed);
+  const n = samples(dur);
+  const out = new Float32Array(n);
+  const bp = new Svf(900, 0.9);
+  for (let i = 0; i < n; i++) {
+    const x = i / n;
+    bp.set(700 + 1100 * x, 0.9);
+    bp.process(rand() * 2 - 1);
+    out[i] = bp.band * Math.sin(Math.PI * x) * 1.4;
+  }
+  return out;
+}
+
+/** Toque de dedo na tela: batida abafada, curta. */
+export function tap(seed: number): Float32Array {
+  const rand = rng(seed);
+  const n = samples(0.09);
+  const out = new Float32Array(n);
+  const lp = new Svf(1400, 0.8);
+  let phase = 0;
+  for (let i = 0; i < n; i++) {
+    const t = i / SR;
+    phase += (TAU * (320 - 1400 * t)) / SR;
+    lp.process(rand() * 2 - 1);
+    out[i] = (Math.sin(phase) * 0.8 + lp.low * 0.9) * Math.exp(-t / 0.018);
+  }
+  return out;
+}
