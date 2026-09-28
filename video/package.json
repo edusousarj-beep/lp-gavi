@@ -1,0 +1,33 @@
+{
+  "name": "gavi-video",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Anúncio vertical de 24s do Inglês com a Gavi, programado em React + Remotion.",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run assets && remotion studio",
+    "editorial": "remotion still EditorialCity public/editorial/cidade.png --image-format=png && remotion still EditorialRoom public/editorial/sala.png --image-format=png",
+    "audio": "tsx scripts/compose-audio.ts",
+    "assets": "npm run editorial && npm run audio",
+    "render": "npm run assets && remotion render GaviAd out/.video-sem-audio.mp4 --muted && tsx scripts/mux.ts",
+    "verify": "tsx scripts/verify.ts out/gavi-anuncio-24s.mp4",
+    "build": "npm run render && npm run verify",
+    "preview": "tsx scripts/preview-frames.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.529",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "5.3.0",
+    "@remotion/bundler": "4.0.529",
+    "@remotion/renderer": "4.0.529",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

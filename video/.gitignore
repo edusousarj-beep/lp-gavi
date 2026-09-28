@@ -1,0 +1,6 @@
+node_modules/
+out/
+# Gerados a partir do código (npm run assets):
+public/editorial/*.png
+public/audio/trilha.wav
+public/audio/trilha.cues.json

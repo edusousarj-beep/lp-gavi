@@ -19,7 +19,13 @@ index.html              hero + snippet do pixel
 assets/css/style.css    tokens e estilos
 assets/js/sdr.js        botão do SDR (código crítico)
 assets/js/reveal.js     reveals no scroll, IntersectionObserver
+video/                  anúncio vertical de 24 s em Remotion (ver video/README.md)
 ```
+
+`video/` é um projeto à parte (Node + Remotion) e não faz parte da página. Se
+o deploy publicar a raiz do repositório, a pasta sobe junto como arquivo
+estático — só código-fonte (MP4 e arquivos gerados estão no `.gitignore`), nada
+quebra, mas vale configurar o deploy para ignorá-la.
 
 HTML estático, sem build step. Para rodar local:
 
