@@ -3,6 +3,7 @@ import {ensureFonts} from './brand/fonts';
 import {EDITORIAL_H, EDITORIAL_W, EditorialCity} from './editorial/EditorialCity';
 import {EditorialRoom} from './editorial/EditorialRoom';
 import {GaviAd} from './GaviAd';
+import {ConversaAd} from './conversa/ConversaAd';
 import {NoticiaAd} from './noticia/NoticiaAd';
 import {PostAd} from './post/PostAd';
 import {DURATION, FPS, HEIGHT, WIDTH} from './timeline';
@@ -22,6 +23,16 @@ export const RemotionRoot: React.FC = () => (
     <Folder name="Variacoes">
       <Composition id="GaviPost" component={PostAd} durationInFrames={DURATION} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{tema: 'escuro' as const}} />
       <Composition id="GaviNoticia" component={NoticiaAd} durationInFrames={DURATION} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{tema: 'escuro' as const}} />
+      {/* Criativo de conversa (um dos que mais trazem lead), encenado. aviso: ex. "Conversa ilustrativa". */}
+      <Composition
+        id="GaviConversa"
+        component={ConversaAd}
+        durationInFrames={DURATION}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{tema: 'escuro' as const, aviso: null as string | null}}
+      />
     </Folder>
 
     {/* Imagem editorial: gerada para public/editorial (npm run editorial). */}

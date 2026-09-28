@@ -28,6 +28,10 @@ export function ensureFonts(): Promise<void> {
     new FontFace('Source Serif 4', `url(${staticFile('fonts/source-serif-4-latin-700-normal.woff2')}) format('woff2')`, {
       weight: '700',
     }),
+    // Variação "Conversa": negrito de app de mensagem.
+    new FontFace('Inter', `url(${staticFile('fonts/inter-latin-700-normal.woff2')}) format('woff2')`, {
+      weight: '700',
+    }),
   ];
 
   fontsPromise = Promise.all(faces.map((face) => face.load())).then((loaded) => {

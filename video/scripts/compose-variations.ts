@@ -12,6 +12,7 @@ import {BREAK, FULL, HALF, LIGHT, Studio, T, writeTrack, type BarPlan} from './a
 import {at, BEAT, FPS} from '../src/timeline';
 import {POST_EVENTS as P, TOKEN_FRAMES} from '../src/post/timeline';
 import {NOTICIA_EVENTS as N} from '../src/noticia/timeline';
+import {CONVERSA_EVENTS as C, ticks, TIMING, typedFrames} from '../src/conversa/timeline';
 
 const t0 = (frame: number) => Math.max(0, T(frame));
 
@@ -151,5 +152,74 @@ const MOVE_NOTES = [72, 76, 79, 83];
     ],
   }, toWav);
   console.log(JSON.stringify({trilha: 'noticia', seconds: bus.length / samples(1), integratedLufs: +loudness.toFixed(2), gainDb: +gainDb.toFixed(2)}));
+}
+
+/* -------------------------------------------------------------- Conversa */
+{
+  const s = new Studio(303);
+  base(s, [
+    {bar: 1, chord: 'Am9', pattern: LIGHT},
+    {bar: 2, chord: 'Fmaj9', pattern: FULL},
+    {bar: 3, chord: 'Cmaj7', pattern: FULL},
+    {bar: 4, chord: 'G6', pattern: FULL},
+    {bar: 5, chord: 'Am9', pattern: HALF},
+    {bar: 6, chord: 'Fmaj9', pattern: LIGHT}, // a pergunta fica no ar
+    {bar: 7, chord: 'Cmaj7', pattern: FULL}, // "Não."
+    {bar: 8, chord: 'G6', pattern: BREAK}, // CTA chega no silêncio
+    {bar: 9, chord: 'Cmaj9', pattern: FULL},
+  ]);
+
+  s.fx(0, X.whoosh(s.next(), 0.35, {from: 400, to: 3000, peak: 0.3, q: 1.4}), -18);
+
+  // A aluna digita (uma tecla a cada dois caracteres), envia; ticks de entregue e lido.
+  for (const id of ['m1', 'm9']) {
+    typedFrames(id)
+      .flat()
+      .filter((f, i) => f >= 0 && i % 2 === 0)
+      .forEach((f, i) => s.fx(T(f), X.key(s.next()), -22, i % 2 ? 0.25 : 0.1));
+    const {arrive} = TIMING[id];
+    s.fx(T(arrive), X.whoosh(s.next(), 0.22, {from: 900, to: 5000, peak: 0.25, q: 1.4, panFrom: 0.35, panTo: 0.1}), -18);
+    s.fx(T(arrive), X.pop(s.next(), {pitch: 1.4}), -14, 0.2);
+    const tk = ticks(arrive);
+    s.fx(T(tk.delivered), X.tick(s.next(), {pitch: 4200}), -30, 0.3);
+    s.fx(T(tk.read), X.tick(s.next(), {pitch: 5200}), -26, 0.3);
+  }
+
+  // Cada balão da Bruna chega com um "pop"; a lista sobe nota a nota.
+  const LIST = ['m5', 'm6', 'm7', 'm8'];
+  for (const id of ['m2', 'm3', 'm4', ...LIST, 'm11']) {
+    s.fx(T(TIMING[id].arrive), X.pop(s.next(), {pitch: 0.95}), -13, -0.2);
+  }
+  LIST.forEach((id, i) => s.pluck(T(TIMING[id].arrive) + 0.05, [69, 72, 76, 79][i], -12, -0.3 + i * 0.2));
+
+  // "Não é você.": tranco + sino.
+  s.kick(T(C.punches[0]), 0.8);
+  s.fx(T(C.punches[0]), I.bell(88, {decay: 0.8}), -18, -0.2, 0.5);
+
+  s.fx(T(C.strike), X.scratch(s.next(), 10 / FPS), -16, 0.1);
+  s.fx(T(C.highlight), X.marker(s.next(), 0.4), -16);
+  C.letters.forEach((f, i) => s.pluck(T(f), MOVE_NOTES[i], -9, -0.3 + i * 0.2));
+  s.fx(T(C.emph), X.tick(s.next(), {pitch: 3000}), -20);
+  s.fx(T(C.underline), X.scratch(s.next(), 16 / FPS), -14, 0.1);
+
+  // "Não." carimbado; as duas linhas seguintes com um tique cada.
+  s.fx(T(C.stampLines[0]), X.impact(s.next()), -6, 0, 0.3);
+  s.kick(T(C.stampLines[0]), 1);
+  C.stampLines.slice(1).forEach((f) => s.fx(T(f), X.tick(s.next(), {pitch: 2400}), -20));
+
+  // CTA no silêncio do compasso 8; drop com a pílula.
+  s.fx(T(TIMING.m11.arrive), I.bell(95, {decay: 1.0}), -20, 0.2, 0.5);
+  s.fx(T(C.drop), X.pop(s.next(), {pitch: 0.7}), -9, 0, 0.25);
+
+  const {bus, loudness, gainDb} = s.master();
+  writeTrack('conversa', bus, {
+    sync: {envio: T(TIMING.m1.arrive), 'não': T(C.stampLines[0]), pílula: T(C.drop)},
+    marks: [
+      ['envio', T(TIMING.m1.arrive), TIMING.m1.arrive],
+      ['não', T(C.stampLines[0]), C.stampLines[0]],
+      ['pílula', T(C.drop), C.drop],
+    ],
+  }, toWav);
+  console.log(JSON.stringify({trilha: 'conversa', seconds: bus.length / samples(1), integratedLufs: +loudness.toFixed(2), gainDb: +gainDb.toFixed(2)}));
 }
 

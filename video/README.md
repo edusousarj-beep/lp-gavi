@@ -28,10 +28,20 @@ E duas **variações de layout** com a copy do post que a Gavi já veicula
   manchete bate no tempo, "90" conta de 0 a 90, sublinhados se desenham, o
   artigo rola e a pílula leva um toque de dedo. O topo do card diz
   "Mentoria", não "Notícias": anúncio não se passa por reportagem.
+- **Conversa** (`GaviConversa`, `src/conversa/`): o criativo de conversa (um
+  dos que mais trazem lead), encenado com a copy original palavra por
+  palavra — a aluna digita e o balão voa da caixa de texto, ticks de
+  entregue/lido, "digitando…" e pontinhos que viram o balão da Bruna, a
+  janela cresce e depois rola, "volume" riscado, marca-texto em
+  "frequência", teclas 1–4 girando, "Não." carimbado e a pílula saindo de
+  baixo da janela no drop. App de mensagem genérico nas cores da marca: sem
+  logo, papel de parede, barra de status ou botão de ligação de app real.
+  Se a conversa for encenada, rotule: prop `aviso` (ex. `"Conversa
+  ilustrativa"`) — `npx remotion render GaviConversa … --props='{"tema":"escuro","aviso":"Conversa ilustrativa"}'`.
 
 | | |
 | --- | --- |
-| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-post-24s.mp4`, `out/gavi-noticia-24s.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
+| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` — H.264, 1080×1920, 30 fps, **720 quadros** |
 | Áudio | AAC 320 kbps, 48 kHz estéreo, −14 LUFS, pico real ≤ −1 dBTP |
 | Grade | 100 BPM = 18 quadros por tempo; cenas cortam no tempo da música |
 
@@ -45,10 +55,11 @@ npm run build    # gera tudo, renderiza as duas versões e verifica as duas
 ```
 
 Só uma versão: `npm run assets && npm run render:claro` (ou `render:escuro`,
-`render:post`, `render:noticia`).
+`render:post`, `render:noticia`, `render:conversa`).
 
-O avatar da variação Post (`public/post/avatar-bruna.png`) foi recortado do
-próprio post e tem resolução baixa: troque pela foto original no mesmo caminho.
+O avatar das variações Post e Conversa (`public/post/avatar-bruna.png`) foi
+recortado do próprio post e tem resolução baixa: troque pela foto original no
+mesmo caminho.
 
 Em máquina sem o Chrome que o Remotion baixa (CI, container), aponte um
 Chromium: `REMOTION_BROWSER_EXECUTABLE=/caminho/do/headless_shell npm run build`.
@@ -81,7 +92,7 @@ src/
   editorial/         imagem editorial procedural (cidade + sala, 2 camadas)
 scripts/
   compose-audio.ts   arranjo + mix + master → public/audio/trilha.wav
-  compose-variations.ts  partituras de Post e Notícia → public/audio/{post,noticia}.wav
+  compose-variations.ts  partituras de Post, Notícia e Conversa → public/audio/{post,noticia,conversa}.wav
   audio/studio.ts    grooves, acordes, mix e master compartilhados pelas variações
   audio/dsp.ts       osciladores, filtros, reverb, compressor, limitador,
                      medidor de loudness BS.1770
@@ -130,3 +141,7 @@ grava ao lado do WAV. Cada vídeo ganha um relatório ao lado:
 - Remotion: gratuito para pessoa física e empresa com até 3 funcionários;
   acima disso exige licença paga (ver `node_modules/remotion/LICENSE.md`).
 - Inter e Source Serif 4 (serifada da variação Post): SIL Open Font License 1.1.
+- Emoji da variação Conversa (`public/emoji/`): SVGs da Noto Emoji (Google,
+  repositório googlefonts/noto-emoji). O `LICENSE` do repositório é a OFL 1.1
+  (cópia em `public/emoji/`); o README de lá cita Apache 2.0 para as imagens.
+  As duas permitem uso comercial.
