@@ -46,8 +46,10 @@ E uma peça **modelada em outro anúncio** (formato próprio, 16 s):
   deslize lateral, texto que entra apagado e acende, barra vertical, itens
   com alerta acendendo, retrato em perspectiva, número grande com caixa
   ("20 MINUTOS. POR DIA."), barras crescendo e cartão final em cascata. A
-  oferta de lá (diagnóstico grátis) não foi copiada: o CTA é o da LP. Toda
-  frase já existe em material da marca (origem anotada em `copy.ts`).
+  oferta de lá (diagnóstico grátis) não foi copiada: o CTA é o da LP. O
+  cartão final diz "Mentoria de inglês funcional" e o público ("executivos
+  e profissionais de diversas áreas") aparece em destaque no gancho e no
+  cartão final, com marca-texto. Origem de cada frase anotada em `copy.ts`.
   Fotos em `public/pordentro/`: **`aula.jpg` foi gerada por IA** (manifesto
   C2PA do Google no arquivo original, `trainedAlgorithmicMedia`) — troque
   por um quadro real de aula antes de veicular algo que diga "por dentro";

@@ -177,6 +177,46 @@ const AccentBox: React.FC<{frame: number; at: number; size: number; children: Re
   );
 };
 
+/* Para quem é: branco e forte; o marca-texto (teal, sem disputar com o vermelho) passa no tempo. */
+const Audience: React.FC<{frame: number; at: number; sweep: number; size?: number; align?: 'left' | 'center'; style?: React.CSSProperties}> = ({
+  frame,
+  at,
+  sweep,
+  size = 34,
+  align = 'left',
+  style,
+}) => {
+  const p = progress(frame, sweep, 10, EASE_OUT);
+  return (
+    <div style={{fontSize: size, fontWeight: 800, lineHeight: `${Math.round(size * 1.32)}px`, letterSpacing: '-0.01em', textAlign: align, ...lit(frame, at), ...style}}>
+      {C.audience.map((l) => (
+        <div key={l.t}>
+          {l.mark ? (
+            <span style={{position: 'relative', display: 'inline-block'}}>
+              <span
+                style={{
+                  position: 'absolute',
+                  left: -8,
+                  right: -8,
+                  top: '6%',
+                  bottom: '2%',
+                  borderRadius: 6,
+                  background: TOKENS.surface,
+                  transformOrigin: '0% 50%',
+                  transform: `scaleX(${p})`,
+                }}
+              />
+              <span style={{position: 'relative'}}>{l.t}</span>
+            </span>
+          ) : (
+            l.t
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 /* ------------------------------------------------------- A · gancho (foto) */
 
 const SectionA: React.FC<{frame: number}> = ({frame}) => {
@@ -221,11 +261,7 @@ const SectionA: React.FC<{frame: number}> = ({frame}) => {
           </Eyebrow>
           <div style={{height: 14}} />
           <Headline frame={frame} lines={C.a.headline} at={PD.aLines} />
-          <div style={{marginTop: 18, fontSize: 30, lineHeight: '40px', color: TOKENS.text2, ...lit(frame, PD.aSub)}}>
-            {C.a.sub.map((s) => (
-              <div key={s}>{s}</div>
-            ))}
-          </div>
+          <Audience frame={frame} at={PD.aSub} sweep={PD.drop} style={{marginTop: 20}} />
         </div>
         <div style={{display: 'flex', gap: 20, marginTop: 20}}>
           {C.a.chips.map((chip, i) => (
@@ -458,7 +494,16 @@ const SectionD: React.FC<{frame: number; p3: number}> = ({frame, p3}) => {
         </div>
       </div>
 
-      <div style={{position: 'absolute', left: X0, top: 624, width: COL, display: 'flex', justifyContent: 'center', gap: 16, ...lag(2)}}>
+      <Audience
+        frame={frame}
+        at={MOVES.scroll3[0]}
+        sweep={PD.dCascade[3]}
+        size={36}
+        align="center"
+        style={{position: 'absolute', left: X0, top: 584, width: COL, ...lag(2)}}
+      />
+
+      <div style={{position: 'absolute', left: X0, top: 700, width: COL, display: 'flex', justifyContent: 'center', gap: 16, ...lag(3)}}>
         {C.d.chips.map((chip, i) => (
           <div
             key={chip}
@@ -478,13 +523,11 @@ const SectionD: React.FC<{frame: number; p3: number}> = ({frame, p3}) => {
         ))}
       </div>
 
-      <div style={{position: 'absolute', left: X0, top: 708, width: COL, textAlign: 'center', fontSize: 32, lineHeight: '42px', color: TOKENS.text2, ...lag(3)}}>
-        {C.d.line.map((l) => (
-          <div key={l}>{l}</div>
-        ))}
+      <div style={{position: 'absolute', left: X0, top: 776, width: COL, textAlign: 'center', fontSize: 26, lineHeight: '34px', color: TOKENS.text2, ...lag(4)}}>
+        {C.d.line}
       </div>
 
-      <div style={{position: 'absolute', left: X0, top: 818, width: COL, ...lag(4)}}>
+      <div style={{position: 'absolute', left: X0, top: 836, width: COL, ...lag(5)}}>
         {ring >= 0 ? (
           <div
             style={{
@@ -520,7 +563,7 @@ const SectionD: React.FC<{frame: number; p3: number}> = ({frame, p3}) => {
         </div>
       </div>
 
-      <div style={{position: 'absolute', left: X0, top: 968, width: COL, height: 440, ...lag(5)}}>
+      <div style={{position: 'absolute', left: X0, top: 984, width: COL, height: 440, ...lag(6)}}>
         <div
           style={{
             position: 'relative',

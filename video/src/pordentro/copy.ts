@@ -13,8 +13,11 @@
  *                            "destrava o inglês que o seu trabalho exige",
  *                            "sem esquecer depois de alguns dias"
  *   criativo Conversa        "sem traduzir na cabeça", "frequência fixa na memória"
- *   foto de perfil (img. 2)  "Especialista em ensino de inglês para adultos.
- *                            Criadora do método M.O.V.E."
+ *   foto de perfil (img. 2)  "INGLÊS FUNCIONAL", "Especialista em ensino de
+ *                            inglês para adultos. Criadora do método M.O.V.E."
+ *   pedido do cliente        "Mentoria de inglês funcional" (no lugar de "Veja a
+ *                            mentoria por dentro") e o público em destaque:
+ *                            "executivos e profissionais de diversas áreas"
  */
 export type Line = {t: string; accent: boolean};
 
@@ -22,16 +25,21 @@ export const PD_COPY = {
   brand: 'Inglês com a Gavi',
   label: 'Mentoria',
 
-  // A — gancho: a dor + o filtro de perfil.
+  /** Público, em destaque no gancho e no cartão final; o marca-texto passa na linha marcada. */
+  audience: [
+    {t: 'Para executivos e profissionais', mark: false},
+    {t: 'de diversas áreas.', mark: true},
+  ],
+
+  // A — gancho: a dor + para quem é.
   a: {
     tag: 'M.O.V.E.',
-    eyebrow: 'Mentoria de inglês',
+    eyebrow: 'Inglês funcional',
     headline: [
       {t: 'Você entende,', accent: false},
       {t: 'mas trava na', accent: true},
       {t: 'reunião?', accent: true},
     ] as Line[],
-    sub: ['Para executivos, empresários e', 'profissionais sêniores.'],
     chips: ['20 min por dia', 'Inglês da sua área'],
   },
 
@@ -57,12 +65,12 @@ export const PD_COPY = {
     chartNote: 'frequência fixa na memória',
   },
 
-  // D — cartão final: mesmo CTA e destino da LP.
+  // D — cartão final: o nome da mentoria, o público e o CTA (mesmo texto e destino da LP).
   d: {
-    title: 'VEJA A MENTORIA',
-    box: 'POR DENTRO',
+    title: 'MENTORIA DE',
+    box: 'INGLÊS FUNCIONAL',
     chips: ['Método M.O.V.E.', '20 min por dia'],
-    line: ['Conversa direta no WhatsApp,', 'com uma pessoa da equipe.'],
+    line: 'Conversa direta no WhatsApp, com uma pessoa da equipe.',
     cta: 'Quero ver por dentro',
     name: ['BRUNA', 'GAVIOLI'],
     bio: ['Especialista em ensino de', 'inglês para adultos.', 'Criadora do método M.O.V.E.'],
