@@ -215,7 +215,19 @@ altura do atributo vale e o recorte (o 4:5 da foto, por exemplo) some. O
   projeto não tiver build step. Verifique a versão atual no npm antes de fixar.
 - Reveals no scroll: `IntersectionObserver` nativo. Só use GSAP/ScrollTrigger se
   o efeito realmente exigir timeline.
-- Deploy: Netlify ou Vercel, a partir deste repositório.
+- Deploy: Netlify ou Vercel, a partir deste repositório. Hoje é a Netlify
+  (projeto `super-lollipop-c93a1e`), que publica a `main`.
+- **Selo da Netlify.** Projeto novo no plano gratuito, criado a partir de
+  19/08/2026, vem com o selo "Powered by Netlify" ligado, no canto inferior
+  direito de todas as páginas. No celular ele fica por cima do CTA fixo, e o
+  toque nele abre um cartão da Netlify em vez do WhatsApp (visto nesta LP em
+  29/09/2026). Em todo projeto novo, desligue antes de mandar tráfego:
+  **Project configuration > General > Powered by Netlify badge**. Vale na
+  hora, sem novo deploy. O "Hide this badge" do cartão só esconde no aparelho
+  de quem clicou. A Netlify injeta o selo na entrega da página, então o
+  `npm test` não o vê: confira no celular, no endereço publicado. Fonte:
+  docs.netlify.com/manage/projects/powered-by-netlify-badge (consultada em
+  29/09/2026).
 - Respeite `prefers-reduced-motion` em qualquer animação.
 - Testes: `npm test` (Playwright em Node, pasta `tests/`). A skill
   webapp-testing dá o método e o `with_server.py`, mas os testes daqui são em
@@ -275,6 +287,7 @@ duas. Os tokens acima mandam.
 - [ ] Todos os CTAs no mesmo destino, com UTM sobrevivendo
 - [ ] Evento de clique separado de `LeadQualificado`
 - [ ] Pixel desligado fora de produção (preview, local)
+- [ ] Selo "Powered by Netlify" desligado no projeto da Netlify, conferido no celular
 - [ ] Testado em 390px de largura antes de testar em desktop
 - [ ] Nenhum depoimento fictício no HTML
 - [ ] Nenhum `.slot` visível na página publicada

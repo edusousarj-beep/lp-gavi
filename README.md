@@ -91,6 +91,7 @@ Nenhum `.slot` pode ficar visível. Pendências:
 
 | Onde | O quê |
 | --- | --- |
+| Selo "Powered by Netlify" | a Netlify liga esse selo nos projetos novos do plano gratuito, e no celular ele cobre o botão fixo do WhatsApp. Desligue em **Project configuration > General > Powered by Netlify badge** (vale na hora, sem novo deploy) e confira no celular. |
 | Foto da Bruna | é a da página atual: 563x582, com o texto e a moldura inclinada desenhados na própria imagem. No celular ela ocupa 342x428px da tela, o que numa tela de alta densidade (3x) pede cerca de 1030x1280 pixels: a imagem é ampliada uns 2x e perde nitidez. Uma foto limpa, vertical (4:5), com pelo menos 1000px de largura, resolve. |
 | Vídeo do hero | é o `LFGi4Th1iJo` da página atual. A skill pede 30–60s; confira a duração. |
 | Logos | marcas de terceiros, usadas porque há mentorados nessas empresas (confirmado em 26/09/2026). Empresa nova só com mentorado real lá. |
