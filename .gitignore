@@ -1,0 +1,5 @@
+# Dependências (npm install)
+node_modules/
+
+# Cache dos testes: fontes baixadas
+tests/.fontes/

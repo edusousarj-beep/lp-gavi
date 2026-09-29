@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-lp-version="atual">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +12,20 @@
   <meta property="og:description" content="A rotina real de quem está destravando o inglês. Sem promessa mágica.">
   <!-- TODO: og:image (1200x630) e og:url quando o domínio estiver definido. -->
 
+  <!--
+    Marca que o JS rodou. Só então os reveals escondem conteúdo: sem JS, a
+    página aparece inteira. Se o reveal.js não carregar em 3s, desiste de
+    esconder — a página nunca fica invisível.
+  -->
+  <script>
+    document.documentElement.classList.add('js');
+    setTimeout(function () {
+      if (!document.documentElement.hasAttribute('data-reveal-ready')) {
+        document.documentElement.classList.remove('js');
+      }
+    }, 3000);
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Uma grotesk, dois pesos apenas. -->
@@ -19,46 +33,138 @@
   <link rel="stylesheet" href="assets/css/style.css">
 
   <!--
-    Meta Pixel — só PageView aqui.
+    Meta Pixel — só PageView aqui, e só em produção.
     `LeadQualificado` NÃO pertence a esta página: é o sinal de renda qualificada
     usado para otimizar a campanha, e quem dispara é o SDR depois de qualificar.
     O clique do botão tem evento próprio (ClickSDR), em assets/js/sdr.js.
+
+    Fora de produção o pixel não carrega: Deploy Preview, branch deploy e link
+    de deploy da Netlify (endereço .netlify.app com "--"), servidor local e
+    arquivo aberto do disco. Sem `fbq`, o sdr.js também não manda o ClickSDR, e
+    o botão segue para o WhatsApp. Visita e clique de teste não entram no
+    dataset. É lista de exclusão, não de permissão: um domínio de produção novo
+    liga o pixel sem mexer aqui. Host de teste novo (outro serviço de preview)
+    entra na lista, e no teste de tests/apoio/verificacoes.mjs.
   -->
   <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '645019308445152');
-    fbq('track', 'PageView');
+    (function () {
+      var host = location.hostname;
+      var teste = host === '' || host === 'localhost' || host === '[::1]' ||
+        /^127\./.test(host) || /--[^.]+\.netlify\.app$/.test(host);
+      if (teste) return;
+
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '645019308445152');
+      fbq('track', 'PageView');
+    })();
   </script>
 </head>
 <body>
 
-  <header class="site-head">
-    <div class="wrap site-head__inner">
-      <a class="brand" href="/">Inglês com a Gavi</a>
-    </div>
-  </header>
+  <!--
+    Ícones. WhatsApp no botão; os demais são do Lucide (lucide.dev),
+    licença ISC: Copyright (c) 2026 Lucide Icons and Contributors.
+  -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-whatsapp" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+    </symbol>
+    <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="5"/>
+      <path d="M20 21a8 8 0 0 0-16 0"/>
+    </symbol>
+    <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6" cy="19" r="3"/>
+      <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/>
+      <circle cx="18" cy="5" r="3"/>
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <path d="M16 3.128a4 4 0 0 1 0 7.744"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+      <circle cx="9" cy="7" r="4"/>
+    </symbol>
+    <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/>
+      <rect x="2" y="6" width="14" height="12" rx="2"/>
+    </symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"/>
+      <path d="m6 6 12 12"/>
+    </symbol>
+  </svg>
 
+  <!--
+    Layout: segue a LP v3 da Lord of Sales (hero com vídeo, cards de situação,
+    grade 2x2, prova, card de próximo passo, quem conduz, perguntas, CTA final,
+    CTA fixo no celular). A paleta é a da página atual da Gavi (link da bio):
+    amarelo sobre quase-preto quente. Tipografia e regras são as da Gavi.
+
+    Conteúdo (pilares, bio, vídeos, prints, respostas, logos) vem da página
+    atual: inglescomgavi.com/vip/oferta/?v=3. Foto, prints e capas dos vídeos
+    foram copiados para assets/img/ em 29/09/2026: a página não depende do
+    WordPress. Os vídeos tocam pelo YouTube (youtube-nocookie), só no clique.
+
+    Blocos .slot = material real que ainda falta. Cada um diz o que precisa.
+    Nenhum .slot pode estar visível na página publicada.
+  -->
   <main>
+
+    <!-- 1. Hero — promessa, vídeo e botão do SDR. -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero__glow" aria-hidden="true"></div>
 
       <div class="wrap hero__inner">
-        <p class="eyebrow eyebrow--pill" data-reveal>Mentoria de inglês</p>
+        <p class="brand">Inglês com a Gavi</p>
 
-        <h1 class="hero__title" id="hero-title" data-reveal>
-          Veja a mentoria <em>por dentro</em> antes de decidir.
-        </h1>
+        <div class="hero__copy">
+          <h1 class="hero__title" id="hero-title" data-reveal>
+            Veja a mentoria <em>por dentro</em> antes de decidir.
+          </h1>
 
-        <p class="hero__lede" data-reveal>
-          Aqui você acompanha o funcionamento da mentoria: o método M.O.V.E., o
-          que se pratica e o ponto em que o inglês deixa de travar na reunião,
-          na call e na viagem de trabalho. A decisão vem depois, com a
-          informação na mão.
-        </p>
+          <p class="hero__lede" data-reveal>
+            Aqui você acompanha o funcionamento da mentoria: o método M.O.V.E., o
+            que se pratica e o ponto em que o inglês deixa de travar na reunião,
+            na call e na viagem de trabalho. A decisão vem depois, com a
+            informação na mão.
+          </p>
+        </div>
+
+        <figure class="video" data-reveal>
+          <div class="video__frame">
+            <!--
+              Fachada: só a capa do YouTube carrega. O player (youtube-nocookie)
+              entra no clique, via video.js. Sem JS, o link abre o vídeo no YouTube.
+            -->
+            <a class="video__facade"
+               data-youtube="LFGi4Th1iJo"
+               data-title="Veja a mentoria por dentro"
+               href="https://www.youtube.com/watch?v=LFGi4Th1iJo"
+               target="_blank"
+               rel="noopener"
+               aria-label="Assistir ao vídeo: veja a mentoria por dentro">
+              <img src="assets/img/videos/LFGi4Th1iJo.jpg" width="1280" height="720" alt="" fetchpriority="high">
+              <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+              <span class="video__label" aria-hidden="true">Veja a mentoria por dentro</span>
+            </a>
+          </div>
+        </figure>
 
         <div class="hero__actions" data-reveal>
           <!--
@@ -71,40 +177,484 @@
              href="https://wa.me/5521999100432"
              target="_blank"
              rel="noopener">
-            <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
-            </svg>
-            <span>Quero ver por dentro</span>
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Conversar no WhatsApp</span>
           </a>
 
-          <p class="hero__micro">
-            Conversa direta no WhatsApp, com uma pessoa da equipe.
-          </p>
+          <!-- O botão já diz WhatsApp: os itens contam o que vem depois do clique. -->
+          <ul class="hero__bullets">
+            <li>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg>
+              <span>Uma pessoa<br>da equipe</span>
+            </li>
+            <li>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-video"></use></svg>
+              <span>Call de<br>diagnóstico</span>
+            </li>
+            <li>
+              <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>
+              <span>Método<br>M.O.V.E.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Para quem é — filtro explícito, antes do SDR. -->
+    <section class="section" id="para-quem" aria-labelledby="para-quem-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Para quem é</p>
+          <h2 class="h2" id="para-quem-title">O inglês trava em algum destes momentos?</h2>
+        </header>
+
+        <div class="cards">
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na reunião</h3>
+              <p class="card__text">Você acompanha a discussão, mas a sua fala não sai no tempo da conversa.</p>
+            </div>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-video"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na call</h3>
+              <p class="card__text">Sem o apoio do texto, a resposta trava justamente quando precisa ser clara.</p>
+            </div>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plane"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na viagem de trabalho</h3>
+              <p class="card__text">Fora da sala de reunião, o inglês resolve o básico, mas não sustenta uma conversa de negócio.</p>
+            </div>
+          </article>
         </div>
 
-        <!--
-          Slot de números (alunas, tempo médio, etc.) fica aqui.
-          Deixado vazio de propósito: sem dado real conferido, não entra número
-          na página. Preencher com o que a Gavi puder comprovar.
-        -->
+        <p class="section__note" data-reveal>
+          Aqui não é escola. É mentoria: um plano montado para a sua rotina, a sua
+          área e o que você precisa dizer em inglês nos próximos meses.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. O método M.O.V.E. — pilares nomeados e o que cada um entrega. -->
+    <section class="section" id="metodo" aria-labelledby="metodo-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">O método</p>
+          <h2 class="h2" id="metodo-title">M.O.V.E.</h2>
+          <p class="section__lede">
+            Os pilares da mentoria e o que cada um entrega. Como cada um
+            funciona na prática, você vê na call.
+          </p>
+        </header>
+
+        <!-- Regra 1: nome do pilar + o que ele entrega. Nunca o como (exercício, sequência, execução). -->
+        <ol class="pillars">
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">M</span>
+            <div>
+              <h3 class="pillar__name">Mentalidade</h3>
+              <p class="pillar__text">Ambiente seguro, inglês gradual e acompanhamento de perto, sem travas e sem vergonha.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">O</span>
+            <div>
+              <h3 class="pillar__name">Organização</h3>
+              <p class="pillar__text">Um roadmap com agenda imersiva diária: você sempre sabe o próximo passo.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">V</span>
+            <div>
+              <h3 class="pillar__name">Voz Ativa</h3>
+              <p class="pillar__text">Foco total em desenvolver a sua fala no idioma, desde o começo.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">E</span>
+            <div>
+              <h3 class="pillar__name">Experiência Real</h3>
+              <p class="pillar__text">Método contextualizado na vida adulta e no seu dia a dia real.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="section__cta" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="metodo"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Conversar no WhatsApp</span>
+          </a>
+        </div>
       </div>
     </section>
 
     <!--
-      Próximas seções, na ordem definida:
-      2. Prova corporativa (logos sob "Alunas em" — sem sugerir relação comercial)
-      3. Para quem é (filtro explícito de perfil)
-      4. Veja por dentro (vídeo real de 30–60s)
-      5. O método M.O.V.E. (pilares nomeados, sem ensinar a execução)
-      6. Quem conduz (Bruna Gavioli)
-      7. Prova (depoimentos — vídeo tem prioridade)
-      8. Objeções (accordion: tempo, nível de inglês, "já tentei antes")
-      9. CTA final
-      Botão do SDR se repete a cada duas seções, sempre com data-sdr.
+      4. Prova — depoimentos (vídeo tem prioridade), prints e as empresas onde
+      os mentorados trabalham. Regra 5: só depoimento real.
     -->
+    <section class="section" id="prova" aria-labelledby="prova-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Prova real de quem aplicou</p>
+          <h2 class="h2" id="prova-title">O que mudou para quem passou pela mentoria</h2>
+          <p class="section__lede">Conversas, áudios e depoimentos reais de quem destravou o inglês com o Método M.O.V.E.</p>
+        </header>
+
+        <div class="proof__block">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Em vídeo</p>
+            <h3 class="h3">Na voz de quem já viveu</h3>
+          </header>
+
+          <!-- Depoimentos verticais (Shorts): moldura 9:16, mesma fachada do hero. -->
+          <div class="proof__videos">
+            <figure class="proof__video" data-reveal>
+              <div class="proof__frame">
+                <a class="video__facade"
+                   data-youtube="ZmF9XccavNE"
+                   data-title="Depoimento: a virada de chave"
+                   href="https://www.youtube.com/watch?v=ZmF9XccavNE"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="Assistir ao depoimento: A virada de chave">
+                  <img src="assets/img/videos/ZmF9XccavNE.jpg" width="1280" height="720" alt="" loading="lazy">
+                  <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                </a>
+              </div>
+              <figcaption class="proof__caption">A virada de chave</figcaption>
+            </figure>
+            <figure class="proof__video" data-reveal>
+              <div class="proof__frame">
+                <a class="video__facade"
+                   data-youtube="Mq2io3x4xwc"
+                   data-title="Depoimento: experiência transformadora com Thiago Lobato"
+                   href="https://www.youtube.com/watch?v=Mq2io3x4xwc"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="Assistir ao depoimento: Experiência transformadora com Thiago Lobato">
+                  <img src="assets/img/videos/Mq2io3x4xwc.jpg" width="1280" height="720" alt="" loading="lazy">
+                  <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                </a>
+              </div>
+              <figcaption class="proof__caption">Experiência transformadora com Thiago Lobato</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="proof__block">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Em prints</p>
+            <h3 class="h3">O que os mentorados escreveram</h3>
+            <p class="proof__hint">Arraste para o lado. Toque para ampliar.</p>
+          </header>
+
+          <!--
+            Prints da página atual. Toque abre o print ampliado (lightbox.js);
+            sem JS, o link abre a imagem.
+          -->
+          <ul class="prints" data-reveal>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-01.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-01.jpg" width="602" height="990" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-02.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-02.jpg" width="589" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-03.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-03.jpg" width="870" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-04.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-04.jpg" width="565" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-05.webp" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-05.webp" width="473" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-06.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-06.jpg" width="567" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-07.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-07.jpg" width="473" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-08.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-08.jpg" width="768" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="assets/img/prints/print-09.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="assets/img/prints/print-09.jpg" width="768" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+          </ul>
+
+          <p class="proof__disclaimer" data-reveal>
+            Os resultados dependem da dedicação e da constância na prática de cada aluno.
+          </p>
+        </div>
+
+        <div class="proof__block proof__block--logos">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Onde nossos mentorados trabalham</p>
+            <p class="proof__hint">Indústria, energia, agro, logística, hotelaria e tecnologia.</p>
+          </header>
+          <!--
+            Empresas onde trabalham mentorados atuais ou antigos (confirmado em
+            26/09/2026). Logos nas cores originais, sobre fundo branco, como na
+            página atual. alt = só o nome da empresa, nunca "parceiro" ou "cliente".
+            Arquivos: assets/logos/, do repositório ln-dev7/logos-apps (código MIT;
+            as marcas são dos donos).
+          -->
+          <ul class="logos" data-reveal>
+            <li><img src="assets/logos/caterpillar.svg" alt="Caterpillar" loading="lazy"></li>
+            <li><img src="assets/logos/schneider-electric.svg" alt="Schneider Electric" loading="lazy"></li>
+            <li><img src="assets/logos/siemens.svg" alt="Siemens" loading="lazy"></li>
+            <li><img src="assets/logos/abb.svg" alt="ABB" loading="lazy"></li>
+            <li><img src="assets/logos/bosch.svg" alt="Bosch" loading="lazy"></li>
+            <li><img src="assets/logos/embraer.svg" alt="Embraer" loading="lazy"></li>
+            <li><img src="assets/logos/john-deere.svg" alt="John Deere" loading="lazy"></li>
+            <li><img src="assets/logos/bayer.svg" alt="Bayer" loading="lazy"></li>
+            <li><img src="assets/logos/dhl.svg" alt="DHL" loading="lazy"></li>
+            <li><img src="assets/logos/hilton.svg" alt="Hilton" loading="lazy"></li>
+            <li><img src="assets/logos/marriott.svg" alt="Marriott International" loading="lazy"></li>
+            <li><img src="assets/logos/totvs.svg" alt="TOTVS" loading="lazy"></li>
+            <li><img src="assets/logos/sap.svg" alt="SAP" loading="lazy"></li>
+            <li><img src="assets/logos/kia.svg" alt="Kia" loading="lazy"></li>
+          </ul>
+          <p class="proof__disclaimer" data-reveal>
+            As marcas pertencem às respectivas empresas. Sem vínculo, patrocínio ou endosso.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      5. Próximo passo — no lugar do card de checkout da referência.
+      Sem preço (regra 2): o valor só aparece depois do agendamento.
+    -->
+    <section class="section" id="conversa" aria-labelledby="conversa-title">
+      <div class="wrap">
+        <div class="next" data-reveal>
+          <p class="next__tag">Próximo passo</p>
+          <h2 class="h2 next__title" id="conversa-title">Uma conversa antes de qualquer decisão</h2>
+
+          <ol class="steps">
+            <li>Você chama a equipe no WhatsApp, pelo botão abaixo.</li>
+            <li>Uma pessoa da equipe entende o seu contexto e onde o inglês trava.</li>
+            <li>Vocês agendam uma call de diagnóstico para você ver a mentoria por dentro.</li>
+            <li>A decisão vem depois, com a informação na mão.</li>
+          </ol>
+
+          <a class="btn btn--primary btn--block"
+             data-sdr
+             data-sdr-placement="conversa"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Conversar no WhatsApp</span>
+          </a>
+
+          <p class="next__micro">Garantia de 8 meses em contrato</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Quem conduz — Bruna Gavioli. Autoridade, não currículo. -->
+    <section class="section" id="quem-conduz" aria-labelledby="quem-conduz-title">
+      <div class="wrap founder">
+        <div class="founder__text" data-reveal>
+          <p class="eyebrow eyebrow--pill">Quem conduz</p>
+          <h2 class="h2" id="quem-conduz-title">Bruna Gavioli</h2>
+
+          <p class="founder__role">Mentora e criadora do Método M.O.V.E.</p>
+          <p class="founder__bio">
+            Professora há 14 anos, ex-coordenadora de escola bilíngue e com
+            certificação internacional. O foco dela é transformar o inglês em algo
+            prático e conectado à vida real.
+          </p>
+          <p class="founder__bio">Foi capa da edição “Legado” da Revista Prospere.</p>
+
+          <!--
+            Números: só com dado real conferido. Sem isso, o bloco não entra.
+            <dl class="stats">
+              <div><dt>000+</dt><dd>O que o número conta</dd></div>
+              <div><dt>000+</dt><dd>O que o número conta</dd></div>
+              <div><dt>000+</dt><dd>O que o número conta</dd></div>
+            </dl>
+          -->
+        </div>
+
+        <img class="founder__photo" src="assets/img/bruna-gavioli.webp" width="563" height="582" alt="Bruna Gavioli" loading="lazy" data-reveal>
+
+        <!--
+          A voz da Bruna: o podcast da página atual, com os textos de lá. Mesma
+          fachada do vídeo do topo (só a capa carrega; o player entra no clique).
+        -->
+        <div class="founder__podcast" data-reveal>
+          <p class="eyebrow">A mentora no podcast</p>
+          <h3 class="h3">A história por trás do método</h3>
+          <p class="founder__bio">
+            Bruna Gavioli conta como nasceu a mentoria e o que ela vê acontecer com
+            quem finalmente destrava o inglês.
+          </p>
+          <figure class="video video--plain">
+            <div class="video__frame">
+              <a class="video__facade"
+                 data-youtube="RVVP-Ze6JVA"
+                 data-title="Podcast com Bruna Gavioli"
+                 href="https://www.youtube.com/watch?v=RVVP-Ze6JVA"
+                 target="_blank"
+                 rel="noopener"
+                 aria-label="Assistir ao podcast com Bruna Gavioli: a história por trás do método">
+                <img src="assets/img/videos/RVVP-Ze6JVA.jpg" width="1280" height="720" alt="" loading="lazy">
+                <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                <!-- Sem rótulo: a capa do podcast já traz título e nomes escritos. -->
+              </a>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Objeções — tempo, nível de inglês, "já tentei antes" e garantia. -->
+    <section class="section" id="duvidas" aria-labelledby="duvidas-title">
+      <div class="wrap wrap--narrow">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Perguntas frequentes</p>
+          <h2 class="h2" id="duvidas-title">Tire suas dúvidas antes da conversa</h2>
+        </header>
+
+        <!-- name="duvidas": abrir uma pergunta fecha a outra, sem JS. -->
+        <div class="faq">
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Tenho pouco tempo. A mentoria cabe na minha agenda?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Menos hora presa na agenda, mais hora de inglês na semana: é assim que a mentoria funciona.</p>
+              <p>O que produz fluência não é quantas vezes você entra na aula, e sim quantas horas por semana o inglês existe na sua vida e quanto desse tempo é você falando. Por isso os encontros ao vivo são semanais e se somam a uma agenda imersiva diária, com prática guiada.</p>
+              <p>A quantidade e o formato ideais para o seu caso são definidos na call com o time.</p>
+            </div>
+          </details>
+
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Preciso de um nível mínimo de inglês?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Não. O método começa do zero (From Scratch). Na primeira semana você faz o teste de nivelamento e recebe um roadmap feito para o seu ponto de partida.</p>
+            </div>
+          </details>
+
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Já tentei aprender inglês e não funcionou. O que muda aqui?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>É a frase que mais ouvimos aqui. E quase nunca o professor era o problema.</p>
+              <p>O que falha é o desenho: aula genérica, conteúdo sem relação com a sua rotina, nenhum critério de progresso além de terminar o livro e um plano que só funciona se a sua semana for perfeita.</p>
+              <p>A call de diagnóstico começa exatamente por aí: entender por que você parou das outras vezes. Se for algo que a mentoria não resolve, você ouve isso na hora.</p>
+            </div>
+          </details>
+
+          <!-- Garantia real, em contrato (confirmada em 26/09/2026). Texto da página atual. -->
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Tem garantia?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Sim, 8 meses de garantia de resultado, em contrato. Execute o método e, ao final de 8 meses, se não atingir no mínimo a Fluência Funcional, você pode pedir reembolso ou tempo extra na mentoria.</p>
+              <p>Além disso, você tem os 7 dias de arrependimento previstos no Código de Defesa do Consumidor (art. 49): desistiu nesse prazo, devolvemos 100% do valor.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. CTA final. -->
+    <section class="section final" id="cta-final" aria-labelledby="cta-final-title">
+      <div class="wrap final__inner" data-reveal>
+        <svg class="final__icon" aria-hidden="true" focusable="false"><use href="#i-message"></use></svg>
+        <h2 class="h2" id="cta-final-title">Veja por dentro. Depois decida.</h2>
+        <p class="section__lede">Direto com uma pessoa da equipe.</p>
+
+        <a class="btn btn--primary"
+           data-sdr
+           data-sdr-placement="final"
+           href="https://wa.me/5521999100432"
+           target="_blank"
+           rel="noopener">
+          <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+          <span>Conversar no WhatsApp</span>
+        </a>
+      </div>
+    </section>
+
   </main>
+
+  <footer class="site-foot">
+    <div class="wrap site-foot__inner">
+      <p class="brand">Inglês com a Gavi</p>
+      <p class="site-foot__copy">© 2026 Inglês com a Gavi. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!--
+    CTA fixo, só no celular. sticky.js mostra entre os CTAs da página e esconde
+    sempre que outro botão do SDR está na tela: um botão primário por viewport.
+  -->
+  <div class="sticky-cta" data-sticky-cta>
+    <a class="btn btn--primary btn--block"
+       data-sdr
+       data-sdr-placement="fixo"
+       href="https://wa.me/5521999100432"
+       target="_blank"
+       rel="noopener">
+      <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+      <span>Conversar no WhatsApp</span>
+    </a>
+  </div>
+
+  <!-- Print ampliado. Sem suporte a <dialog>, o link do print abre a imagem. -->
+  <dialog class="lightbox" data-lightbox-dialog aria-label="Print ampliado">
+    <button class="lightbox__close" type="button" data-lightbox-close aria-label="Fechar">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>
+    </button>
+    <img class="lightbox__img" alt="">
+  </dialog>
 
   <script src="assets/js/sdr.js" defer></script>
   <script src="assets/js/reveal.js" defer></script>
+  <script src="assets/js/sticky.js" defer></script>
+  <script src="assets/js/video.js" defer></script>
+  <script src="assets/js/lightbox.js" defer></script>
 </body>
 </html>

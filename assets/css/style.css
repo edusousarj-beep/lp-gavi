@@ -2,15 +2,32 @@
    Tokens — nenhuma cor literal existe fora deste bloco.
    ========================================================================== */
 :root {
-  --bg:          #062D33;  /* petróleo escuro */
-  --surface:     #1B6070;  /* cards do bento */
-  --border:      #0E404A;  /* derivado: mesma sutileza da borda antiga (1.29:1) */
-  --accent:      #E32443;  /* ÚNICO acento */
-  --accent-dim:  #C00E2B;  /* hover e estados pressionados */
-  --accent-soft: #FFA8B7;  /* auxiliar. Tinta do vermelho, não um segundo acento */
-  --text:        #FEFEFE;  /* headline */
-  --text-2:      #B5D4D7;  /* corpo */
-  --text-3:      #729599;  /* derivado do --text-2: labels, eyebrow */
+  /* Página escura: barras de rolagem e controles nativos seguem o tema. */
+  color-scheme: dark;
+
+  /*
+   * Paleta da página atual da Gavi (link da bio): amarelo "school bus" sobre
+   * quase-preto quente. --surface, --border, --text-3 e --accent-dim são
+   * derivados para contraste; não os troque no olho.
+   */
+  --bg:          #0B0908;  /* quase-preto quente (página da bio) */
+  --surface:     #1C1A19;  /* cards: branco a 7% sobre o --bg */
+  --border:      #3A3530;  /* linhas e bordas neutras (1.64:1) */
+  --accent:      #F5B642;  /* ÚNICO acento (página da bio) */
+  --accent-dim:  #DDA033;  /* hover e estados pressionados */
+  --accent-soft: #FFD479;  /* auxiliar: só o fim do gradiente da ênfase do título */
+  --text:        #FFFFFF;  /* headline */
+  --text-2:      #A59C8E;  /* corpo (página da bio) */
+  --text-3:      #928A7D;  /* derivado do --text-2: labels, notas */
+
+  /* Tintas do --accent. Ao trocar o acento, troque aqui também. */
+  --accent-wash: rgba(245, 182, 66, 0.12);  /* fundo de ícone */
+  --accent-line: rgba(245, 182, 66, 0.40);  /* bordas e linhas de destaque */
+  --accent-glow: rgba(245, 182, 66, 0.30);  /* luz ambiente e brilho */
+
+  --tile:        #FFFFFF;                   /* fundo dos logos: marcas nas cores originais */
+  --scrim:       rgba(11, 9, 8, 0.88);      /* fundo do print ampliado e da legenda do vídeo */
+  --shine:       rgba(255, 255, 255, 0.50); /* reflexo que atravessa o botão do SDR */
 
   --radius:      16px;
   --radius-pill: 999px;
@@ -52,15 +69,22 @@ body {
   overflow-x: hidden;
 }
 
-h1 {
+h1,
+h2,
+h3 {
   margin: 0;
   font-weight: 800;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
   color: var(--text);
 }
 
-p { margin: 0; }
+h1 {
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+p,
+figure,
+blockquote { margin: 0; }
 
 a { color: inherit; }
 
@@ -77,6 +101,8 @@ a { color: inherit; }
   padding-inline: var(--s3);
 }
 
+.wrap--narrow { max-width: 48rem; }
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -88,6 +114,36 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
+/* Sprite de ícones: existe no DOM, não ocupa espaço. */
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+
+/* ==========================================================================
+   Tipografia de seção
+   ========================================================================== */
+.h2 {
+  font-size: clamp(1.75rem, 6vw, 2.75rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.h3 {
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
 /* ==========================================================================
    Eyebrow
    ========================================================================== */
@@ -96,103 +152,138 @@ a { color: inherit; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-3);
+  /* O acento como texto passa: 11.03:1 sobre --bg, 9.62:1 sobre --surface. */
+  color: var(--accent);
 }
 
+/* Vazado, com borda na tinta do acento. Preenchido, viraria um segundo botão. */
 .eyebrow--pill {
   display: inline-block;
   padding: var(--s1) var(--s2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius-pill);
-  /*
-   * Vazado, não preenchido com --surface. O surface da marca é um teal claro:
-   * preenchido, o eyebrow vira um bloco que compete com a headline, e --text-3
-   * sobre ele cai para 2.19:1. Sobre o --bg, --text-3 dá 4.52:1.
-   */
   background: transparent;
 }
 
 /* ==========================================================================
-   Cabeçalho — marca só. Sem menu de navegação longo.
+   Marca — sem menu de navegação. Fica no topo do hero e no rodapé.
    ========================================================================== */
-.site-head {
-  position: relative;
-  z-index: 2;
-  padding-block: var(--s3);
-}
-
-.site-head__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s2);
-}
-
 .brand {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--text);
-  text-decoration: none;
 }
 
-.brand span { color: var(--text-3); font-weight: 400; }
+/* ==========================================================================
+   Seções
+   ========================================================================== */
+.section {
+  padding-block: var(--s5);
+  border-top: 1px solid var(--border);
+}
+
+.section__head {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+  max-width: 40rem;
+  margin: 0 auto var(--s4);
+  text-align: center;
+}
+
+.section__lede {
+  max-width: 40rem;
+  margin-inline: auto;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+.section__note {
+  max-width: 40rem;
+  margin: var(--s4) auto 0;
+  font-size: 15px;
+  text-align: center;
+  color: var(--text-3);
+  text-wrap: pretty;
+}
+
+.section__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--s4);
+}
 
 /* ==========================================================================
-   Hero
+   Hero — centrado, com o vídeo entre a promessa e o botão.
    ========================================================================== */
 .hero {
   position: relative;
   isolation: isolate;
-  padding-block: var(--s5) var(--s6);
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: var(--s4);
   overflow: hidden;
 }
 
-/*
- * Luz ambiente no teal da marca, não no acento. Vermelho diluído sobre o
- * petróleo dá uma mancha arroxeada suja; e gastar o acento no fundo tira do
- * botão a exclusividade dele. Assim o único vermelho da viewport é o CTA.
- */
+/* Luz ambiente quente atrás do hero, como na referência. Só tinta, nunca o acento cheio. */
 .hero__glow {
   position: absolute;
   z-index: -1;
-  top: -30%;
-  right: -40%;
+  top: 20%;
+  left: 50%;
   width: 640px;
   height: 640px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--surface) 0%, transparent 62%);
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 62%);
   opacity: 0.55;
   filter: blur(60px);
+  transform: translateX(-50%);
   pointer-events: none;
 }
 
 .hero__inner {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--s3);
-  text-align: left;
+  text-align: center;
+}
+
+.hero__copy {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
 }
 
 .hero__title {
-  font-size: clamp(2.25rem, 9vw, 5rem);
-  max-width: 16ch;
+  max-width: 18ch;
+  font-size: clamp(2rem, 8vw, 3.25rem);
 }
 
 /*
- * Headline sem cor de acento, de propósito. O acento é do botão: dar acento à
- * headline também põe dois focos concorrendo na mesma viewport. `em` fica só
- * como ênfase semântica.
+ * Ênfase do título no acento, como a referência. O gradiente só entra onde o
+ * navegador recorta fundo no texto; sem isso, texto transparente sumiria.
  */
-.hero__title em { font-style: normal; }
+.hero__title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__title em {
+    background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
 
 .hero__lede {
-  max-width: 46ch;
-  font-size: 17px;
+  max-width: 52ch;
+  font-size: 16px;
   color: var(--text-2);
   text-wrap: pretty;
 }
@@ -200,13 +291,682 @@ a { color: inherit; }
 .hero__actions {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s2);
-  margin-top: var(--s2);
+  align-items: center;
+  gap: var(--s3);
 }
 
-.hero__micro {
+.hero__bullets {
+  display: flex;
+  justify-content: center;
+  gap: var(--s2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero__bullets li {
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
   font-size: 13px;
+  line-height: 1.25;
+  text-align: left;
+  color: var(--text-2);
+}
+
+.hero__bullets .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
+}
+
+/* Telas de 320–374px: ícone em cima do texto, para os três bullets caberem numa linha. */
+@media (max-width: 374px) {
+  .hero__bullets { gap: var(--s1); }
+
+  .hero__bullets li {
+    flex-direction: column;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .hero__bullets .icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ==========================================================================
+   Vídeo — moldura com luz do acento atrás. Só a capa carrega antes do play.
+   ========================================================================== */
+.video {
+  position: relative;
+  width: 100%;
+  max-width: 36rem;
+}
+
+.video::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: calc(var(--s3) * -1);
+  border-radius: var(--radius);
+  background: var(--accent);
+  opacity: 0.22;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.video__frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.video__frame > video,
+.video__frame > iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+/* Fachada do YouTube: capa + botão de play. O player só entra no clique. */
+.video__facade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.video__facade img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video__facade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--scrim), transparent 55%);
+  pointer-events: none;
+}
+
+/* A moldura corta o que passa da borda: o foco fica por dentro. */
+.video__facade:focus-visible { outline-offset: -4px; }
+
+/* Sem a luz atrás: ela marca o vídeo do topo como o principal da página. */
+.video--plain::before { content: none; }
+
+/* Play em tinta, não acento cheio: acento sólido é só do botão do SDR. */
+.video__play {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--accent-line);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 32px var(--accent-glow);
+  color: var(--accent);
+  transform: translate(-50%, -50%);
+  transition: transform 180ms ease;
+}
+
+.video__play .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.video__facade:hover .video__play { transform: translate(-50%, -50%) scale(1.06); }
+
+.video__label {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: var(--s2);
+  left: 0;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Para quem é — cards de situação.
+   ========================================================================== */
+.cards {
+  display: grid;
+  gap: var(--s2);
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+/* Card de bento de verdade: aqui o --surface cabe. */
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  padding: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.card__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--s1);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+/* Título do card no acento: 9.62:1 sobre --surface. */
+.card__title {
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--accent);
+}
+
+/* Sobre --surface: --text-2 dá 7.20:1. */
+.card__text {
+  margin-top: var(--s1);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+/* ==========================================================================
+   Método — grade 2x2 com linhas cruzadas.
+   ========================================================================== */
+.pillars {
+  position: relative;
+  display: grid;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.pillar {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  padding-block: var(--s3);
+  border-bottom: 1px solid var(--border);
+}
+
+.pillar:last-child { border-bottom: 0; }
+
+.pillar__letter {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  box-shadow: 0 0 20px var(--accent-glow);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.pillar__name {
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.pillar__text {
+  margin-top: var(--s1);
+  color: var(--text-2);
+}
+
+/* ==========================================================================
+   Prova — vídeos, prints e logos.
+   ========================================================================== */
+.proof__block + .proof__block {
+  margin-top: var(--s5);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--border);
+}
+
+.proof__head {
+  display: grid;
+  justify-items: center;
+  gap: var(--s1);
+  margin-bottom: var(--s3);
+  text-align: center;
+}
+
+.proof__hint {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* Depoimentos em vídeo são Shorts: duas molduras 9:16 lado a lado. */
+.proof__videos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 280px));
+  justify-content: center;
+  gap: var(--s2);
+}
+
+.proof__video { min-width: 0; }
+
+.proof__frame {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.proof__frame > iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.proof__caption {
+  margin-top: var(--s1);
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--text-2);
+}
+
+/*
+ * Prints: faixa com rolagem lateral, que encosta nas bordas da tela no
+ * celular. Altura fixa, largura pela proporção de cada print: nada é cortado.
+ */
+.prints {
+  display: flex;
+  gap: var(--s2);
+  margin: 0 calc(var(--s3) * -1);
+  padding: 0 var(--s3) var(--s2);
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--s3);
+  scrollbar-color: var(--border) transparent;
+}
+
+.prints li {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.prints__item {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.prints__item:focus-visible { outline-offset: -4px; }
+
+.prints__item img {
+  display: block;
+  width: auto;
+  height: 360px;
+}
+
+.proof__disclaimer {
+  max-width: 40rem;
+  margin: var(--s3) auto 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-3);
+}
+
+.proof__block--logos { text-align: center; }
+
+/*
+ * Logos nas cores originais, sobre cartão branco, como na página atual.
+ * Branco chapado não serve: apaga Siemens e SAP, que usam letra branca.
+ * Flex com quebra e centro: a última linha fica centrada.
+ */
+.logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s1);
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.logos li {
+  display: flex;
+  flex: 0 0 calc((100% - 2 * var(--s1)) / 3);
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: var(--s2);
+  border-radius: var(--s1);
+  background: var(--tile);
+}
+
+.logos img {
+  display: block;
+  width: 100%;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Print ampliado. */
+.lightbox {
+  width: auto;
+  max-width: min(92vw, 560px);
+  max-height: 92vh;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.lightbox::backdrop { background: var(--scrim); }
+
+.lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: 88vh;
+  border-radius: var(--radius);
+  object-fit: contain;
+}
+
+.lightbox__close {
+  position: absolute;
+  top: var(--s1);
+  right: var(--s1);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Próximo passo — o card de checkout da referência, sem preço.
+   ========================================================================== */
+.next {
+  display: grid;
+  justify-items: center;
+  gap: var(--s3);
+  max-width: 40rem;
+  margin-inline: auto;
+  padding: var(--s4) var(--s3);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+/*
+ * Abaixo de 360px, o card aperta o botão: "Conversar no WhatsApp" só cabe
+ * numa linha com menos respiro no card (aqui) e no botão (ver .btn--block).
+ */
+@media (max-width: 359px) {
+  .next { padding-inline: var(--s2); }
+}
+
+/* Chip vazado, como o eyebrow. Acento sobre --surface: 9.62:1. */
+.next__tag {
+  padding: var(--s1) var(--s2);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Sob o botão, colado nele: o card tem gap de --s3, a linha sobe --s1. */
+.next__micro {
+  margin-top: calc(var(--s1) * -1);
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.steps {
+  display: grid;
+  gap: var(--s2);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  text-align: left;
+}
+
+.steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  line-height: 1.5;
+  color: var(--text);
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text);
+}
+
+/* ==========================================================================
+   Quem conduz — texto e foto. No celular, a foto vem primeiro.
+   ========================================================================== */
+.founder {
+  display: grid;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.founder__text {
+  display: grid;
+  justify-items: start;
+  gap: var(--s2);
+}
+
+.founder__role {
+  font-weight: 800;
+  color: var(--text);
+}
+
+.founder__bio {
+  max-width: 36rem;
+  color: var(--text-2);
+}
+
+/* O podcast ocupa a largura toda da seção, abaixo do texto e da foto. */
+.founder__podcast {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: start;
+  gap: var(--s2);
+}
+
+.founder__podcast .video { margin-top: var(--s1); }
+
+.founder__photo {
+  order: -1;
+  display: block;
+  width: 100%;
+  height: auto; /* senão vale o height do <img> e o 4:5 some */
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius);
+  background: var(--surface);
+  object-fit: cover;
+  object-position: top center;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s1);
+  width: 100%;
+  margin: var(--s1) 0 0;
+}
+
+.stats > div {
+  padding: var(--s2) var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--s1);
+  text-align: center;
+}
+
+.stats dt {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.stats dd {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* ==========================================================================
+   Perguntas — <details>, sem JS.
+   ========================================================================== */
+.faq {
+  display: grid;
+  gap: var(--s2);
+}
+
+.faq__item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 200ms ease;
+}
+
+.faq__item:hover { border-color: var(--text-3); }
+
+.faq__item[open] { border-color: var(--accent-line); }
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  min-height: 56px;
+  padding: var(--s2) var(--s3);
+  line-height: 1.4;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__q::-webkit-details-marker { display: none; }
+
+.faq__item[open] .faq__q { font-weight: 800; }
+
+.faq__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--accent);
+  transform: rotate(-90deg);
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.faq__icon .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Tinta, não acento cheio: um círculo sólido disputaria com o CTA logo abaixo. */
+.faq__item[open] .faq__icon {
+  background: var(--accent-wash);
+  transform: none;
+}
+
+.faq__a {
+  padding: 0 var(--s3) var(--s3);
+  color: var(--text-2);
+}
+
+.faq__a p + p { margin-top: var(--s2); }
+
+/* ==========================================================================
+   CTA final e rodapé
+   ========================================================================== */
+.final__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s2);
+  max-width: 40rem;
+  text-align: center;
+}
+
+.final__icon {
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
+}
+
+.final .btn { margin-top: var(--s2); }
+
+.site-foot {
+  padding-block: var(--s4);
+  border-top: 1px solid var(--border);
+}
+
+.site-foot__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s1);
+  text-align: center;
+}
+
+.site-foot__copy {
+  font-size: 12px;
   color: var(--text-3);
 }
 
@@ -229,23 +989,123 @@ a { color: inherit; }
   transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
 }
 
+/*
+ * Efeito do botão do SDR. Uma luz gira em volta do botão (4s por volta):
+ * um brilho branco corre pela borda e um halo amarelo desfocado acompanha
+ * por fora. A cada 5s, um reflexo atravessa o botão. Tudo fica atrás do
+ * texto, então o contraste do texto não muda.
+ *
+ * O ângulo e o preenchimento são propriedades registradas: é o que deixa o
+ * navegador animar o conic-gradient e suavizar a troca de cor do hover. Sem
+ * suporte a @property, o brilho fica parado e o botão continua o mesmo.
+ *
+ * O ângulo base é declarado no botão (--sdr-angle: 0deg), não como reserva
+ * no var(). Sem @property, é ele que impede o brilho de piscar a cada 2s; e
+ * var(--sdr-angle, 0deg) trava o giro no Chromium 141 (testado).
+ */
+@property --sdr-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --btn-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
 .btn--primary {
-  background: var(--accent);
+  --sdr-angle: 0deg;
+  --btn-fill: var(--accent);
+  position: relative;
+  /* As camadas do efeito (z-index -1) ficam dentro do botão, atrás do texto. */
+  isolation: isolate;
+  background: var(--btn-fill);
   /*
-   * Texto claro, ao contrário do lime anterior. O vermelho da marca é escuro:
-   * --bg sobre --accent dá 3.21:1 e reprova em AA; --text dá 4.53:1 e passa.
+   * Texto escuro. O amarelo é claro: --text (branco) sobre --accent dá 1.80:1
+   * e reprova em AA; --bg dá 11.03:1 (8.66:1 no hover).
    */
-  color: var(--text);
-  box-shadow: 0 0 40px -8px var(--accent);
+  color: var(--bg);
+  /* Brilho fixo mais curto que o halo, para o halo girando aparecer. */
+  box-shadow: 0 0 24px -8px var(--accent);
+  transition: transform 180ms ease, box-shadow 180ms ease, --btn-fill 180ms ease;
+  animation: sdr-spin 4s linear infinite;
+}
+
+/* Halo: a luz que gira por fora, desfocada contra o fundo escuro. */
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: calc(-1 * var(--s1));
+  border-radius: inherit;
+  background: conic-gradient(from var(--sdr-angle), transparent 0 45%, var(--accent) 80%, transparent);
+  filter: blur(16px);
+}
+
+/*
+ * Por cima do halo: o preenchimento, a borda de 2px com o brilho branco e o
+ * reflexo. O preenchimento cobre o halo por dentro; o halo só aparece fora.
+ */
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, transparent 45%, var(--shine) 50%, transparent 55%) padding-box,
+    linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
+    conic-gradient(from var(--sdr-angle), var(--btn-fill) 0 60%, var(--text) 80%, var(--btn-fill)) border-box;
+  background-repeat: no-repeat;
+  /* O reflexo mede 3x a largura do botão e espera fora dele, à esquerda. */
+  background-size: 300% 100%, auto, auto;
+  background-position: 100% 0, 0 0, 0 0;
+  animation: sdr-sweep 5s ease-in-out infinite;
 }
 
 .btn--primary:hover {
-  background: var(--accent-dim);
+  --btn-fill: var(--accent-dim);
   transform: translateY(-2px);
-  box-shadow: 0 0 56px -6px var(--accent);
+  box-shadow: 0 0 40px -6px var(--accent);
 }
 
 .btn--primary:active { transform: translateY(0); }
+
+@keyframes sdr-spin {
+  to { --sdr-angle: 360deg; }
+}
+
+/* Parado 3,5s fora do botão; atravessa da esquerda para a direita em 1,5s. */
+@keyframes sdr-sweep {
+  0%, 70% { background-position: 100% 0, 0 0, 0 0; }
+  100%    { background-position: 0% 0, 0 0, 0 0; }
+}
+
+/* Abaixo de 360px: menos respiro lateral, para o texto do botão não quebrar. */
+@media (max-width: 359px) {
+  .btn {
+    padding-inline: var(--s3);
+    font-size: 15px;
+  }
+}
+
+/*
+ * Botão na largura toda (card do próximo passo, CTA fixo). O texto fica
+ * centralizado, então basta um respiro lateral menor: com os 40px do .btn, o
+ * botão do card quebrava em duas linhas em 320 e 360px. Vem depois da regra
+ * de 360px para valer também abaixo dela.
+ */
+.btn--block {
+  width: 100%;
+  padding-inline: var(--s2);
+}
+
+@media (max-width: 359px) {
+  .btn--block { padding-inline: var(--s1); }
+}
 
 .btn__icon {
   width: 20px;
@@ -255,22 +1115,89 @@ a { color: inherit; }
 }
 
 /* ==========================================================================
-   Reveal
+   CTA fixo — só no celular. sticky.js decide quando aparece.
    ========================================================================== */
-[data-reveal] {
+.sticky-cta {
+  position: fixed;
+  z-index: 50;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: var(--s2) var(--s2) calc(var(--s2) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform 240ms ease, visibility 0s linear 240ms;
+}
+
+.sticky-cta[data-state="on"] {
+  transform: none;
+  visibility: visible;
+  transition: transform 240ms ease, visibility 0s;
+}
+
+/* ==========================================================================
+   Slot — material real que ainda falta. Vazio e sinalizado, nunca fictício.
+   Nenhum .slot pode estar visível na página publicada.
+   ========================================================================== */
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s1);
+  padding: var(--s3);
+  border: 1px dashed var(--text-3);
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+  color: var(--text-3);
+}
+
+.slot__title {
+  font-weight: 800;
+  color: var(--text-2);
+}
+
+.slot__hint { font-size: 13px; }
+
+.slot__icon {
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
+}
+
+/* Ocupa a moldura inteira (vídeo do hero, depoimentos em vídeo). */
+.slot--fill {
+  position: absolute;
+  inset: var(--s1);
+}
+
+.slot--inline {
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+}
+
+
+/* ==========================================================================
+   Reveal — só esconde quando o JS está ativo (classe .js no <html>).
+   ========================================================================== */
+.js [data-reveal] {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 640ms ease, transform 640ms ease;
 }
 
-[data-reveal="in"] {
+.js [data-reveal="in"] {
   opacity: 1;
   transform: none;
 }
 
-[data-reveal]:nth-child(2) { transition-delay: 80ms; }
-[data-reveal]:nth-child(3) { transition-delay: 160ms; }
-[data-reveal]:nth-child(4) { transition-delay: 240ms; }
+.js [data-reveal]:nth-child(2) { transition-delay: 80ms; }
+.js [data-reveal]:nth-child(3) { transition-delay: 160ms; }
+.js [data-reveal]:nth-child(4) { transition-delay: 240ms; }
 
 /* ==========================================================================
    Telas maiores
@@ -278,20 +1205,87 @@ a { color: inherit; }
 @media (min-width: 768px) {
   body { font-size: 18px; }
 
-  .hero { padding-block: var(--s6) var(--s7); }
+  .section { padding-block: var(--s6); }
 
-  .hero__inner { gap: var(--s4); }
+  .section__head { margin-bottom: var(--s5); }
+
+  /* Título em duas linhas: o botão do hero cabe na dobra de um notebook 1366x768. */
+  .hero__title {
+    max-width: 26ch;
+    text-wrap: balance;
+  }
 
   .hero__lede { font-size: 18px; }
 
   .hero__glow {
     width: 900px;
     height: 900px;
-    right: -20%;
     opacity: 0.6;
   }
 
-  .hero__actions { flex-direction: row; align-items: center; gap: var(--s3); }
+  .hero__bullets { gap: var(--s4); }
+
+  .hero__bullets li { font-size: 14px; }
+
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s3);
+  }
+
+  /* Linhas cruzadas da grade 2x2, na tinta do acento, sumindo nas pontas. */
+  .pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .pillars::before,
+  .pillars::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .pillars::before {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--accent-line), transparent);
+  }
+
+  .pillars::after {
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-line), transparent);
+  }
+
+  .pillar {
+    display: block;
+    padding: var(--s5) var(--s4);
+    border-bottom: 0;
+  }
+
+  .pillar__letter { margin-bottom: var(--s3); }
+
+  .proof__videos { gap: var(--s3); }
+
+  .prints__item img { height: 440px; }
+
+  .logos { gap: var(--s2); }
+
+  .logos li { flex-basis: calc((100% - 6 * var(--s2)) / 7); }
+
+  .next { padding: var(--s5) var(--s4); }
+
+  .founder {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: var(--s5);
+  }
+
+  .founder__photo { order: 0; }
+
+  .faq__q { padding: var(--s3); }
+
+  .sticky-cta { display: none; }
 }
 
 /* ==========================================================================
@@ -308,10 +1302,14 @@ a { color: inherit; }
     transition-duration: 0.01ms !important;
   }
 
-  [data-reveal] {
+  .js [data-reveal] {
     opacity: 1;
     transform: none;
   }
 
   .btn--primary:hover { transform: none; }
+
+  /* O brilho fica parado na borda e o reflexo não passa. */
+  .btn--primary,
+  .btn--primary::after { animation: none; }
 }

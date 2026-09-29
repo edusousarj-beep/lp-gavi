@@ -127,10 +127,19 @@
     return 'https://wa.me/' + CONFIG.phone + '?text=' + encodeURIComponent(text);
   }
 
-  function track(placement, attrib) {
+  /*
+   * Versão da página, para comparar versões (A/B): vem de
+   * <html data-lp-version="...">. Sem o atributo, o evento vai sem ela.
+   */
+  function pageVersion() {
+    return document.documentElement.getAttribute('data-lp-version') || '';
+  }
+
+  function track(placement, attrib, version) {
     if (typeof window.fbq !== 'function') return;
 
     var payload = { placement: placement };
+    if (version) payload.lp_version = version;
     TRACKED.forEach(function (key) {
       if (attrib[key]) payload[key] = attrib[key];
     });
@@ -141,6 +150,7 @@
 
   function init() {
     var attrib = resolve();
+    var version = pageVersion();
     var href = buildHref(attrib);
     var buttons = document.querySelectorAll('[data-sdr]');
 
@@ -150,7 +160,7 @@
       button.setAttribute('href', href);
 
       button.addEventListener('click', function () {
-        track(button.getAttribute('data-sdr-placement') || 'sem-rotulo', attrib);
+        track(button.getAttribute('data-sdr-placement') || 'sem-rotulo', attrib, version);
       });
     });
   }

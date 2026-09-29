@@ -2,6 +2,9 @@
 (function () {
   'use strict';
 
+  // Avisa o <head> que o reveal carregou; sem isso, ele desiste de esconder.
+  document.documentElement.setAttribute('data-reveal-ready', '');
+
   var targets = document.querySelectorAll('[data-reveal]');
   if (!targets.length) return;
 
