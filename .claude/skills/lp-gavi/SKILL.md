@@ -208,6 +208,37 @@ site. No CSS, essa imagem ganha altura própria ou `height: auto`: senão a
 altura do atributo vale e o recorte (o 4:5 da foto, por exemplo) some. O
 `npm test` reprova as duas coisas: imagem de outro site e altura presa.
 
+## Versão executiva (`executiva/`)
+
+Pedida em 29/09/2026: o usuário trouxe uma página de referência
+(globalbusinessenglish.com.br, que ele diz ter feito R$ 110 mil em setembro;
+não verificado) e pediu para modelar o máximo possível. Ela tem estrutura,
+não texto nem marca: todo o conteúdo é da Gavi (página atual ou versão
+`atual`). Fica em `executiva/index.html`, com `data-lp-version="executiva"`.
+A versão `atual` (`index.html`) continua no ar.
+
+- Ordem: a Bruna no topo, com cartão de nome; onde os mentorados trabalham;
+  vídeo "veja por dentro"; o problema e os pilares; prova; quem conduz, com
+  números e o podcast; o programa listado e o próximo passo; para quem é, com
+  as áreas dos mentorados; chamada; perguntas; WhatsApp e aplicação.
+- Decisões do usuário em 29/09/2026: quem atende o WhatsApp é **a equipe da
+  Bruna** (nunca "fale com a Bruna"); formulário de aplicação com aviso por
+  e-mail; "número limitado de mentorados por vez" é verdade e pode aparecer,
+  sem contagem regressiva.
+- Números só da página atual: 14 anos como professora, 12 meses de jornada,
+  96 aulas ao vivo, 8 meses de garantia. Número de alunos só com dado conferido.
+- Fora de propósito: menu de navegação e "empresas atendidas" (sugere relação
+  comercial; aqui é "onde nossos mentorados trabalham").
+- Formulário da Netlify (`data-netlify`, isca `bot-field`), que cai em
+  `executiva/obrigado/`. O `sdr.js` preenche os campos ocultos
+  `[data-sdr-campo]` com a origem da visita (a mesma linha do WhatsApp) e a
+  versão. O botão de enviar é vazado (`.btn--secondary`): o único botão cheio
+  é o do SDR. A página de obrigado dispara `AplicacaoEnviada` (evento próprio,
+  com `lp_version`), nunca `LeadQualificado`.
+- Com formulário, a política de privacidade (`privacidade.html`) é
+  obrigatória (LGPD). Ela descreve o que as páginas coletam; mudou a coleta,
+  mude a política.
+
 ## Stack
 
 - HTML estático + Tailwind (ou CSS puro com os tokens acima). Sem framework SPA.
@@ -254,7 +285,7 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
   entra na lista do `<head>` e no teste (`pixelSoEmProducao`).
 - O `ClickSDR` leva o `placement` do botão e a versão da página em
   `lp_version`, lida de `<html data-lp-version="...">`. Toda página com botão
-  do SDR declara a sua versão (hoje só existe `atual`): é o que permite
+  do SDR declara a sua versão (hoje: `atual` e `executiva`): é o que permite
   comparar versões num teste A/B.
 - Todo botão da página aponta para o mesmo destino. Sem CTA secundário
   competindo.
@@ -287,6 +318,8 @@ duas. Os tokens acima mandam.
 - [ ] Todos os CTAs no mesmo destino, com UTM sobrevivendo
 - [ ] Evento de clique separado de `LeadQualificado`
 - [ ] Pixel desligado fora de produção (preview, local)
+- [ ] Formulário: detecção ligada na Netlify e aviso por e-mail testado com um envio real
+- [ ] Política de privacidade sem `.slot` e de acordo com o que a página coleta
 - [ ] Selo "Powered by Netlify" desligado no projeto da Netlify, conferido no celular
 - [ ] Testado em 390px de largura antes de testar em desktop
 - [ ] Nenhum depoimento fictício no HTML

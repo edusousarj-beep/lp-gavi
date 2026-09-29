@@ -12,6 +12,7 @@ const PAGINA = {
   corTextoBotao: 'rgb(11, 9, 8)',
   pseudosComLuz: ['::after', '::before'], // borda e halo
   versao: 'atual', // o data-lp-version do index.html
+  lugares: ['hero', 'metodo', 'conversa', 'final'], // botões do SDR, sem o fixo
 };
 
 const t = suite('Página');

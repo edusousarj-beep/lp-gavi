@@ -6,6 +6,8 @@
  *   2. Injetar essa origem no link do WhatsApp, para o SDR saber de onde o lead
  *      veio sem perguntar e para a atribuição sobreviver até o Kommo.
  *   3. Disparar um evento de clique próprio no pixel.
+ *   4. Preencher os campos ocultos [data-sdr-campo] de formulários com a mesma
+ *      origem, para a aplicação chegar dizendo de onde o lead veio.
  *
  * NUNCA dispare `LeadQualificado` daqui. Esse evento é o sinal de renda
  * qualificada usado para otimizar a campanha no Meta; sujá-lo com clique de
@@ -162,6 +164,17 @@
       button.addEventListener('click', function () {
         track(button.getAttribute('data-sdr-placement') || 'sem-rotulo', attrib, version);
       });
+    });
+
+    // Campos ocultos de formulário (a aplicação da versão executiva): a mesma
+    // origem que vai no WhatsApp, para o e-mail da aplicação dizer de onde o
+    // lead veio.
+    var fields = document.querySelectorAll('[data-sdr-campo]');
+    Array.prototype.forEach.call(fields, function (input) {
+      var key = input.getAttribute('data-sdr-campo');
+      if (key === 'origem') input.value = originLine(attrib);
+      else if (key === 'lp_version') input.value = version;
+      else input.value = attrib[key] || '';
     });
   }
 

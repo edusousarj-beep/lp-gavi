@@ -16,8 +16,9 @@ export async function destinoEClique(t, browser, p) {
   const { ctx, page, erros } = await novaPagina(browser, { reducedMotion: 'no-preference' });
   await page.goto(BASE + p.caminho + QS, { waitUntil: 'load' }); await pronta(page);
 
+  // p.lugares: os botões da página, na ordem; o CTA fixo (fixo) vem a mais.
   const hrefs = await page.$$eval('[data-sdr]', els => els.map(e => ({ p: e.dataset.sdrPlacement, h: e.getAttribute('href') })));
-  t.check(hrefs.length === 5, `5 botões do SDR (${hrefs.map(h => h.p).join(', ')})`);
+  t.check(hrefs.map(h => h.p).join() === [...p.lugares, 'fixo'].join(), `${p.lugares.length + 1} botões do SDR (${hrefs.map(h => h.p).join(', ')})`);
   t.check(new Set(hrefs.map(h => h.h)).size === 1, 'todos os botões com o mesmo destino');
   t.check(hrefs[0].h.startsWith(DESTINO + '?text='), 'destino wa.me do SDR');
   const texto = decodeURIComponent(hrefs[0].h.split('text=')[1] || '');
@@ -47,10 +48,10 @@ export async function destinoEClique(t, browser, p) {
 
   // Clique: ClickSDR com placement e versão, nunca LeadQualificado.
   await page.evaluate(() => document.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); }));
-  for (const lugar of ['hero', 'metodo', 'conversa', 'final']) await page.$eval(`[data-sdr-placement="${lugar}"]`, e => e.click());
+  for (const lugar of p.lugares) await page.$eval(`[data-sdr-placement="${lugar}"]`, e => e.click());
   const chamadas = await page.evaluate(() => window.__fbq);
   const cliques = chamadas.filter(c => c[0] === 'trackCustom' && c[1] === 'ClickSDR').map(c => c[2]);
-  t.check(cliques.map(c => c.placement).join() === 'hero,metodo,conversa,final', `ClickSDR por placement (${cliques.map(c => c.placement).join(', ')})`);
+  t.check(cliques.map(c => c.placement).join() === p.lugares.join(), `ClickSDR por placement (${cliques.map(c => c.placement).join(', ')})`);
   t.check(!JSON.stringify(chamadas).includes('LeadQualificado'), 'nenhum LeadQualificado disparado');
   t.check(cliques[0] && cliques[0].utm_campaign === 'teste-lp' && cliques[0].fbclid === 'abc123', 'UTMs no payload do ClickSDR');
   if (p.versao) t.check(cliques.length > 0 && cliques.every(c => c.lp_version === p.versao), `ClickSDR diz a versão da página (lp_version: ${[...new Set(cliques.map(c => c.lp_version))]})`);
@@ -62,7 +63,7 @@ export async function destinoEClique(t, browser, p) {
     await new Promise(r => setTimeout(r, 50));
     return d.map(x => x.open);
   }, p.faq);
-  t.check(JSON.stringify(faq) === '[false,true,false,false]', `abrir uma pergunta fecha a outra (${JSON.stringify(faq)})`);
+  t.check(JSON.stringify(faq) === JSON.stringify(faq.map((_, i) => i === 1)), `abrir uma pergunta fecha a outra (${JSON.stringify(faq)})`);
 
   t.check(await page.$$eval('use', us => us.filter(u => !document.querySelector(u.getAttribute('href'))).length) === 0, 'todo ícone aponta para um símbolo existente');
   t.check(erros.length === 0, `sem erro de JS (${erros.join(' | ') || 'nenhum'})`);

@@ -17,7 +17,7 @@ import path from 'node:path';
 const RAIZ = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
 const CACHE = path.join(RAIZ, 'tests', '.fontes');
 const MAPA = path.join(CACHE, 'mapa.json');
-const PAGINAS = ['index.html'];
+const PAGINAS = ['index.html', 'executiva/index.html'];
 
 // O Google Fonts só entrega woff2 para navegador moderno.
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36';

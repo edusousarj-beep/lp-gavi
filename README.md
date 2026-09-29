@@ -26,10 +26,22 @@ FAQ e empresas) vem da página atual, inglescomgavi.com/vip/oferta/?v=3. Hoje n�
 há nenhum `.slot` na página; se faltar material no futuro, ele entra como
 `.slot` tracejado dizendo o que precisa.
 
+**Versão executiva (`executiva/`, 29/09/2026).** Uma segunda versão, modelada na
+estrutura de uma página de referência que o usuário trouxe
+(globalbusinessenglish.com.br): a Bruna no topo, as empresas logo abaixo, o
+problema antes dos pilares, números reais, o programa listado, para quem é,
+perguntas e, no fim, o WhatsApp com um formulário de aplicação como
+alternativa. Modela a estrutura, não o texto nem a marca: o conteúdo é todo da
+Gavi. As duas versões ficam no ar; o `ClickSDR` leva `lp_version` (`atual` ou
+`executiva`), e dá para comparar. A bio aponta para a que o usuário escolher.
+
 ## Estrutura
 
 ```
-index.html              seções + sprite de ícones + snippet do pixel
+index.html              versão atual: seções + sprite de ícones + snippet do pixel
+executiva/index.html    versão executiva (mesmo CSS e mesmos scripts)
+executiva/obrigado/     destino do formulário de aplicação
+privacidade.html        política de privacidade das duas versões
 assets/css/style.css    tokens e estilos
 assets/js/sdr.js        botão do SDR (código crítico)
 assets/js/sticky.js     CTA fixo no celular
@@ -65,6 +77,7 @@ servidor de Python lota o buffer e trava os testes no meio.
 | Suíte | O que confere |
 | --- | --- |
 | `tests/css.mjs` | cores só nos tokens, espaçamento da escala, contraste dos pares de tokens, nenhum `var(--sdr-angle, …)` |
+| `tests/executiva.mjs` | a mesma bateria da `pagina.mjs`, com o perfil da versão executiva; formulário da Netlify (isca para robô, rótulos, campos obrigatórios, origem da visita nos campos ocultos, botão de enviar vazado); CTA fixo fora do formulário; `AplicacaoEnviada` na página de obrigado; política de privacidade sem pendência e sem pixel |
 | `tests/pagina.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; pixel só em produção; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; nenhuma imagem de outro site nem com a altura presa pelo atributo `height`; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
 
 As fontes do Google são baixadas uma vez com `curl` para `tests/.fontes/`. O
@@ -91,6 +104,8 @@ Nenhum `.slot` pode ficar visível. Pendências:
 
 | Onde | O quê |
 | --- | --- |
+| Política de privacidade | faltam a razão social e o CNPJ da empresa e o e-mail para assuntos de dados (dois `.slot` em `privacidade.html`). O `npm test` falha enquanto eles existirem. O texto é um rascunho feito a partir do que as páginas coletam: revise com um advogado. |
+| Formulário da versão executiva | na Netlify, em **Forms**, clique em **Enable form detection** antes do deploy que publica a página: a detecção vale a partir do próximo deploy. Depois, em **Forms > Submission notifications > Add notification**, crie o aviso por e-mail para quem atende as aplicações. O uso do mês fica em **Forms > Usage**; confira o limite do seu plano. Teste com um envio real. Fonte: docs.netlify.com/manage/forms/setup (consultada em 29/09/2026). |
 | Selo "Powered by Netlify" | a Netlify liga esse selo nos projetos novos do plano gratuito, e no celular ele cobre o botão fixo do WhatsApp. Desligue em **Project configuration > General > Powered by Netlify badge** (vale na hora, sem novo deploy) e confira no celular. |
 | Foto da Bruna | é a da página atual: 563x582, com o texto e a moldura inclinada desenhados na própria imagem. No celular ela ocupa 342x428px da tela, o que numa tela de alta densidade (3x) pede cerca de 1030x1280 pixels: a imagem é ampliada uns 2x e perde nitidez. Uma foto limpa, vertical (4:5), com pelo menos 1000px de largura, resolve. |
 | Vídeo do hero | é o `LFGi4Th1iJo` da página atual. A skill pede 30–60s; confira a duração. |

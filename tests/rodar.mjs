@@ -16,7 +16,7 @@ try {
   process.exit(2);
 }
 
-const SUITES = ['css.mjs', 'pagina.mjs'];
+const SUITES = ['css.mjs', 'pagina.mjs', 'executiva.mjs'];
 const resultado = [];
 const inicio = Date.now();
 for (const s of SUITES) {

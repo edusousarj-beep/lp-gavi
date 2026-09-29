@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="pt-BR" data-lp-version="executiva">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inglês com a Gavi — mentoria de inglês para profissionais</title>
+  <meta name="description" content="Mentoria de inglês com o Método M.O.V.E. para executivos, empresários e profissionais que precisam falar com segurança na reunião, na call e na viagem de trabalho.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Inglês com a Gavi — mentoria de inglês para profissionais">
+  <meta property="og:description" content="Um plano de 12 meses para a sua rotina e a sua área, com o Método M.O.V.E.">
+  <!-- TODO: og:image (1200x630) e og:url quando o domínio estiver definido. -->
+
+  <!--
+    Marca que o JS rodou. Só então os reveals escondem conteúdo: sem JS, a
+    página aparece inteira. Se o reveal.js não carregar em 3s, desiste de
+    esconder — a página nunca fica invisível.
+  -->
+  <script>
+    document.documentElement.classList.add('js');
+    setTimeout(function () {
+      if (!document.documentElement.hasAttribute('data-reveal-ready')) {
+        document.documentElement.classList.remove('js');
+      }
+    }, 3000);
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Uma grotesk, dois pesos apenas. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap">
+  <link rel="stylesheet" href="../assets/css/style.css">
+
+  <!--
+    Meta Pixel — só PageView aqui, e só em produção.
+    `LeadQualificado` NÃO pertence a esta página: é o sinal de renda qualificada
+    usado para otimizar a campanha, e quem dispara é o SDR depois de qualificar.
+    O clique do botão tem evento próprio (ClickSDR), em assets/js/sdr.js.
+
+    Fora de produção o pixel não carrega: Deploy Preview, branch deploy e link
+    de deploy da Netlify (endereço .netlify.app com "--"), servidor local e
+    arquivo aberto do disco. Sem `fbq`, o sdr.js também não manda o ClickSDR, e
+    o botão segue para o WhatsApp. Visita e clique de teste não entram no
+    dataset. É lista de exclusão, não de permissão: um domínio de produção novo
+    liga o pixel sem mexer aqui. Host de teste novo (outro serviço de preview)
+    entra na lista, e no teste de tests/apoio/verificacoes.mjs.
+  -->
+  <script>
+    (function () {
+      var host = location.hostname;
+      var teste = host === '' || host === 'localhost' || host === '[::1]' ||
+        /^127\./.test(host) || /--[^.]+\.netlify\.app$/.test(host);
+      if (teste) return;
+
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '645019308445152');
+      fbq('track', 'PageView');
+    })();
+  </script>
+</head>
+<body>
+
+  <!--
+    Ícones. WhatsApp no botão; os demais são do Lucide (lucide.dev),
+    licença ISC: Copyright (c) 2026 Lucide Icons and Contributors.
+  -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-whatsapp" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+    </symbol>
+    <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="5"/>
+      <path d="M20 21a8 8 0 0 0-16 0"/>
+    </symbol>
+    <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6" cy="19" r="3"/>
+      <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/>
+      <circle cx="18" cy="5" r="3"/>
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <path d="M16 3.128a4 4 0 0 1 0 7.744"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+      <circle cx="9" cy="7" r="4"/>
+    </symbol>
+    <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/>
+      <rect x="2" y="6" width="14" height="12" rx="2"/>
+    </symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>
+    </symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"/>
+      <path d="m6 6 12 12"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 6 9 17l-5-5"/>
+    </symbol>
+  </svg>
+
+  <!--
+    Versão "executiva" (data-lp-version="executiva"), pedida em 29/09/2026.
+    Modela a estrutura da página de referência que o usuário trouxe
+    (globalbusinessenglish.com.br): a mentora no topo, as empresas logo abaixo,
+    problema e pilares, autoridade com números, o programa listado, para quem é,
+    perguntas, WhatsApp e aplicação no fim.
+
+    Modela a estrutura, não o texto nem a marca. Todo o conteúdo é da Gavi: da
+    página atual (inglescomgavi.com/vip/oferta/?v=3) ou da versão "atual" desta LP.
+    Ficaram de fora de propósito: menu de navegação (a skill não tem menu) e
+    "empresas atendidas" (sugere relação comercial; aqui é "onde nossos mentorados
+    trabalham"). A versão "atual" (../index.html) continua no ar: o ClickSDR leva
+    lp_version, e dá para comparar as duas.
+  -->
+  <main>
+
+    <!-- 1. Hero — a mentora no topo, a promessa e o botão do SDR. -->
+    <section class="hero hero--founder" aria-labelledby="hero-title">
+      <div class="hero__glow" aria-hidden="true"></div>
+
+      <div class="wrap hero__inner">
+        <div class="hero__main">
+          <p class="brand">Inglês com a Gavi</p>
+
+          <div class="hero__copy">
+            <p class="eyebrow">Mentoria de inglês · Método M.O.V.E.</p>
+            <h1 class="hero__title" id="hero-title" data-reveal>
+              Inglês para falar com <em>segurança</em> onde a sua carreira acontece.
+            </h1>
+            <p class="hero__lede" data-reveal>
+              Mentoria para executivos, empresários e profissionais que precisam do
+              inglês na reunião, na call e na viagem de trabalho.
+            </p>
+            <p class="hero__lede" data-reveal>
+              Um plano de 12 meses montado para a sua rotina e a sua área, com
+              acompanhamento de perto da mentora e da equipe.
+            </p>
+          </div>
+
+          <div class="hero__actions" data-reveal>
+            <a class="btn btn--primary"
+               data-sdr
+               data-sdr-placement="hero"
+               href="https://wa.me/5521999100432"
+               target="_blank"
+               rel="noopener">
+              <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+              <span>Conversar no WhatsApp</span>
+            </a>
+
+            <!-- Quem atende é a equipe da Bruna (decisão do usuário em 29/09/2026). -->
+            <ul class="hero__bullets">
+              <li>
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-user"></use></svg>
+                <span>A equipe<br>da Bruna</span>
+              </li>
+              <li>
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-video"></use></svg>
+                <span>Call de<br>diagnóstico</span>
+              </li>
+              <li>
+                <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-route"></use></svg>
+                <span>Método<br>M.O.V.E.</span>
+              </li>
+            </ul>
+
+            <p class="hero__alt">Prefere não usar o WhatsApp? <a href="#aplicar">Envie uma aplicação</a></p>
+          </div>
+        </div>
+
+        <figure class="hero__founder" data-reveal>
+          <img src="../assets/img/bruna-gavioli.webp" width="563" height="582" alt="Bruna Gavioli">
+          <figcaption class="hero__founder-card">
+            <strong>Bruna Gavioli</strong>
+            <span>Mentora e criadora do Método M.O.V.E.</span>
+            <span>Professora há 14 anos</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!--
+      2. Onde os mentorados trabalham — logo abaixo do topo, como na referência.
+      Mesmas 14 empresas da versão atual (confirmadas em 26/09/2026).
+    -->
+    <section class="section" id="empresas" aria-labelledby="empresas-title">
+      <div class="wrap proof__block--logos">
+        <header class="proof__head" data-reveal>
+          <h2 class="eyebrow" id="empresas-title">Onde nossos mentorados trabalham</h2>
+          <p class="proof__hint">Indústria, energia, agro, logística, hotelaria e tecnologia.</p>
+        </header>
+          <ul class="logos" data-reveal>
+            <li><img src="../assets/logos/caterpillar.svg" alt="Caterpillar" loading="lazy"></li>
+            <li><img src="../assets/logos/schneider-electric.svg" alt="Schneider Electric" loading="lazy"></li>
+            <li><img src="../assets/logos/siemens.svg" alt="Siemens" loading="lazy"></li>
+            <li><img src="../assets/logos/abb.svg" alt="ABB" loading="lazy"></li>
+            <li><img src="../assets/logos/bosch.svg" alt="Bosch" loading="lazy"></li>
+            <li><img src="../assets/logos/embraer.svg" alt="Embraer" loading="lazy"></li>
+            <li><img src="../assets/logos/john-deere.svg" alt="John Deere" loading="lazy"></li>
+            <li><img src="../assets/logos/bayer.svg" alt="Bayer" loading="lazy"></li>
+            <li><img src="../assets/logos/dhl.svg" alt="DHL" loading="lazy"></li>
+            <li><img src="../assets/logos/hilton.svg" alt="Hilton" loading="lazy"></li>
+            <li><img src="../assets/logos/marriott.svg" alt="Marriott International" loading="lazy"></li>
+            <li><img src="../assets/logos/totvs.svg" alt="TOTVS" loading="lazy"></li>
+            <li><img src="../assets/logos/sap.svg" alt="SAP" loading="lazy"></li>
+            <li><img src="../assets/logos/kia.svg" alt="Kia" loading="lazy"></li>
+          </ul>
+          <p class="proof__disclaimer" data-reveal>
+            As marcas pertencem às respectivas empresas. Sem vínculo, patrocínio ou endosso.
+          </p>
+      </div>
+    </section>
+
+    <!-- 3. A mentoria por dentro — o vídeo da página atual, em fachada. -->
+    <section class="section" id="por-dentro" aria-labelledby="por-dentro-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Assista antes de decidir</p>
+          <h2 class="h2" id="por-dentro-title">Veja a mentoria por dentro</h2>
+        </header>
+
+        <figure class="video video--center" data-reveal>
+          <div class="video__frame">
+            <a class="video__facade"
+               data-youtube="LFGi4Th1iJo"
+               data-title="Veja a mentoria por dentro"
+               href="https://www.youtube.com/watch?v=LFGi4Th1iJo"
+               target="_blank"
+               rel="noopener"
+               aria-label="Assistir ao vídeo: veja a mentoria por dentro">
+              <img src="../assets/img/videos/LFGi4Th1iJo.jpg" width="1280" height="720" alt="" loading="lazy">
+              <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+              <span class="video__label" aria-hidden="true">Veja a mentoria por dentro</span>
+            </a>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 4. O método — o problema e os pilares. Regra 1: o que entrega, nunca o como. -->
+    <section class="section" id="metodo" aria-labelledby="metodo-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">A metodologia</p>
+          <h2 class="h2" id="metodo-title">Método M.O.V.E.</h2>
+          <p class="section__lede">
+            Os pilares da mentoria e o que cada um entrega. Como cada um
+            funciona na prática, você vê na call.
+          </p>
+        </header>
+
+        <article class="problem" data-reveal>
+          <p class="eyebrow">O problema</p>
+          <h3 class="h3">O inglês que trava na hora de falar</h3>
+          <p>
+            Na reunião, na call ou na viagem de trabalho, a sua fala não sai no tempo
+            da conversa. É nesse ponto que ficam a promoção que não vem, a viagem sem
+            liberdade e a vaga que passa.
+          </p>
+        </article>
+
+        <ol class="pillars">
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">M</span>
+            <div>
+              <h3 class="pillar__name">Mentalidade</h3>
+              <p class="pillar__text">Ambiente seguro, inglês gradual e acompanhamento de perto, sem travas e sem vergonha.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">O</span>
+            <div>
+              <h3 class="pillar__name">Organização</h3>
+              <p class="pillar__text">Um roadmap com agenda imersiva diária: você sempre sabe o próximo passo.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">V</span>
+            <div>
+              <h3 class="pillar__name">Voz Ativa</h3>
+              <p class="pillar__text">Foco total em desenvolver a sua fala no idioma, desde o começo.</p>
+            </div>
+          </li>
+          <li class="pillar" data-reveal>
+            <span class="pillar__letter" aria-hidden="true">E</span>
+            <div>
+              <h3 class="pillar__name">Experiência Real</h3>
+              <p class="pillar__text">Método contextualizado na vida adulta e no seu dia a dia real.</p>
+            </div>
+          </li>
+        </ol>
+
+        <div class="section__cta" data-reveal>
+          <a class="btn btn--primary"
+             data-sdr
+             data-sdr-placement="metodo"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Conversar no WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Prova — depoimentos em vídeo e prints. Regra 5: só depoimento real. -->
+    <section class="section" id="prova" aria-labelledby="prova-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Prova real de quem aplicou</p>
+          <h2 class="h2" id="prova-title">O que mudou para quem passou pela mentoria</h2>
+          <p class="section__lede">Conversas, áudios e depoimentos reais de quem destravou o inglês com o Método M.O.V.E.</p>
+        </header>
+
+        <div class="proof__block">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Em vídeo</p>
+            <h3 class="h3">Na voz de quem já viveu</h3>
+          </header>
+
+          <!-- Depoimentos verticais (Shorts): moldura 9:16, mesma fachada do hero. -->
+          <div class="proof__videos">
+            <figure class="proof__video" data-reveal>
+              <div class="proof__frame">
+                <a class="video__facade"
+                   data-youtube="ZmF9XccavNE"
+                   data-title="Depoimento: a virada de chave"
+                   href="https://www.youtube.com/watch?v=ZmF9XccavNE"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="Assistir ao depoimento: A virada de chave">
+                  <img src="../assets/img/videos/ZmF9XccavNE.jpg" width="1280" height="720" alt="" loading="lazy">
+                  <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                </a>
+              </div>
+              <figcaption class="proof__caption">A virada de chave</figcaption>
+            </figure>
+            <figure class="proof__video" data-reveal>
+              <div class="proof__frame">
+                <a class="video__facade"
+                   data-youtube="Mq2io3x4xwc"
+                   data-title="Depoimento: experiência transformadora com Thiago Lobato"
+                   href="https://www.youtube.com/watch?v=Mq2io3x4xwc"
+                   target="_blank"
+                   rel="noopener"
+                   aria-label="Assistir ao depoimento: Experiência transformadora com Thiago Lobato">
+                  <img src="../assets/img/videos/Mq2io3x4xwc.jpg" width="1280" height="720" alt="" loading="lazy">
+                  <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                </a>
+              </div>
+              <figcaption class="proof__caption">Experiência transformadora com Thiago Lobato</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="proof__block">
+          <header class="proof__head" data-reveal>
+            <p class="eyebrow">Em prints</p>
+            <h3 class="h3">O que os mentorados escreveram</h3>
+            <p class="proof__hint">Arraste para o lado. Toque para ampliar.</p>
+          </header>
+
+          <!--
+            Prints da página atual. Toque abre o print ampliado (lightbox.js);
+            sem JS, o link abre a imagem.
+          -->
+          <ul class="prints" data-reveal>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-01.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-01.jpg" width="602" height="990" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-02.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-02.jpg" width="589" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-03.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-03.jpg" width="870" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-04.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-04.jpg" width="565" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-05.webp" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-05.webp" width="473" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-06.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-06.jpg" width="567" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-07.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-07.jpg" width="473" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-08.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-08.jpg" width="768" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+            <li>
+              <a class="prints__item" href="../assets/img/prints/print-09.jpg" target="_blank" rel="noopener" data-lightbox>
+                <img src="../assets/img/prints/print-09.jpg" width="768" height="1024" alt="Print de depoimento de mentorado" loading="lazy">
+              </a>
+            </li>
+          </ul>
+
+          <p class="proof__disclaimer" data-reveal>
+            Os resultados dependem da dedicação e da constância na prática de cada aluno.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Quem conduz — autoridade: bio, números da página atual e o podcast. -->
+    <section class="section" id="sobre" aria-labelledby="sobre-title">
+      <div class="wrap about">
+        <div class="about__text" data-reveal>
+          <p class="eyebrow eyebrow--pill">Quem conduz</p>
+          <h2 class="h2" id="sobre-title">Bruna Gavioli</h2>
+
+          <p class="founder__role">Mentora e criadora do Método M.O.V.E.</p>
+          <p class="founder__bio">
+            Professora há 14 anos, ex-coordenadora de escola bilíngue e com
+            certificação internacional. O foco dela é transformar o inglês em algo
+            prático e conectado à vida real.
+          </p>
+          <p class="founder__bio">Foi capa da edição “Legado” da Revista Prospere.</p>
+
+          <!--
+            Números da página atual (bio e oferta). Número de alunos não entra:
+            não há dado conferido.
+          -->
+          <dl class="stats stats--4">
+            <div><dt>14 anos</dt><dd>como professora</dd></div>
+            <div><dt>12 meses</dt><dd>de jornada</dd></div>
+            <div><dt>96</dt><dd>aulas ao vivo</dd></div>
+            <div><dt>8 meses</dt><dd>de garantia em contrato</dd></div>
+          </dl>
+        </div>
+
+        <div class="founder__podcast about__podcast" data-reveal>
+          <p class="eyebrow">A mentora no podcast</p>
+          <h3 class="h3">A história por trás do método</h3>
+          <p class="founder__bio">
+            Bruna Gavioli conta como nasceu a mentoria e o que ela vê acontecer com
+            quem finalmente destrava o inglês.
+          </p>
+          <figure class="video video--plain">
+            <div class="video__frame">
+              <a class="video__facade"
+                 data-youtube="RVVP-Ze6JVA"
+                 data-title="Podcast com Bruna Gavioli"
+                 href="https://www.youtube.com/watch?v=RVVP-Ze6JVA"
+                 target="_blank"
+                 rel="noopener"
+                 aria-label="Assistir ao podcast com Bruna Gavioli: a história por trás do método">
+                <img src="../assets/img/videos/RVVP-Ze6JVA.jpg" width="1280" height="720" alt="" loading="lazy">
+                <span class="video__play" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-play"></use></svg></span>
+                <!-- Sem rótulo: a capa do podcast já traz título e nomes escritos. -->
+              </a>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      7. O programa — o que tem na mentoria (lista da página atual) e o próximo
+      passo. Sem preço (regra 2). Vagas limitadas: verdade, confirmada pelo
+      usuário em 29/09/2026.
+    -->
+    <section class="section" id="programa" aria-labelledby="programa-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">O programa</p>
+          <h2 class="h2" id="programa-title">O que tem na mentoria</h2>
+          <p class="section__lede">
+            Tudo o que acompanha a sua jornada de 12 meses. O formato ideal para o
+            seu momento é definido na call com a equipe.
+          </p>
+        </header>
+
+        <ul class="checklist" data-reveal>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Método M.O.V.E. completo</strong><span>Todas as aulas gravadas e o material na plataforma, do zero à Fluência Funcional.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Encontros individuais</strong><span>Sessões 1 a 1 com a mentora e com professores, focadas no seu ponto de partida.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Aulas de conversação ao vivo</strong><span>Prática de fala em pequeno grupo nivelado, toda semana.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Roadmap personalizado</strong><span>Teste de nivelamento na 1ª semana e uma agenda imersiva diária.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Prática de speaking</strong><span>Treino direcionado à sua área de atuação e à sua rotina real.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Material complementar</strong><span>Exercícios, listening e apoio para estudar entre os encontros.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Suporte via WhatsApp</strong><span>Canal direto com a equipe para dúvidas ao longo da jornada.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"></use></svg>
+            <div><strong>Acompanhamento e comunidade</strong><span>Correção, ajuste de rota e uma turma para praticar junto.</span></div>
+          </li>
+        </ul>
+
+        <p class="section__note" data-reveal>A mentoria atende um número limitado de mentorados por vez.</p>
+
+        <div class="next program__next" data-reveal>
+          <p class="next__tag">Próximo passo</p>
+          <h3 class="h2 next__title">Uma conversa antes de qualquer decisão</h3>
+
+          <ol class="steps">
+            <li>Você chama a equipe da Bruna no WhatsApp, pelo botão abaixo.</li>
+            <li>Uma pessoa da equipe entende o seu contexto e onde o inglês trava.</li>
+            <li>Vocês agendam uma call de diagnóstico para você ver a mentoria por dentro.</li>
+            <li>A decisão vem depois, com a informação na mão.</li>
+          </ol>
+
+          <a class="btn btn--primary btn--block"
+             data-sdr
+             data-sdr-placement="programa"
+             href="https://wa.me/5521999100432"
+             target="_blank"
+             rel="noopener">
+            <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+            <span>Conversar no WhatsApp</span>
+          </a>
+
+          <p class="next__micro">Garantia de 8 meses em contrato</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Para quem é — as situações e as áreas dos mentorados (página atual). -->
+    <section class="section" id="para-quem" aria-labelledby="para-quem-title">
+      <div class="wrap">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Para quem é</p>
+          <h2 class="h2" id="para-quem-title">Para quem é esta mentoria</h2>
+          <p class="section__lede">Para quem precisa do inglês no trabalho e trava em algum destes momentos.</p>
+        </header>
+
+        <div class="cards">
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-users"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na reunião</h3>
+              <p class="card__text">Você acompanha a discussão, mas a sua fala não sai no tempo da conversa.</p>
+            </div>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-video"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na call</h3>
+              <p class="card__text">Sem o apoio do texto, a resposta trava justamente quando precisa ser clara.</p>
+            </div>
+          </article>
+
+          <article class="card" data-reveal>
+            <span class="card__icon"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-plane"></use></svg></span>
+            <div>
+              <h3 class="card__title">Na viagem de trabalho</h3>
+              <p class="card__text">Fora da sala de reunião, o inglês resolve o básico, mas não sustenta uma conversa de negócio.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="areas" data-reveal>
+          <p class="areas__title">Nossos mentorados destravam o inglês em áreas tão diferentes quanto:</p>
+          <ul class="areas__list">
+            <li>Tecnologia / TI</li>
+            <li>Eng. Mecânica</li>
+            <li>Eng. Elétrica</li>
+            <li>Eng. Civil</li>
+            <li>Eng. Ambiental</li>
+            <li>Cafeicultura</li>
+            <li>Logística</li>
+            <li>Nutrição Animal</li>
+            <li>Turismo</li>
+            <li>Recursos Humanos</li>
+            <li>Advocacia</li>
+            <li>Cargos de Liderança</li>
+          </ul>
+          <p class="areas__note">E muitas outras. Trabalhamos com todas as áreas e cargos: o método se adapta à sua rotina e ao seu objetivo.</p>
+        </div>
+
+        <p class="section__note" data-reveal>
+          Aqui não é escola. É mentoria: um plano montado para a sua rotina, a sua
+          área e o que você precisa dizer em inglês nos próximos meses.
+        </p>
+      </div>
+    </section>
+
+    <!-- 9. Chamada antes das perguntas, como na referência. -->
+    <section class="section final" id="pronto" aria-labelledby="pronto-title">
+      <div class="wrap final__inner" data-reveal>
+        <svg class="final__icon" aria-hidden="true" focusable="false"><use href="#i-message"></use></svg>
+        <h2 class="h2" id="pronto-title">Pronto para destravar o seu inglês?</h2>
+        <p class="section__lede">Converse com a equipe da Bruna e veja como a mentoria se encaixa na sua rotina.</p>
+
+        <a class="btn btn--primary"
+           data-sdr
+           data-sdr-placement="pronto"
+           href="https://wa.me/5521999100432"
+           target="_blank"
+           rel="noopener">
+          <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+          <span>Conversar no WhatsApp</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 10. Perguntas — as 4 da versão atual e 3 da página atual. -->
+    <section class="section" id="duvidas" aria-labelledby="duvidas-title">
+      <div class="wrap wrap--narrow">
+        <header class="section__head" data-reveal>
+          <p class="eyebrow">Perguntas frequentes</p>
+          <h2 class="h2" id="duvidas-title">Tire suas dúvidas antes da conversa</h2>
+        </header>
+
+        <!-- name="duvidas": abrir uma pergunta fecha a outra, sem JS. -->
+        <div class="faq">
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Tenho pouco tempo. A mentoria cabe na minha agenda?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Menos hora presa na agenda, mais hora de inglês na semana: é assim que a mentoria funciona.</p>
+              <p>O que produz fluência não é quantas vezes você entra na aula, e sim quantas horas por semana o inglês existe na sua vida e quanto desse tempo é você falando. Por isso os encontros ao vivo são semanais e se somam a uma agenda imersiva diária, com prática guiada.</p>
+              <p>A quantidade e o formato ideais para o seu caso são definidos na call com o time.</p>
+            </div>
+          </details>
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Preciso de um nível mínimo de inglês?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Não. O método começa do zero (From Scratch). Na primeira semana você faz o teste de nivelamento e recebe um roadmap feito para o seu ponto de partida.</p>
+            </div>
+          </details>
+          <!-- Texto da página atual ("Como são os encontros e as aulas?"). -->
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Os encontros são individuais ou em grupo?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Os dois. Você tem encontros individuais com a mentora e com professores, aulas de conversação ao vivo em pequeno grupo nivelado e o método M.O.V.E. completo na plataforma.</p>
+              <p>Os encontros ao vivo são semanais e a prática de speaking é direcionada à sua área. A quantidade e o formato ideais para o seu caso são definidos na call com a equipe.</p>
+            </div>
+          </details>
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>A mentoria se adapta à minha área?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Sim. A prática de speaking é direcionada à sua área de atuação e à sua rotina real.</p>
+              <p>Nossos mentorados estão em áreas como tecnologia, engenharia, logística, turismo, recursos humanos, advocacia e cargos de liderança. Trabalhamos com todas as áreas e cargos.</p>
+            </div>
+          </details>
+          <!-- Montada com frases da página atual (respostas sobre a call). -->
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Como funciona a call de diagnóstico?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Uma pessoa da equipe entende o seu contexto, onde o inglês trava e por que você parou das outras vezes. Você vê a mentoria por dentro, e a quantidade e o formato ideais para o seu caso são definidos ali.</p>
+              <p>A call existe para você sair dela sabendo se a mentoria serve para você. Se for algo que a mentoria não resolve, você ouve isso na hora.</p>
+            </div>
+          </details>
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Já tentei aprender inglês e não funcionou. O que muda aqui?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>É a frase que mais ouvimos aqui. E quase nunca o professor era o problema.</p>
+              <p>O que falha é o desenho: aula genérica, conteúdo sem relação com a sua rotina, nenhum critério de progresso além de terminar o livro e um plano que só funciona se a sua semana for perfeita.</p>
+              <p>A call de diagnóstico começa exatamente por aí: entender por que você parou das outras vezes. Se for algo que a mentoria não resolve, você ouve isso na hora.</p>
+            </div>
+          </details>
+          <details class="faq__item" name="duvidas" data-reveal>
+            <summary class="faq__q">
+              <span>Tem garantia?</span>
+              <span class="faq__icon" aria-hidden="true"><svg class="icon" focusable="false"><use href="#i-chevron"></use></svg></span>
+            </summary>
+            <div class="faq__a">
+              <p>Sim, 8 meses de garantia de resultado, em contrato. Execute o método e, ao final de 8 meses, se não atingir no mínimo a Fluência Funcional, você pode pedir reembolso ou tempo extra na mentoria.</p>
+              <p>Além disso, você tem os 7 dias de arrependimento previstos no Código de Defesa do Consumidor (art. 49): desistiu nesse prazo, devolvemos 100% do valor.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      11. Fim — WhatsApp primeiro; a aplicação é a alternativa, como na referência.
+      O formulário é da Netlify (data-netlify): cada envio vai por e-mail para a
+      equipe (configurar em Netlify > Forms > Submission notifications). O
+      sdr.js preenche a origem da visita nos campos ocultos.
+    -->
+    <section class="section final" id="aplicar" aria-labelledby="aplicar-title">
+      <div class="wrap final__inner">
+        <p class="next__tag" data-reveal>Próximo passo</p>
+        <h2 class="h2" id="aplicar-title" data-reveal>Fale direto com a equipe da Bruna</h2>
+        <p class="section__lede" data-reveal>A mentoria atende um número limitado de mentorados por vez. A conversa começa pelo WhatsApp.</p>
+
+        <a class="btn btn--primary"
+           data-sdr
+           data-sdr-placement="final"
+           href="https://wa.me/5521999100432"
+           target="_blank"
+           rel="noopener">
+          <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+          <span>Conversar no WhatsApp</span>
+        </a>
+
+        <div class="apply" data-reveal>
+          <p class="apply__lede">Ou, se preferir, envie uma aplicação e a equipe entra em contato.</p>
+
+          <form class="apply__form" name="aplicacao" method="POST" action="/executiva/obrigado/" data-netlify="true" netlify-honeypot="bot-field">
+            <!-- O campo form-name, a Netlify injeta no deploy (docs.netlify.com/manage/forms/setup). -->
+            <input type="hidden" name="origem" data-sdr-campo="origem">
+            <input type="hidden" name="lp_version" data-sdr-campo="lp_version">
+
+            <!-- Isca para robôs: fica fora da tela e fora do Tab. -->
+            <p class="visually-hidden" aria-hidden="true">
+              <label>Não preencha este campo <input name="bot-field" tabindex="-1" autocomplete="off"></label>
+            </p>
+
+            <div class="field">
+              <label class="field__label" for="ap-nome">Nome completo</label>
+              <input class="field__input" id="ap-nome" name="nome" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label class="field__label" for="ap-email">E-mail</label>
+              <input class="field__input" id="ap-email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label class="field__label" for="ap-whatsapp">WhatsApp</label>
+              <input class="field__input" id="ap-whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" required>
+            </div>
+            <div class="field">
+              <label class="field__label" for="ap-cargo">Cargo atual</label>
+              <input class="field__input" id="ap-cargo" name="cargo" type="text" autocomplete="organization-title">
+            </div>
+            <div class="field">
+              <label class="field__label" for="ap-objetivo">Principal objetivo com o inglês</label>
+              <textarea class="field__input" id="ap-objetivo" name="objetivo" rows="3"></textarea>
+            </div>
+
+            <p class="apply__note">
+              Seus dados vão só para a equipe da Bruna, para o contato sobre a mentoria.
+              Veja a <a href="../privacidade.html">política de privacidade</a>.
+            </p>
+
+            <!-- Vazado: o único botão cheio da tela é o do SDR. -->
+            <button class="btn btn--secondary btn--block" type="submit">Enviar aplicação</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap site-foot__inner">
+      <p class="brand">Inglês com a Gavi</p>
+      <ul class="site-foot__links">
+        <li><a href="https://www.instagram.com/brunagaviolioficial/" target="_blank" rel="noopener">Instagram: @brunagaviolioficial</a></li>
+        <li><a href="../privacidade.html">Política de privacidade</a></li>
+      </ul>
+      <p class="site-foot__copy">© 2026 Inglês com a Gavi. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <!--
+    CTA fixo, só no celular. sticky.js mostra entre os CTAs da página e esconde
+    sempre que outro botão do SDR está na tela. Depois do CTA final não volta,
+    então não cobre o formulário.
+  -->
+  <div class="sticky-cta" data-sticky-cta>
+    <a class="btn btn--primary btn--block"
+       data-sdr
+       data-sdr-placement="fixo"
+       href="https://wa.me/5521999100432"
+       target="_blank"
+       rel="noopener">
+      <svg class="btn__icon" aria-hidden="true" focusable="false"><use href="#i-whatsapp"></use></svg>
+      <span>Conversar no WhatsApp</span>
+    </a>
+  </div>
+
+  <!-- Print ampliado. Sem suporte a <dialog>, o link do print abre a imagem. -->
+  <dialog class="lightbox" data-lightbox-dialog aria-label="Print ampliado">
+    <button class="lightbox__close" type="button" data-lightbox-close aria-label="Fechar">
+      <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>
+    </button>
+    <img class="lightbox__img" alt="">
+  </dialog>
+
+  <script src="../assets/js/sdr.js" defer></script>
+  <script src="../assets/js/reveal.js" defer></script>
+  <script src="../assets/js/sticky.js" defer></script>
+  <script src="../assets/js/video.js" defer></script>
+  <script src="../assets/js/lightbox.js" defer></script>
+</body>
+</html>

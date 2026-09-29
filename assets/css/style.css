@@ -1182,6 +1182,349 @@ a { color: inherit; }
 
 
 /* ==========================================================================
+   Versão executiva (executiva/) — blocos que só ela usa, modelados na
+   página de referência do usuário. Mesmos tokens e regras da versão atual.
+   ========================================================================== */
+
+/* Hero com a mentora. No celular, texto e botão primeiro; a foto vem depois. */
+.hero--founder .hero__inner { gap: var(--s4); }
+
+.hero__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.hero__alt {
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+/* Acento como texto: 11.03:1 sobre --bg. */
+.hero__alt a {
+  font-weight: 700;
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.hero__founder {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+}
+
+.hero__founder img {
+  display: block;
+  width: 100%;
+  height: auto; /* senão vale o height do <img> e o 4:5 some */
+  aspect-ratio: 4 / 5;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Cartão de nome sobre a base da foto, como na referência. */
+.hero__founder-card {
+  position: absolute;
+  right: var(--s2);
+  bottom: var(--s2);
+  left: var(--s2);
+  display: grid;
+  padding: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: var(--s1);
+  background: var(--scrim);
+  text-align: left;
+}
+
+.hero__founder-card strong {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.hero__founder-card span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+/* Vídeo numa seção própria: centrado, com a luz presa à moldura. */
+.video--center {
+  isolation: isolate;
+  margin-inline: auto;
+}
+
+/* O problema, antes dos pilares. Borda na tinta do acento, nunca o acento cheio. */
+.problem {
+  display: grid;
+  gap: var(--s1);
+  max-width: 64rem;
+  margin: 0 auto var(--s4);
+  padding: var(--s3);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.problem p:last-child { color: var(--text-2); }
+
+/* Quem conduz sem foto: a foto já está no topo. */
+.about {
+  display: grid;
+  gap: var(--s4);
+}
+
+.about__text {
+  display: grid;
+  justify-items: start;
+  gap: var(--s2);
+}
+
+.about .founder__podcast { grid-column: auto; }
+
+.stats--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* O que tem na mentoria. */
+.checklist {
+  display: grid;
+  gap: var(--s2);
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  padding: var(--s3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.checklist .icon { color: var(--accent); }
+
+.checklist strong {
+  display: block;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+/* Sobre --surface: --text-2 dá 6.40:1. */
+.checklist span {
+  display: block;
+  margin-top: var(--s1);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.program__next { margin-top: var(--s5); }
+
+/* Áreas dos mentorados, em etiquetas neutras. */
+.areas {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+  max-width: 48rem;
+  margin: var(--s4) auto 0;
+  text-align: center;
+}
+
+.areas__title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.areas__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.areas__list li {
+  padding: var(--s1) var(--s2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+.areas__note {
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+/* Aplicação: a alternativa ao WhatsApp, abaixo do botão final. */
+.apply {
+  display: grid;
+  gap: var(--s3);
+  width: 100%;
+  max-width: 32rem;
+  margin-top: var(--s4);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.apply__lede {
+  color: var(--text);
+  text-align: center;
+}
+
+.apply__form {
+  display: grid;
+  gap: var(--s2);
+}
+
+.field {
+  display: grid;
+  gap: var(--s1);
+}
+
+.field__label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* 16px no campo: abaixo disso o Safari do iPhone dá zoom ao tocar. */
+.field__input {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--s1) var(--s2);
+  border: 1px solid var(--border);
+  border-radius: var(--s1);
+  background: var(--surface);
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.field__input:hover { border-color: var(--text-3); }
+
+textarea.field__input {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.apply__note {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.apply__note a { color: var(--accent); }
+
+/* Botão vazado: o único botão cheio da tela é o do SDR. */
+.btn--secondary {
+  border: 1px solid var(--accent-line);
+  background: transparent;
+  font-family: inherit;
+  color: var(--text);
+}
+
+.btn--secondary:hover { border-color: var(--accent); }
+
+.site-foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s1) var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.site-foot__links a { color: var(--text-2); }
+
+/* Página de obrigado: uma tela só, centrada. */
+.obrigado {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  border-top: 0;
+}
+
+/* Política de privacidade: texto corrido. */
+.legal { border-top: 0; }
+
+.legal__inner {
+  display: grid;
+  gap: var(--s2);
+}
+
+.legal__inner h2 { margin-top: var(--s3); }
+
+.legal__inner ul {
+  display: grid;
+  gap: var(--s1);
+  margin: 0;
+  padding-left: var(--s3);
+}
+
+.legal__inner strong { color: var(--text); }
+
+.legal__meta {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.legal .brand a { text-decoration: none; }
+
+@media (min-width: 768px) {
+  .stats--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .about {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--s5);
+  }
+
+  .checklist {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s3);
+  }
+}
+
+/* Do notebook para cima: texto à esquerda, a mentora à direita. */
+@media (min-width: 960px) {
+  .hero--founder .hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: center;
+    gap: var(--s5);
+    text-align: left;
+  }
+
+  .hero--founder .hero__main,
+  .hero--founder .hero__actions { align-items: flex-start; }
+
+  .hero--founder .hero__copy { justify-items: start; }
+
+  .hero--founder .hero__bullets { justify-content: flex-start; }
+
+  .hero--founder .hero__founder {
+    justify-self: end;
+    max-width: 420px;
+  }
+}
+
+/* ==========================================================================
    Reveal — só esconde quando o JS está ativo (classe .js no <html>).
    ========================================================================== */
 .js [data-reveal] {
