@@ -73,15 +73,28 @@ export async function midia(t, browser, p) {
   const { ctx, page, erros } = await novaPagina(browser, { reducedMotion: 'reduce' });
   await page.goto(BASE + p.caminho, { waitUntil: 'load' }); await pronta(page);
 
+  // Foto, prints e capas moram em assets/img/: nenhuma imagem vem de outro site.
+  // Confere antes do clique no vídeo do topo, que tira a capa dele da página.
+  const imagens = await page.$$eval('img[src], [data-lightbox]', els => els.map(e => e.getAttribute('src') || e.getAttribute('href')));
+  const externas = imagens.filter(s => /^(https?:)?\/\//.test(s));
+  t.check(externas.length === 0, `nenhuma imagem de outro site (${externas.join(', ') || `${imagens.length} locais`})`);
+  const quebradas = [];
+  for (const src of new Set(imagens)) {
+    const r = await page.request.get(new URL(src, page.url()).href);
+    if (!r.ok() || !/^image\//.test(r.headers()['content-type'] || '')) quebradas.push(`${src} (${r.status()})`);
+  }
+  t.check(quebradas.length === 0, `todas as imagens locais existem (${quebradas.join(', ') || 'ok'})`);
+
   t.check(await page.evaluate(() => document.querySelectorAll('iframe').length) === 0, 'nenhum player do YouTube antes do clique');
   await page.click(p.videoTopo);
   const src = await page.$eval(p.iframeTopo, f => f.src).catch(() => null);
   t.check(!!src && src.startsWith('https://www.youtube-nocookie.com/embed/LFGi4Th1iJo?autoplay=1'), 'clique troca a capa pelo player (youtube-nocookie)');
 
   await page.locator('.prints').scrollIntoViewIfNeeded();
+  const alvo = await page.getAttribute('.prints [data-lightbox] >> nth=1', 'href');
   await page.click('.prints [data-lightbox] >> nth=1');
   const aberto = await page.$eval('[data-lightbox-dialog]', d => ({ open: d.open, src: d.querySelector('img').getAttribute('src') || '' }));
-  t.check(aberto.open && aberto.src.includes('Dobler'), 'print abre ampliado');
+  t.check(aberto.open && aberto.src === new URL(alvo, page.url()).href, `print abre ampliado (${alvo})`);
   await page.keyboard.press('Escape');
   await page.waitForTimeout(100); // o evento close do <dialog> é assíncrono
   t.check(await page.$eval('[data-lightbox-dialog]', d => !d.open && !d.querySelector('img').getAttribute('src')), 'Esc fecha o print ampliado');
@@ -134,6 +147,7 @@ export async function umBotaoPorTela(t, browser, p, telas) {
 
 /* 5. Larguras: sem rolagem lateral, nada fora da tela, texto do botão em 1 linha. */
 export async function larguras(t, browser, p, lista) {
+  const presas = [];
   for (const w of lista) {
     const { ctx, page } = await novaPagina(browser, { viewport: { width: w, height: 800 }, reducedMotion: 'reduce' });
     await page.goto(BASE + p.caminho, { waitUntil: 'load' }); await pronta(page);
@@ -147,12 +161,21 @@ export async function larguras(t, browser, p, lista) {
       const linhas = [...document.querySelectorAll('[data-sdr] span')]
         .filter(s => s.getBoundingClientRect().height > 0)
         .map(s => Math.round(s.getBoundingClientRect().height / parseFloat(getComputedStyle(s).lineHeight)));
-      return { vw, sw: document.documentElement.scrollWidth, fora, linhas };
+      // Com width/height no <img>, o CSS precisa dar a altura (ou height: auto):
+      // senão vale a do atributo, e a imagem encolhe na largura mas não na altura.
+      const presas = [...document.querySelectorAll('img[width][height]')].filter(i => {
+        const b = i.getBoundingClientRect();
+        return b.width > 0 && Math.abs(b.height - Number(i.getAttribute('height'))) < 0.5
+          && Math.abs(b.width - Number(i.getAttribute('width'))) >= 0.5;
+      }).map(i => `${i.getAttribute('src')} ${Math.round(i.getBoundingClientRect().width)}x${Math.round(i.getBoundingClientRect().height)}`);
+      return { vw, sw: document.documentElement.scrollWidth, fora, linhas, presas };
     });
     t.check(r.sw <= r.vw && r.fora.length === 0, `${w}px: sem rolagem lateral nem elemento fora da tela (${r.fora.join(', ') || 'ok'})`);
     t.check(r.linhas.every(n => n === 1), `${w}px: texto dos ${r.linhas.length} botões visíveis em 1 linha (${r.linhas.join('/')})`);
+    presas.push(...r.presas.map(x => `${x} em ${w}px`));
     await ctx.close();
   }
+  t.check(presas.length === 0, `nenhuma imagem com a altura presa pelo atributo height (${presas.slice(0, 3).join(', ') || 'ok'})`);
 }
 
 /* 6. Efeito do botão: gira, reflete, respeita movimento reduzido. */

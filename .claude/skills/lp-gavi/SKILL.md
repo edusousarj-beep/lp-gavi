@@ -177,7 +177,7 @@ mais o CTA fixo no celular.
    Números só com dado real conferido. Hoje: foto, função, bio curta e o
    podcast (vídeo `RVVP-Ze6JVA`, "A história por trás do método"), tudo da
    página atual. O podcast usa a mesma fachada dos outros vídeos, sem a luz
-   do vídeo do topo.
+   do vídeo do topo e sem rótulo: a capa já traz título e nomes escritos.
 
 7. **Objeções** — accordion: tempo, nível de inglês, "já tentei antes" e
    garantia. A garantia é real e está em contrato (confirmada em 26/09/2026):
@@ -198,6 +198,15 @@ respostas do FAQ e empresas vêm da página atual,
 inglescomgavi.com/vip/oferta/?v=3. Mantenha as palavras de lá; não reescreva
 fato (pilar, número, garantia) sem o usuário pedir. O público são
 "mentorados" (homens e mulheres), não "alunas".
+
+**Onde fica a mídia.** Foto, prints e capas dos vídeos foram copiados da
+página atual para `assets/img/` em 29/09/2026; os logos ficam em
+`assets/logos/`. A página não depende do WordPress nem do `i.ytimg.com`: só o
+player do YouTube vem de fora, e só no clique. Imagem nova entra copiada no
+repositório, com largura e altura reais no `<img>`, nunca por link para outro
+site. No CSS, essa imagem ganha altura própria ou `height: auto`: senão a
+altura do atributo vale e o recorte (o 4:5 da foto, por exemplo) some. O
+`npm test` reprova as duas coisas: imagem de outro site e altura presa.
 
 ## Stack
 

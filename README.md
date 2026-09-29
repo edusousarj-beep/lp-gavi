@@ -37,6 +37,7 @@ assets/js/video.js      vídeos do YouTube em fachada (player só no clique)
 assets/js/lightbox.js   print ampliado num <dialog>
 assets/js/reveal.js     reveals no scroll, IntersectionObserver
 assets/logos/           logos das empresas dos mentorados (SVG)
+assets/img/             foto da Bruna, prints e capas dos vídeos
 tests/                  testes da página (npm test)
 package.json            só para os testes: Playwright preso em 1.56.1
 ```
@@ -64,12 +65,13 @@ servidor de Python lota o buffer e trava os testes no meio.
 | Suíte | O que confere |
 | --- | --- |
 | `tests/css.mjs` | cores só nos tokens, espaçamento da escala, contraste dos pares de tokens, nenhum `var(--sdr-angle, …)` |
-| `tests/pagina.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
+| `tests/pagina.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; nenhuma imagem de outro site nem com a altura presa pelo atributo `height`; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
 
 As fontes do Google são baixadas uma vez com `curl` para `tests/.fontes/`. O
 Chromium do ambiente de nuvem não confia no proxy de rede e, sem a fonte certa,
-os testes de quebra de linha medem outra letra. Imagens do WordPress e capas do
-YouTube viram marcadores com as mesmas dimensões.
+os testes de quebra de linha medem outra letra. A página não carrega imagem de
+outro site: o teste reprova se aparecer uma e confere se cada imagem local
+existe.
 
 Fora do ambiente de nuvem, depois do `npm install`, rode uma vez
 `npx playwright install chromium`.
@@ -89,8 +91,7 @@ Nenhum `.slot` pode ficar visível. Pendências:
 
 | Onde | O quê |
 | --- | --- |
-| Foto da Bruna e os 9 prints | apontam para o WordPress (`inglescomgavi.com/wp-content/uploads`). Aparecem na página publicada, não na prévia, e deixam a LP dependente do WordPress. Para trazer ao repositório, libere `inglescomgavi.com` na rede do ambiente ou copie os arquivos para `assets/`. |
-| Capas dos 4 vídeos | vêm do YouTube (`i.ytimg.com`), como a da página atual. Para trazer ao repositório, libere `i.ytimg.com` na rede do ambiente. O player continua sendo o do YouTube, no clique. |
+| Foto da Bruna | é a da página atual: 563x582, com o texto e a moldura inclinada desenhados na própria imagem. No celular ela ocupa 342x428px da tela, o que numa tela de alta densidade (3x) pede cerca de 1030x1280 pixels: a imagem é ampliada uns 2x e perde nitidez. Uma foto limpa, vertical (4:5), com pelo menos 1000px de largura, resolve. |
 | Vídeo do hero | é o `LFGi4Th1iJo` da página atual. A skill pede 30–60s; confira a duração. |
 | Logos | marcas de terceiros, usadas porque há mentorados nessas empresas (confirmado em 26/09/2026). Empresa nova só com mentorado real lá. |
 | `index.html` → `og:image`, `og:url` | quando o domínio estiver definido |

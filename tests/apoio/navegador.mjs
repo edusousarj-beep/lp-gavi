@@ -3,8 +3,9 @@
  * deixam o teste determinístico e conta os resultados.
  *
  * - Fontes do Google: servidas do cache (ver fontes.mjs).
- * - Imagens do WordPress e capas do YouTube: trocadas por marcadores com as
- *   mesmas dimensões, para o layout ser o real sem depender da rede.
+ * - Imagem do WordPress ou capa do YouTube (hoje não há nenhuma: a página usa
+ *   assets/img/): vira marcador com as mesmas dimensões, e o teste de mídia
+ *   reprova imagem de outro site.
  * - Qualquer outro host externo (pixel da Meta etc.) é bloqueado. O `fbq` vira
  *   um gravador, para conferir os eventos sem mandar nada à Meta.
  *

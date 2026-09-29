@@ -830,6 +830,7 @@ a { color: inherit; }
   order: -1;
   display: block;
   width: 100%;
+  height: auto; /* senão vale o height do <img> e o 4:5 some */
   aspect-ratio: 4 / 5;
   border-radius: var(--radius);
   background: var(--surface);
