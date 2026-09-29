@@ -5,10 +5,11 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { BASE, QS, novaPagina, pronta, assentar } from './navegador.mjs';
+import { BASE, QS, novaPagina, pronta, assentar, servirComo } from './navegador.mjs';
 
 const RAIZ = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
 const DESTINO = 'https://wa.me/5521999100432';
+const PIXEL = '645019308445152';
 
 /* 1. Destino, UTMs, CTA fixo, clique no pixel, FAQ, ícones, erros de JS. */
 export async function destinoEClique(t, browser, p) {
@@ -110,6 +111,43 @@ export async function midia(t, browser, p) {
   t.check(await page.$$eval('.slot', els => els.length) === 0, 'nenhum .slot na página');
   t.check(erros.length === 0, `sem erro de JS (${erros.join(' | ') || 'nenhum'})`);
   await ctx.close();
+}
+
+/*
+ * Pixel só em produção. Sem o gravador: vale o snippet de verdade. O
+ * fbevents.js fica bloqueado, então as chamadas param na fila do fbq, onde
+ * dá para conferir init, PageView e o ClickSDR do clique. Fora de produção
+ * não pode existir fbq nem pedido ao connect.facebook.net, e o botão continua
+ * levando ao WhatsApp.
+ */
+export async function pixelSoEmProducao(t, browser, p) {
+  const casos = [
+    ['produção na Netlify', 'https://super-lollipop-c93a1e.netlify.app', true],
+    ['domínio próprio (qualquer um)', 'https://www.example.com', true],
+    ['Deploy Preview da Netlify', 'https://deploy-preview-3--super-lollipop-c93a1e.netlify.app', false],
+    ['branch deploy da Netlify', 'https://main--super-lollipop-c93a1e.netlify.app', false],
+    ['localhost', 'http://localhost:8765', false],
+    ['127.0.0.1', BASE, false],
+    ['arquivo aberto do disco', 'file://' + RAIZ, false],
+  ];
+  const esperado = ['init ' + PIXEL, 'track PageView', 'trackCustom ClickSDR'].join(', ');
+  for (const [nome, origem, liga] of casos) {
+    const { ctx, page, erros } = await novaPagina(browser, {}, { gravarPixel: false });
+    if (origem.startsWith('http') && origem !== BASE) await servirComo(ctx, origem);
+    let pediu = false;
+    page.on('request', r => { if (r.url().startsWith('https://connect.facebook.net/')) pediu = true; });
+    await page.goto(origem + p.caminho + QS, { waitUntil: 'load' });
+    await page.evaluate(() => document.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); }));
+    await page.$eval('[data-sdr-placement="hero"]', e => e.click());
+    const r = await page.evaluate(() => ({
+      fila: typeof window.fbq === 'function' ? window.fbq.queue.map(a => `${a[0]} ${a[1]}`).join(', ') : null,
+      href: document.querySelector('[data-sdr-placement="hero"]').getAttribute('href'),
+    }));
+    const pixelOk = liga ? pediu && r.fila === esperado : !pediu && r.fila === null;
+    t.check(pixelOk && r.href.startsWith(DESTINO) && erros.length === 0,
+      `${nome}: pixel ${liga ? 'ligado' : 'desligado'} (${r.fila ?? 'sem fbq'}${pediu ? '; baixa o fbevents.js' : ''}${erros.length ? ' | ' + erros.join(' | ') : ''})`);
+    await ctx.close();
+  }
 }
 
 /* 3. Sem JS: conteúdo visível e botão com o href de reserva. */

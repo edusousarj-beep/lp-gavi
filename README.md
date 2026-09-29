@@ -65,7 +65,7 @@ servidor de Python lota o buffer e trava os testes no meio.
 | Suíte | O que confere |
 | --- | --- |
 | `tests/css.mjs` | cores só nos tokens, espaçamento da escala, contraste dos pares de tokens, nenhum `var(--sdr-angle, …)` |
-| `tests/pagina.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; nenhuma imagem de outro site nem com a altura presa pelo atributo `height`; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
+| `tests/pagina.mjs` | destino e UTMs do WhatsApp; `ClickSDR` com placement e versão, nunca `LeadQualificado`; pixel só em produção; CTA fixo sem colisão; um botão por tela; botão do topo na primeira tela; sem rolagem lateral de 320 a 1920px; texto do botão em 1 linha; vídeo, prints e logos; nenhuma imagem de outro site nem com a altura presa pelo atributo `height`; página sem JS; giro do botão, também sem `@property`; movimento reduzido; contraste AA de todo texto; anel de foco |
 
 As fontes do Google são baixadas uma vez com `curl` para `tests/.fontes/`. O
 Chromium do ambiente de nuvem não confia no proxy de rede e, sem a fonte certa,
@@ -117,6 +117,14 @@ que vale quando o JS não carrega.
 **`LeadQualificado` não é disparado por esta página.** É o sinal de renda
 qualificada usado para otimizar campanha no Meta; enchê-lo de clique de página
 destrói a otimização. Quem dispara é o SDR, depois de qualificar.
+
+**O pixel só liga em produção.** Na Deploy Preview e no branch deploy da
+Netlify (endereço `.netlify.app` com `--`), no servidor local e no arquivo
+aberto do disco, o snippet do `<head>` sai antes de carregar. Sem `fbq`, o
+`sdr.js` também não manda o `ClickSDR`, e o botão segue para o WhatsApp.
+Então, dá para testar à vontade sem sujar o dataset. É lista de exclusão: um
+domínio de produção novo liga o pixel sem mexer em nada. Um serviço de preview
+novo (Vercel, por exemplo) precisa entrar na lista do `<head>` e no teste.
 
 Todo CTA novo é só um `<a>` com `data-sdr` e `data-sdr-placement="<nome>"` —
 o `sdr.js` cuida do resto e mantém todos no mesmo destino. Os de hoje: `hero`,

@@ -7,7 +7,9 @@
  *   assets/img/): vira marcador com as mesmas dimensões, e o teste de mídia
  *   reprova imagem de outro site.
  * - Qualquer outro host externo (pixel da Meta etc.) é bloqueado. O `fbq` vira
- *   um gravador, para conferir os eventos sem mandar nada à Meta.
+ *   um gravador, para conferir os eventos sem mandar nada à Meta. Com
+ *   `gravarPixel: false`, vale o snippet de verdade (o fbevents.js continua
+ *   bloqueado, então as chamadas ficam na fila `fbq.queue`).
  *
  * O servidor da página não sobe aqui: o `npm test` usa o with_server.py da
  * skill webapp-testing, que sobe o servidor e roda as suítes.
@@ -35,7 +37,7 @@ export async function abrirNavegador() {
  * Contexto com as rotas e o gravador do pixel. `erros` junta exceções de JS e
  * erros de console da página (menos as falhas de rede dos hosts bloqueados).
  */
-export async function novaPagina(browser, opcoes = {}) {
+export async function novaPagina(browser, opcoes = {}, { gravarPixel = true } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, ...opcoes });
 
   // Rotas: a registrada por último roda primeiro. Esta é a de reserva.
@@ -48,20 +50,40 @@ export async function novaPagina(browser, opcoes = {}) {
     if (url.startsWith('https://fonts.googleapis.com/') || url.startsWith('https://fonts.gstatic.com/')) {
       return route.continue();
     }
-    return url.startsWith(BASE) ? route.continue() : route.abort();
+    // A página local e o arquivo aberto do disco (file:) seguem.
+    return url.startsWith(BASE) || url.startsWith('file:') ? route.continue() : route.abort();
   });
   await ctx.route(/fonts\.(googleapis|gstatic)\.com/, servirFontes(mapaFontes));
 
-  await ctx.addInitScript(() => {
-    window.__fbq = [];
-    window.fbq = function () { window.__fbq.push([].slice.call(arguments)); };
-  });
+  if (gravarPixel) {
+    await ctx.addInitScript(() => {
+      window.__fbq = [];
+      window.fbq = function () { window.__fbq.push([].slice.call(arguments)); };
+    });
+  }
 
   const page = await ctx.newPage();
   const erros = [];
   page.on('pageerror', e => erros.push(String(e)));
   page.on('console', m => { if (m.type() === 'error' && !/ERR_FAILED|net::/.test(m.text())) erros.push(m.text()); });
   return { ctx, page, erros };
+}
+
+/*
+ * Serve a página local em outro endereço (o da Netlify, um domínio próprio),
+ * para testar o que depende do host, como o pixel só em produção.
+ */
+export async function servirComo(ctx, origem) {
+  await ctx.route(u => u.origin === origem, async route => {
+    const u = new URL(route.request().url());
+    try {
+      await route.fulfill({ response: await route.fetch({ url: BASE + u.pathname + u.search }) });
+    } catch {
+      // Servidor fora do ar: falha já, sem esperar o tempo-limite. Se o teste
+      // fechou a página com o pedido no meio (uma imagem tardia), só ignora.
+      await route.abort().catch(() => {});
+    }
+  });
 }
 
 export async function pronta(page) {

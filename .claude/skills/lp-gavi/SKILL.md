@@ -233,6 +233,13 @@ Isto é o que faz ou quebra a página. Trate como código crítico.
 - UTMs da URL têm que sobreviver do anúncio até o Kommo. Leia os parâmetros na
   chegada, guarde, e injete no link do WhatsApp.
 - Dispare um evento de clique próprio no pixel. **Não** `LeadQualificado`.
+- O pixel só liga em produção (pedido do usuário em 29/09/2026). No `<head>`,
+  o snippet sai antes de carregar na Deploy Preview, no branch deploy e no
+  link de deploy da Netlify (`.netlify.app` com `--`), no servidor local e no
+  arquivo aberto do disco. Sem `fbq`, o `ClickSDR` também não sai. É lista de
+  exclusão, não de permissão: numa lista de permissão, o domínio próprio que
+  vier depois ficaria sem pixel e ninguém perceberia. Serviço de preview novo
+  entra na lista do `<head>` e no teste (`pixelSoEmProducao`).
 - O `ClickSDR` leva o `placement` do botão e a versão da página em
   `lp_version`, lida de `<html data-lp-version="...">`. Toda página com botão
   do SDR declara a sua versão (hoje só existe `atual`): é o que permite
@@ -267,6 +274,7 @@ duas. Os tokens acima mandam.
 - [ ] Método nomeado sem explicar a execução de nenhum pilar; nenhuma menção a preço
 - [ ] Todos os CTAs no mesmo destino, com UTM sobrevivendo
 - [ ] Evento de clique separado de `LeadQualificado`
+- [ ] Pixel desligado fora de produção (preview, local)
 - [ ] Testado em 390px de largura antes de testar em desktop
 - [ ] Nenhum depoimento fictício no HTML
 - [ ] Nenhum `.slot` visível na página publicada

@@ -33,19 +33,34 @@
   <link rel="stylesheet" href="assets/css/style.css">
 
   <!--
-    Meta Pixel — só PageView aqui.
+    Meta Pixel — só PageView aqui, e só em produção.
     `LeadQualificado` NÃO pertence a esta página: é o sinal de renda qualificada
     usado para otimizar a campanha, e quem dispara é o SDR depois de qualificar.
     O clique do botão tem evento próprio (ClickSDR), em assets/js/sdr.js.
+
+    Fora de produção o pixel não carrega: Deploy Preview, branch deploy e link
+    de deploy da Netlify (endereço .netlify.app com "--"), servidor local e
+    arquivo aberto do disco. Sem `fbq`, o sdr.js também não manda o ClickSDR, e
+    o botão segue para o WhatsApp. Visita e clique de teste não entram no
+    dataset. É lista de exclusão, não de permissão: um domínio de produção novo
+    liga o pixel sem mexer aqui. Host de teste novo (outro serviço de preview)
+    entra na lista, e no teste de tests/apoio/verificacoes.mjs.
   -->
   <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '645019308445152');
-    fbq('track', 'PageView');
+    (function () {
+      var host = location.hostname;
+      var teste = host === '' || host === 'localhost' || host === '[::1]' ||
+        /^127\./.test(host) || /--[^.]+\.netlify\.app$/.test(host);
+      if (teste) return;
+
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '645019308445152');
+      fbq('track', 'PageView');
+    })();
   </script>
 </head>
 <body>

@@ -20,6 +20,7 @@ const browser = await abrirNavegador();
 await v.destinoEClique(t, browser, PAGINA);
 await v.midia(t, browser, PAGINA);
 await v.semJs(t, browser, PAGINA);
+await v.pixelSoEmProducao(t, browser, PAGINA);
 
 // Os 4 vídeos da página atual estão na LP, em fachada; o do podcast abre o player no clique.
 {
