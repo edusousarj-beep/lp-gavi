@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Inglês com a Gavi — Reel</title>
+<!--
+  Composição do Reel (1080x1920, 30fps, 21,5s). Cada quadro é função pura do
+  tempo: render.mjs chama window.render(t) e fotografa a página. Nada anima
+  sozinho (sem CSS animation, sem requestAnimationFrame).
+
+  Tokens, fonte, cards, grade do M.O.V.E., logos e o botão do SDR vêm da LP
+  (assets/css/style.css), em escala de vídeo. Mídia: ../../assets/.
+-->
+<style>
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(fonts/inter-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(fonts/inter-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Tokens da LP. Nenhuma cor literal fora deste bloco. */
+:root {
+  --bg:          #0B0908;
+  --surface:     #1C1A19;
+  --border:      #3A3530;
+  --accent:      #F5B642;
+  --accent-dim:  #DDA033;
+  --accent-soft: #FFD479;  /* só o fim do gradiente das ênfases de título */
+  --text:        #FFFFFF;
+  --text-2:      #A59C8E;
+  --text-3:      #928A7D;
+
+  --accent-wash: rgba(245, 182, 66, 0.12);
+  --accent-line: rgba(245, 182, 66, 0.40);
+  --accent-glow: rgba(245, 182, 66, 0.30);
+
+  --tile:        #FFFFFF;
+  --scrim:       rgba(11, 9, 8, 0.88);
+  --shine:       rgba(255, 255, 255, 0.50);
+
+  /* Só do vídeo. */
+  --shadow:      rgba(0, 0, 0, 0.55);
+  --vignette:    rgba(0, 0, 0, 0.45);
+
+  /* A LP em escala de vídeo (~2,4x). */
+  --radius:      28px;
+  --radius-pill: 999px;
+  --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@property --sdr-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html,
+body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--text-2);
+  -webkit-font-smoothing: antialiased;
+}
+
+#stage {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/*
+ * Fundo: a luz ambiente da LP (.hero__glow) e a vinheta, desenhadas num canvas
+ * em ponto flutuante e pontilhadas (dither) antes de virar 8 bits. Com
+ * gradiente CSS, o degradê escuro saía em anéis, e a recompressão do
+ * Instagram piora anéis.
+ */
+#bg {
+  position: absolute;
+  inset: 0;
+}
+
+.brand {
+  position: absolute;
+  top: 226px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.scene { position: absolute; inset: 0; }
+
+/* Títulos: peso 800, branco; ênfase no acento com o gradiente do hero. */
+.h {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  text-align: center;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--text);
+}
+
+.line { display: block; }
+.w { display: inline-block; }
+
+.em {
+  display: inline-block;
+  padding: 0 0.04em 0.06em;
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.eyebrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.lede {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  text-align: center;
+  font-size: 36px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+.note {
+  position: absolute;
+  left: 130px;
+  right: 130px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.4;
+  color: var(--text-3);
+}
+
+/* 1. Gancho: a linha do acento troca como um letreiro, dentro da máscara. */
+.rot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 300px;
+  overflow: hidden;
+}
+
+.rot__item {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 128px;
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+}
+
+/* 2. Quem conduz: recorte da foto da LP, sem a moldura desenhada nela. */
+.photo {
+  position: absolute;
+  top: 640px;
+  left: 240px;
+  width: 600px;
+  height: 606px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.photo img {
+  position: absolute;
+  left: -49px;
+  top: -55px;
+  width: 689px;
+  height: 713px;
+  transform-origin: 50% 38%;
+}
+
+.name {
+  position: absolute;
+  top: 1284px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.role {
+  position: absolute;
+  top: 1354px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 34px;
+  color: var(--text-2);
+}
+
+/* 3. M.O.V.E.: o .pillar da LP em card, letra em cima, nome embaixo. */
+.pillar {
+  position: absolute;
+  width: 430px;
+  height: 300px;
+  padding: 36px;
+  list-style: none;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.pillar__letter {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border: 2px solid var(--accent-line);
+  border-radius: 24px;
+  box-shadow: 0 0 44px var(--accent-glow);
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.pillar__name {
+  display: block;
+  margin-top: 28px;
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+/* 4. Prova: prints em leque e a faixa de logos em cartão branco. */
+.print {
+  position: absolute;
+  top: 556px;
+  left: 540px;
+  height: 540px;
+  width: var(--w);
+  margin-left: calc(var(--w) / -2);
+  transform: translateX(var(--x)) rotate(var(--r));
+  transform-origin: 50% 100%;
+}
+
+.print__card {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 30px 70px var(--shadow);
+}
+
+.print__card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.marquee {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  height: 104px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, var(--text) 8%, var(--text) 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, var(--text) 8%, var(--text) 92%, transparent);
+}
+
+.marquee__track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 230px;
+  height: 104px;
+  padding: 18px 26px;
+  border-radius: 16px;
+  background: var(--tile);
+}
+
+.tile img {
+  display: block;
+  width: 100%;
+  height: 60px;
+  object-fit: contain;
+}
+
+/* 5. CTA: o botão do SDR da LP, com a luz girando e o reflexo. */
+.cta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 134px;
+  padding: 38px 96px;
+  border-radius: var(--radius-pill);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.btn--primary {
+  --sdr-angle: 0deg;
+  --btn-fill: var(--accent);
+  --shine-pos: 100%;
+  position: relative;
+  isolation: isolate;
+  background: var(--btn-fill);
+  color: var(--bg);
+  box-shadow: 0 0 58px -19px var(--accent);
+}
+
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -19px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--sdr-angle), transparent 0 45%, var(--accent) 80%, transparent);
+  filter: blur(38px);
+}
+
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 5px solid transparent;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, transparent 45%, var(--shine) 50%, transparent 55%) padding-box,
+    linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
+    conic-gradient(from var(--sdr-angle), var(--btn-fill) 0 60%, var(--text) 80%, var(--btn-fill)) border-box;
+  background-repeat: no-repeat;
+  background-size: 300% 100%, auto, auto;
+  background-position: var(--shine-pos) 0, 0 0, 0 0;
+}
+
+.btn__icon {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  fill: currentColor;
+}
+
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-whatsapp" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+    </symbol>
+</svg>
+
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+
+  <p class="brand" id="brand">Inglês com a Gavi</p>
+
+  <!-- 1. Gancho — a pergunta da seção "Para quem é". -->
+  <section class="scene" id="s1">
+    <h1 class="h" id="s1a" style="top: 536px; font-size: 172px;">
+      <span class="line"><span class="w">O</span> <span class="w">inglês</span></span>
+      <span class="line"><span class="w">trava</span></span>
+    </h1>
+    <div class="rot" id="rot" style="top: 914px;">
+      <p class="rot__item" id="r1"><span class="em">na reunião?</span></p>
+      <p class="rot__item" id="r2"><span class="em">na call?</span></p>
+      <p class="rot__item" id="r3"><span class="em">na viagem<br>de trabalho?</span></p>
+    </div>
+  </section>
+
+  <!-- 2. Revelação — "Aqui não é escola. É mentoria." e quem conduz. -->
+  <section class="scene" id="s2">
+    <h2 class="h" id="s2a" style="top: 360px; font-size: 80px;">
+      <span class="w">Aqui</span> <span class="w">não</span> <span class="w">é</span> <span class="w">escola.</span>
+    </h2>
+    <p class="h" id="s2b" style="top: 452px; font-size: 132px;"><span class="em">É mentoria.</span></p>
+    <figure class="photo" id="s2photo"><img id="s2img" src="../../assets/img/bruna-gavioli.webp" alt=""></figure>
+    <p class="name" id="s2name">Bruna Gavioli</p>
+    <p class="role" id="s2role">Mentora e criadora do Método M.O.V.E.</p>
+  </section>
+
+  <!-- 3. O método — pilares pelo nome (regra 1: nunca o como). -->
+  <section class="scene" id="s3">
+    <p class="eyebrow" id="s3eb" style="top: 350px;">O método</p>
+    <h2 class="h" id="s3t" style="top: 404px; font-size: 156px;">
+      <span class="w">M.</span><span class="w">O.</span><span class="w">V.</span><span class="w">E.</span>
+    </h2>
+    <ol>
+      <li class="pillar" id="p1" style="left: 90px; top: 636px;"><span class="pillar__letter">M</span><span class="pillar__name">Mentalidade</span></li>
+      <li class="pillar" id="p2" style="left: 560px; top: 636px;"><span class="pillar__letter">O</span><span class="pillar__name">Organização</span></li>
+      <li class="pillar" id="p3" style="left: 90px; top: 976px;"><span class="pillar__letter">V</span><span class="pillar__name">Voz Ativa</span></li>
+      <li class="pillar" id="p4" style="left: 560px; top: 976px;"><span class="pillar__letter">E</span><span class="pillar__name">Experiência Real</span></li>
+    </ol>
+  </section>
+
+  <!-- 4. Prova — prints reais, aviso de resultados e onde os mentorados trabalham. -->
+  <section class="scene" id="s4">
+    <h2 class="h" id="s4a" style="top: 330px; font-size: 88px;">Prova real</h2>
+    <p class="h" id="s4b" style="top: 420px; font-size: 88px;"><span class="em">de quem aplicou</span></p>
+
+    <figure class="print" style="--x: -232px; --r: -8deg; --w: 328px;"><div class="print__card" id="pr1"><img src="../../assets/img/prints/print-01.jpg" alt=""></div></figure>
+    <figure class="print" style="--x: 232px; --r: 8deg; --w: 311px;"><div class="print__card" id="pr3"><img src="../../assets/img/prints/print-02.jpg" alt=""></div></figure>
+    <figure class="print" style="--x: 0px; --r: 0deg; --w: 459px;"><div class="print__card" id="pr2"><img src="../../assets/img/prints/print-03.jpg" alt=""></div></figure>
+
+    <p class="note" id="s4n1" style="top: 1148px;">Os resultados dependem da dedicação e da constância na prática de cada aluno.</p>
+    <p class="eyebrow" id="s4eb" style="top: 1230px; font-size: 26px;">Onde nossos mentorados trabalham</p>
+    <div class="marquee" id="s4m" style="top: 1280px;"><div class="marquee__track" id="track"></div></div>
+    <p class="note" id="s4n2" style="top: 1404px;">As marcas pertencem às respectivas empresas. Sem vínculo, patrocínio ou endosso.</p>
+  </section>
+
+  <!-- 5. CTA final — o botão do SDR. -->
+  <section class="scene" id="s5">
+    <h2 class="h" id="s5a" style="top: 540px; font-size: 112px;">
+      <span class="w">Veja</span> <span class="w">por</span> <span class="w">dentro.</span>
+    </h2>
+    <p class="h" id="s5b" style="top: 664px; font-size: 112px;"><span class="em">Depois decida.</span></p>
+    <p class="lede" id="s5c" style="top: 834px;">Direto com uma pessoa da equipe.</p>
+    <div class="cta" id="s5btn" style="top: 936px;">
+      <span class="btn btn--primary" id="btn">
+        <svg class="btn__icon" aria-hidden="true"><use href="#i-whatsapp"></use></svg>
+        <span>Conversar no WhatsApp</span>
+      </span>
+    </div>
+    <p class="lede" id="s5d" style="top: 1122px; font-size: 32px;">Garantia de 8 meses em contrato</p>
+  </section>
+</div>
+
+<script>
+'use strict';
+
+const DURATION = 21.5;
+const $ = (id) => document.getElementById(id);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const lerp = (a, b, k) => a + (b - a) * k;
+const EASE = {
+  lin: (x) => x,
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  out5: (x) => 1 - Math.pow(1 - x, 5),
+  in: (x) => x * x * x,
+  inOut: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+};
+const prog = (t, start, dur, ease = 'out5') => EASE[ease](clamp01((t - start) / dur));
+
+/*
+ * Entrada e saída de um elemento. enter/exit = [início, duração, de/para, easing].
+ * de/para: o (opacidade), x, y, s (escala), r (graus), blur (px).
+ */
+function motion(el, t, enter, exit, base) {
+  let o = 1, x = 0, y = 0, s = 1, r = 0, blur = 0;
+  if (enter) {
+    const [st, du, f, e] = enter;
+    const k = prog(t, st, du, e || 'out5');
+    o *= lerp(f.o ?? 0, 1, k);
+    x += (f.x || 0) * (1 - k);
+    y += (f.y || 0) * (1 - k);
+    s *= lerp(f.s ?? 1, 1, k);
+    r += (f.r || 0) * (1 - k);
+    blur += (f.blur || 0) * (1 - k);
+  }
+  if (exit) {
+    const [st, du, f, e] = exit;
+    const k = prog(t, st, du, e || 'in');
+    o *= lerp(1, f.o ?? 0, k);
+    x += (f.x || 0) * k;
+    y += (f.y || 0) * k;
+    s *= lerp(1, f.s ?? 1, k);
+    r += (f.r || 0) * k;
+    blur += (f.blur || 0) * k;
+  }
+  if (base) {
+    x += base.x || 0;
+    y += base.y || 0;
+  }
+  el.style.opacity = o.toFixed(4);
+  el.style.visibility = o < 0.002 ? 'hidden' : 'visible';
+  el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${r.toFixed(3)}deg) scale(${s.toFixed(4)})`;
+  el.style.filter = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : 'none';
+  return o;
+}
+
+// Revela da esquerda para a direita (ênfases no acento).
+function wipe(el, t, start, dur) {
+  const k = prog(t, start, dur, 'out5');
+  el.style.clipPath = `inset(-30% ${(100 - 100 * k).toFixed(2)}% -30% -3%)`;
+}
+
+// A cena sai subindo, antes da próxima entrar: nada de fusão entre layouts.
+const exitAt = (st) => [st, 0.26, { y: -80, o: 0, blur: 8 }, 'in'];
+
+// Luz ambiente: acompanha o foco de cada cena.
+const GLOW = [
+  // t,    x,   y,    escala, opacidade
+  [0.0,  540, 900,  1.00, 0.42],
+  [4.0,  540, 880,  1.06, 0.55],
+  [8.0,  540, 980,  1.10, 0.46],
+  [12.0, 540, 840,  1.00, 0.42],
+  [16.0, 540, 1010, 0.92, 0.58],
+  [21.5, 540, 1000, 0.96, 0.62],
+];
+const BG_W = 1080;
+const BG_H = 1920;
+const bgCtx = $('bg').getContext('2d');
+const bgImg = bgCtx.createImageData(BG_W, BG_H);
+
+// Cores dos tokens, lidas do CSS: nada de cor literal aqui.
+function tokenRgb(name) {
+  const hex = getComputedStyle(document.documentElement).getPropertyValue(name).trim().replace('#', '');
+  return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+}
+function tokenAlpha(name) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+  return Number(v.match(/rgba\([^)]*,\s*([\d.]+)\s*\)/)[1]);
+}
+const C_BG = tokenRgb('--bg');
+const C_AC = tokenRgb('--accent');
+const GLOW_ALPHA = tokenAlpha('--accent-glow');
+const VIG_ALPHA = tokenAlpha('--vignette');
+
+// Vinheta (fixa) e ruído do pontilhado (fixo, semente própria: todo render sai igual).
+const VIG = new Float32Array(BG_W * BG_H);
+const NOISE = new Float32Array(BG_W * BG_H);
+(() => {
+  let seed = 20260930;
+  const rand = () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+  // Mesma elipse do CSS de antes: 120% x 85%, centro em 50% 46%, de 55% a 100%.
+  const rx = 1.2 * BG_W, ry = 0.85 * BG_H, cx = 0.5 * BG_W, cy = 0.46 * BG_H;
+  for (let y = 0, p = 0; y < BG_H; y++) {
+    for (let x = 0; x < BG_W; x++, p++) {
+      const q = Math.hypot((x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry);
+      VIG[p] = 1 - VIG_ALPHA * clamp01((q - 0.55) / 0.45);
+      NOISE[p] = rand() + rand() - 1; // triangular, -1..1
+    }
+  }
+})();
+
+function drawBackground(cx, cy, scale, opacity) {
+  const data = bgImg.data;
+  // circle sem tamanho = farthest-corner (650·√2); o gradiente da LP some em 62%.
+  const radius = 650 * Math.SQRT2 * 0.62 * scale;
+  const inv = 1 / radius;
+  const a0 = GLOW_ALPHA * opacity;
+  const dr = C_AC[0] - C_BG[0], dg = C_AC[1] - C_BG[1], db = C_AC[2] - C_BG[2];
+  for (let y = 0, p = 0, i = 0; y < BG_H; y++) {
+    const dy = y + 0.5 - cy;
+    const dy2 = dy * dy;
+    for (let x = 0; x < BG_W; x++, p++, i += 4) {
+      const dx = x + 0.5 - cx;
+      const d = Math.sqrt(dx * dx + dy2);
+      const ag = d < radius ? a0 * (1 - d * inv) : 0;
+      const v = VIG[p];
+      const n = NOISE[p] * 0.75;
+      data[i] = (C_BG[0] + dr * ag) * v + n;
+      data[i + 1] = (C_BG[1] + dg * ag) * v + n;
+      data[i + 2] = (C_BG[2] + db * ag) * v + n;
+      data[i + 3] = 255;
+    }
+  }
+  bgCtx.putImageData(bgImg, 0, 0);
+}
+
+function glow(t) {
+  let i = 0;
+  while (i < GLOW.length - 2 && t >= GLOW[i + 1][0]) i++;
+  const a = GLOW[i], b = GLOW[i + 1];
+  const k = EASE.inOut(clamp01((t - a[0]) / (b[0] - a[0])));
+  drawBackground(lerp(a[1], b[1], k), lerp(a[2], b[2], k), lerp(a[3], b[3], k), lerp(a[4], b[4], k));
+}
+
+// Logos da LP, na mesma ordem. Duas voltas para a faixa não ter fim.
+const LOGOS = ['caterpillar', 'schneider-electric', 'siemens', 'abb', 'bosch', 'embraer',
+  'john-deere', 'bayer', 'dhl', 'hilton', 'marriott', 'totvs', 'sap', 'kia'];
+const track = $('track');
+for (let pass = 0; pass < 2; pass++) {
+  for (const name of LOGOS) {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    const img = document.createElement('img');
+    img.src = `../../assets/logos/${name}.svg`;
+    img.alt = '';
+    tile.appendChild(img);
+    track.appendChild(tile);
+  }
+}
+const TILE_STEP = 230 + 20;
+const LOOP_WIDTH = LOGOS.length * TILE_STEP;
+
+const hookWords = $$('#s1a .w');
+const s2Words = $$('#s2a .w');
+const moveLetters = $$('#s3t .w');
+const pillars = ['p1', 'p2', 'p3', 'p4'].map($);
+const s5Words = $$('#s5a .w');
+
+function render(t) {
+  glow(t);
+  motion($('brand'), t, [0.0, 0.5, { y: -12 }]);
+
+  // 1. Gancho (0–4s)
+  const x1 = exitAt(3.82);
+  hookWords.forEach((w, i) => motion(w, t, [0.05 + i * 0.08, 0.5, { y: 80, blur: 14 }], x1));
+  motion($('rot'), t, null, x1);
+  motion($('r1'), t, [0.35, 0.32, { y: 150 }], [1.40, 0.24, { y: -150, o: 0 }]);
+  motion($('r2'), t, [1.50, 0.32, { y: 150 }], [2.55, 0.24, { y: -150, o: 0 }]);
+  motion($('r3'), t, [2.65, 0.32, { y: 150 }]);
+
+  // 2. Revelação (4–8s)
+  const x2 = exitAt(7.80);
+  s2Words.forEach((w, i) => motion(w, t, [4.10 + i * 0.07, 0.5, { y: 60, blur: 10 }], x2));
+  motion($('s2b'), t, [4.45, 0.6, { y: 40, blur: 8 }], x2);
+  wipe($('s2b'), t, 4.45, 0.65);
+  const photo = $('s2photo');
+  motion(photo, t, [4.80, 0.8, { y: 70, o: 0 }], x2);
+  const kp = prog(t, 4.80, 0.9);
+  photo.style.clipPath = `inset(${(100 - 100 * kp).toFixed(2)}% 0 0 0 round 28px)`;
+  const push = 1 + 0.03 * clamp01((t - 5.6) / 2.4);
+  $('s2img').style.transform = `scale(${(lerp(1.12, 1.0, prog(t, 4.80, 1.3)) * push).toFixed(4)})`;
+  motion($('s2name'), t, [5.25, 0.5, { y: 30, blur: 6 }], x2);
+  motion($('s2role'), t, [5.40, 0.5, { y: 30, blur: 6 }], x2);
+
+  // 3. Método (8–12s)
+  const x3 = exitAt(11.80);
+  motion($('s3eb'), t, [8.06, 0.45, { y: 30 }], x3);
+  moveLetters.forEach((w, i) => motion(w, t, [8.14 + i * 0.07, 0.5, { y: 80, blur: 14 }], x3));
+  pillars.forEach((p, i) => motion(p, t, [8.75 + i * 0.30, 0.55, { y: 90, s: 0.96, blur: 8 }], x3));
+
+  // 4. Prova (12–16s)
+  const x4 = exitAt(15.80);
+  motion($('s4a'), t, [12.06, 0.5, { y: 60, blur: 10 }], x4);
+  motion($('s4b'), t, [12.18, 0.6, { y: 40, blur: 8 }], x4);
+  wipe($('s4b'), t, 12.18, 0.65);
+  [['pr1', 12.40, -14], ['pr3', 12.55, 14], ['pr2', 12.70, 0]].forEach(([id, st, r]) => {
+    const drift = -Math.max(0, t - st) * 7;
+    motion($(id), t, [st, 0.75, { y: 900, r, o: 0 }], x4, { y: drift });
+  });
+  motion($('s4n1'), t, [13.05, 0.45, { y: 24 }], x4);
+  motion($('s4eb'), t, [13.00, 0.45, { y: 24 }], x4);
+  motion($('s4m'), t, [13.10, 0.55, { y: 30 }], x4);
+  motion($('s4n2'), t, [13.30, 0.45, { y: 24 }], x4);
+  const shift = ((Math.max(0, t - 12.6) * 110) % LOOP_WIDTH);
+  track.style.transform = `translate3d(${(-shift).toFixed(2)}px, 0, 0)`;
+
+  // 5. CTA (16–21,5s)
+  s5Words.forEach((w, i) => motion(w, t, [16.06 + i * 0.08, 0.5, { y: 60, blur: 10 }]));
+  motion($('s5b'), t, [16.40, 0.6, { y: 40, blur: 8 }]);
+  wipe($('s5b'), t, 16.40, 0.65);
+  motion($('s5c'), t, [16.80, 0.5, { y: 30 }]);
+  motion($('s5btn'), t, [17.00, 0.6, { y: 50, s: 0.97 }]);
+  motion($('s5d'), t, [17.30, 0.5, { y: 24 }]);
+  // A luz dá uma volta a cada 4s, como na LP; o reflexo atravessa uma vez.
+  const btn = $('btn');
+  btn.style.setProperty('--sdr-angle', `${((200 + ((t - 16) / 4) * 360) % 360).toFixed(2)}deg`);
+  btn.style.setProperty('--shine-pos', `${(100 - 100 * prog(t, 18.6, 1.5, 'inOut')).toFixed(2)}%`);
+}
+
+window.DURATION = DURATION;
+window.render = render;
+window.__ready = (async () => {
+  await Promise.all([
+    document.fonts.load('800 100px Inter'),
+    document.fonts.load('700 30px Inter'),
+    document.fonts.load('400 30px Inter'),
+    document.fonts.load('800 100px Inter', 'ÉêãçáíóúâôõÇ'),
+  ]);
+  await document.fonts.ready;
+  await Promise.all(Array.from(document.images).map((img) => img.decode().catch(() => {
+    throw new Error(`imagem não carregou: ${img.src}`);
+  })));
+  render(0);
+  return true;
+})();
+</script>
+</body>
+</html>
