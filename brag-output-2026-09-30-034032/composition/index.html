@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Inglês com a Gavi — Reel em capítulos</title>
+<!--
+  Reel no formato da referência (vídeo de lançamento em capítulos): chapéu
+  numerado, título gigante em caixa alta com ponto final e marca-texto,
+  interface flutuando em 3D, linha com ponto andando, contadores e um cartão
+  de capítulo em tela cheia. Paleta, fonte e componentes são os da LP
+  (escuro com amarelo, Inter 400/800). Números: só os da LP.
+
+  1080x1920, 30fps, 24s. Cada quadro é função pura do tempo: render.mjs chama
+  window.render(t) e fotografa a página. window.EVENTS alimenta a trilha.
+-->
+<style>
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(fonts/inter-latin-ext.woff2) format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url(fonts/inter-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Tokens da LP. Nenhuma cor literal fora deste bloco. */
+:root {
+  --bg:          #0B0908;
+  --surface:     #1C1A19;
+  --border:      #3A3530;
+  --accent:      #F5B642;
+  --accent-dim:  #DDA033;
+  --accent-soft: #FFD479;
+  --text:        #FFFFFF;
+  --text-2:      #A59C8E;
+  --text-3:      #928A7D;
+
+  --accent-wash: rgba(245, 182, 66, 0.12);
+  --accent-line: rgba(245, 182, 66, 0.40);
+  --accent-glow: rgba(245, 182, 66, 0.30);
+
+  --tile:        #FFFFFF;
+  --shine:       rgba(255, 255, 255, 0.50);
+
+  /* Só do vídeo. */
+  --shadow:      rgba(0, 0, 0, 0.60);
+  --vignette:    rgba(0, 0, 0, 0.45);
+
+  --radius:      28px;
+  --radius-pill: 999px;
+  --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@property --sdr-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html,
+body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  color: var(--text-2);
+  -webkit-font-smoothing: antialiased;
+}
+
+#stage {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+#bg { position: absolute; inset: 0; }
+.layer { position: absolute; inset: 0; }
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ------------------------------------------------ moldura (chrome) */
+.chrome {
+  position: absolute;
+  top: 230px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.chrome--brand {
+  left: 90px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.chrome--num { right: 90px; font-variant-numeric: tabular-nums; }
+
+.ring {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+}
+
+.dashes {
+  position: absolute;
+  top: 268px;
+  right: 90px;
+  display: flex;
+  gap: 6px;
+}
+
+.dash {
+  width: 30px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.dash.is-on { background: var(--accent); }
+
+/* No cartão amarelo, a moldura fica escura. */
+.on-accent .chrome { color: var(--bg); }
+.on-accent .ring { border-color: var(--bg); }
+.on-accent .dash { background: var(--accent-dim); }
+.on-accent .dash.is-on { background: var(--bg); }
+
+/* ------------------------------------------------ títulos */
+.eyebrow {
+  position: absolute;
+  left: 90px;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hd {
+  position: absolute;
+  left: 90px;
+  right: 40px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.line { display: block; }
+.w { display: inline-block; }
+
+/* Marca-texto: bloco no acento, texto em --bg (11.03:1). */
+.hl {
+  position: relative;
+  display: inline-block;
+  padding: 0.07em 0.12em 0.01em;
+  margin-left: -0.12em;
+  isolation: isolate;
+  color: var(--bg);
+}
+
+.hl::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 -0.02em;
+  border-radius: 0.05em;
+  background: var(--accent);
+  transform: rotate(-1.2deg);
+}
+
+.sub {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  font-size: 34px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+.note {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--text-3);
+}
+
+/* ------------------------------------------------ palco 3D */
+.stage3d {
+  position: absolute;
+  left: 0;
+  right: 0;
+  perspective: 1800px;
+}
+
+.plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+.node {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.flow {
+  position: absolute;
+  left: -800px;
+  top: -800px;
+  overflow: visible;
+}
+
+.flow__base {
+  fill: none;
+  stroke: var(--accent-line);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 2 14;
+}
+
+.flow__done {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.flow__dot {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 14px var(--accent));
+}
+
+/* Card de situação (o .card da LP). */
+.card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  width: 580px;
+  padding: 28px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 30px 70px var(--shadow);
+}
+
+.ring-on {
+  position: absolute;
+  inset: -2px;
+  border: 3px solid var(--accent);
+  border-radius: inherit;
+  box-shadow: 0 0 50px var(--accent-glow);
+  opacity: 0;
+}
+
+.icon-box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.icon-box svg { width: 38px; height: 38px; }
+
+.card__title {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--accent);
+}
+
+.card__text {
+  margin-top: 8px;
+  font-size: 22px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+
+/* Pilar do M.O.V.E. (o .pillar da LP). */
+.pcard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 500px;
+  padding: 22px 26px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 30px 70px var(--shadow);
+}
+
+.pcard__letter {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border: 2px solid var(--accent-line);
+  border-radius: 20px;
+  box-shadow: 0 0 36px var(--accent-glow);
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.pcard__name {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.pcard__text {
+  margin-top: 6px;
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+/* Toast de quem conduz, com contador. */
+.toast {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 26px 30px;
+  border: 2px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 30px 70px var(--shadow), 0 0 60px var(--accent-glow);
+}
+
+.avatar {
+  position: relative;
+  flex: none;
+  width: 132px;
+  height: 132px;
+  overflow: hidden;
+  border: 3px solid var(--accent-line);
+  border-radius: 50%;
+}
+
+.avatar img {
+  position: absolute;
+  left: -79px;
+  top: -41px;
+  width: 286px;
+  height: 296px;
+}
+
+.toast__who { flex: 1; }
+
+.toast__name {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.toast__role {
+  margin-top: 6px;
+  font-size: 24px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+.toast__count {
+  flex: none;
+  text-align: right;
+}
+
+.count-num {
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.toast__count .count-num { font-size: 96px; color: var(--accent); }
+
+.toast__label {
+  margin-top: 6px;
+  font-size: 20px;
+  line-height: 1.25;
+  color: var(--text-2);
+}
+
+/* Prints e logos. */
+.print {
+  overflow: hidden;
+  height: 420px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 30px 70px var(--shadow);
+}
+
+.print img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 64px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--tile);
+  box-shadow: 0 16px 34px var(--shadow);
+}
+
+.tile img { display: block; width: 100%; height: 40px; object-fit: contain; }
+
+/* Passos do "Próximo passo". */
+.step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 560px;
+  padding: 22px 26px;
+  border: 2px solid var(--border);
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: 0 30px 70px var(--shadow);
+}
+
+.step .icon-box { width: 68px; height: 68px; border-radius: 50%; }
+.step .icon-box svg { width: 34px; height: 34px; }
+
+.step__title {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.step__text {
+  margin-top: 6px;
+  font-size: 20px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+/* ------------------------------------------------ cartão de capítulo */
+.accent-panel {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+}
+
+.bigword {
+  position: absolute;
+  left: 84px;
+  top: 830px;
+  font-size: 156px;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: var(--bg);
+  transform-origin: 0 50%;
+}
+
+.panel-label {
+  position: absolute;
+  left: 90px;
+  top: 1420px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bg);
+}
+
+/* ------------------------------------------------ CTA */
+.counter {
+  position: absolute;
+  left: 90px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.counter .count-num { font-size: 200px; }
+
+.counter__label {
+  font-size: 38px;
+  line-height: 1.2;
+  color: var(--text-2);
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 18px 9px;
+  border-radius: 10px;
+  background: var(--accent);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bg);
+}
+
+.cta { position: absolute; left: 90px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 134px;
+  padding: 38px 88px;
+  border-radius: var(--radius-pill);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.btn--primary {
+  --sdr-angle: 0deg;
+  --btn-fill: var(--accent);
+  --shine-pos: 100%;
+  position: relative;
+  isolation: isolate;
+  background: var(--btn-fill);
+  color: var(--bg);
+  box-shadow: 0 0 58px -19px var(--accent);
+}
+
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -19px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--sdr-angle), transparent 0 45%, var(--accent) 80%, transparent);
+  filter: blur(38px);
+}
+
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 5px solid transparent;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, transparent 45%, var(--shine) 50%, transparent 55%) padding-box,
+    linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box,
+    conic-gradient(from var(--sdr-angle), var(--btn-fill) 0 60%, var(--text) 80%, var(--btn-fill)) border-box;
+  background-repeat: no-repeat;
+  background-size: 300% 100%, auto, auto;
+  background-position: var(--shine-pos) 0, 0 0, 0 0;
+}
+
+.btn__icon { width: 48px; height: 48px; flex: none; }
+</style>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-whatsapp" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.87 9.87 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.83 2.41a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.14.17-.24.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.23.25-.86.84-.86 2.04s.88 2.37 1 2.53c.12.17 1.73 2.64 4.2 3.7.58.26 1.04.41 1.4.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"/>
+    </symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <path d="M16 3.128a4 4 0 0 1 0 7.744"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+      <circle cx="9" cy="7" r="4"/>
+    </symbol>
+  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/>
+      <rect x="2" y="6" width="14" height="12" rx="2"/>
+    </symbol>
+  <symbol id="i-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+    </symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="5"/>
+      <path d="M20 21a8 8 0 0 0-16 0"/>
+    </symbol>
+  <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6" cy="19" r="3"/>
+      <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/>
+      <circle cx="18" cy="5" r="3"/>
+    </symbol>
+</svg>
+
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+
+  <!-- Moldura fixa: marca, número do capítulo e progresso. -->
+  <div class="layer" id="chrome">
+    <p class="chrome chrome--brand"><span class="ring"></span>Inglês com a Gavi · Mentoria</p>
+    <p class="chrome chrome--num" id="chapterNum">01</p>
+    <div class="dashes" id="dashes"><span class="dash"></span><span class="dash"></span><span class="dash"></span><span class="dash"></span></div>
+  </div>
+
+  <!-- 01 · Para quem é -->
+  <div class="layer" id="A">
+    <p class="eyebrow" id="A-eb" style="top: 318px;">01 · Para quem é</p>
+    <h1 class="hd" id="A-hd" style="top: 368px; font-size: 150px;">
+      <span class="line"><span class="w">O</span> <span class="w">inglês</span></span>
+      <span class="line"><span class="w">trava</span></span>
+    </h1>
+    <div class="hd" style="top: 650px; font-size: 104px; line-height: 0.95;">
+      <span class="hl line-hl" id="A-h1" style="position: absolute; top: 0;">na reunião.</span>
+      <span class="hl line-hl" id="A-h2" style="position: absolute; top: 0;">na call.</span>
+      <span style="position: absolute; top: 0;" id="A-h3">
+        <span class="hl" id="A-h3a">na viagem</span><br>
+        <span class="hl" id="A-h3b" style="margin-top: 6px;">de trabalho.</span>
+      </span>
+    </div>
+    <div class="stage3d" style="top: 900px; height: 560px;">
+      <div class="plane" id="A-plane">
+        <svg class="flow" width="1600" height="1600" viewBox="-800 -800 1600 1600" id="A-flow"></svg>
+        <div class="node" id="A-c1"><div class="card"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-users"></use></svg></span><div><p class="card__title">Na reunião</p><p class="card__text">Você acompanha a discussão, mas a sua fala não sai no tempo da conversa.</p></div></div></div>
+        <div class="node" id="A-c2"><div class="card"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-video"></use></svg></span><div><p class="card__title">Na call</p><p class="card__text">Sem o apoio do texto, a resposta trava justamente quando precisa ser clara.</p></div></div></div>
+        <div class="node" id="A-c3"><div class="card"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-plane"></use></svg></span><div><p class="card__title">Na viagem de trabalho</p><p class="card__text">O inglês resolve o básico, mas não sustenta uma conversa de negócio.</p></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cartão de capítulo em tela cheia. -->
+  <div class="layer on-accent" id="B">
+    <div class="accent-panel"></div>
+    <p class="chrome chrome--brand"><span class="ring"></span>Inglês com a Gavi · Mentoria</p>
+    <p class="chrome chrome--num">02</p>
+    <div class="dashes"><span class="dash is-on"></span><span class="dash is-on"></span><span class="dash"></span><span class="dash"></span></div>
+    <p class="bigword" id="B-word">Mentoria.</p>
+    <p class="panel-label" id="B-label">Aqui não é escola.</p>
+  </div>
+
+  <!-- 02 · O método -->
+  <div class="layer" id="C">
+    <p class="eyebrow" id="C-eb" style="top: 318px;">02 · O método</p>
+    <h2 class="hd" id="C-hd" style="top: 368px; font-size: 196px;">
+      <span class="w">M.</span><span class="w">O.</span><span class="w">V.</span><span class="w">E.</span>
+    </h2>
+    <p class="sub" id="C-sub" style="top: 568px;">Os pilares da mentoria e o que cada um entrega.</p>
+    <div class="stage3d" style="top: 690px; height: 760px;">
+      <div class="plane" id="C-plane">
+        <svg class="flow" width="1600" height="1600" viewBox="-800 -800 1600 1600" id="C-flow"></svg>
+        <div class="node" id="C-p1"><div class="pcard"><span class="ring-on"></span><span class="pcard__letter">M</span><div><p class="pcard__name">Mentalidade</p><p class="pcard__text">Ambiente seguro, inglês gradual e acompanhamento de perto.</p></div></div></div>
+        <div class="node" id="C-p2"><div class="pcard"><span class="ring-on"></span><span class="pcard__letter">O</span><div><p class="pcard__name">Organização</p><p class="pcard__text">Roadmap com agenda imersiva diária: você sempre sabe o próximo passo.</p></div></div></div>
+        <div class="node" id="C-p3"><div class="pcard"><span class="ring-on"></span><span class="pcard__letter">V</span><div><p class="pcard__name">Voz Ativa</p><p class="pcard__text">Foco total em desenvolver a sua fala no idioma, desde o começo.</p></div></div></div>
+        <div class="node" id="C-p4"><div class="pcard"><span class="ring-on"></span><span class="pcard__letter">E</span><div><p class="pcard__name">Experiência Real</p><p class="pcard__text">Método contextualizado na vida adulta e no seu dia a dia real.</p></div></div></div>
+      </div>
+    </div>
+    <div class="toast" id="C-toast" style="top: 1236px;">
+      <span class="avatar"><img src="../../assets/img/bruna-gavioli.webp" alt=""></span>
+      <div class="toast__who">
+        <p class="toast__name">Bruna Gavioli</p>
+        <p class="toast__role">Mentora e criadora do Método M.O.V.E.</p>
+      </div>
+      <div class="toast__count">
+        <p class="count-num" id="C-count">0</p>
+        <p class="toast__label">anos como<br>professora</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 · Prova real -->
+  <div class="layer" id="E">
+    <p class="eyebrow" id="E-eb" style="top: 318px;">03 · Prova real</p>
+    <h2 class="hd" id="E-hd" style="top: 368px; font-size: 150px;">
+      <span class="line"><span class="w" id="E-w1">Prova</span></span>
+      <span class="line"><span class="hl" id="E-hl">real.</span></span>
+    </h2>
+    <div class="stage3d" style="top: 660px; height: 470px;">
+      <div class="plane" id="E-plane">
+        <div class="node" id="E-p1"><div class="print" style="width: 255px;"><img src="../../assets/img/prints/print-01.jpg" alt=""></div></div>
+        <div class="node" id="E-p2"><div class="print" style="width: 242px;"><img src="../../assets/img/prints/print-02.jpg" alt=""></div></div>
+        <div class="node" id="E-p3"><div class="print" style="width: 357px;"><img src="../../assets/img/prints/print-03.jpg" alt=""></div></div>
+      </div>
+    </div>
+    <p class="note" id="E-note1" style="top: 1128px;">Os resultados dependem da dedicação e da constância na prática de cada aluno.</p>
+    <p class="eyebrow" id="E-eb2" style="top: 1210px; font-size: 24px;">Onde nossos mentorados trabalham</p>
+    <div class="stage3d" style="top: 1236px; height: 200px;">
+      <div class="plane" id="E-grid"></div>
+    </div>
+    <p class="note" id="E-note2" style="top: 1432px; font-size: 20px;">As marcas pertencem às respectivas empresas. Sem vínculo, patrocínio ou endosso.</p>
+  </div>
+
+  <!-- 04 · Próximo passo -->
+  <div class="layer" id="F">
+    <p class="eyebrow" id="F-eb" style="top: 318px;">04 · Próximo passo</p>
+    <h2 class="hd" id="F-hd" style="top: 368px; font-size: 136px;">
+      <span class="line"><span class="w" id="F-w1">Uma</span></span>
+      <span class="line"><span class="hl" id="F-hl">conversa.</span></span>
+    </h2>
+    <p class="sub" id="F-sub" style="top: 634px;">Antes de qualquer decisão.</p>
+    <div class="stage3d" style="top: 720px; height: 720px;">
+      <div class="plane" id="F-plane">
+        <svg class="flow" width="1600" height="1600" viewBox="-800 -800 1600 1600" id="F-flow"></svg>
+        <div class="node" id="F-s1"><div class="step"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-whatsapp"></use></svg></span><div><p class="step__title">WhatsApp</p><p class="step__text">Você chama a equipe pelo botão.</p></div></div></div>
+        <div class="node" id="F-s2"><div class="step"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-user"></use></svg></span><div><p class="step__title">Uma pessoa da equipe</p><p class="step__text">Entende o seu contexto e onde o inglês trava.</p></div></div></div>
+        <div class="node" id="F-s3"><div class="step"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-video"></use></svg></span><div><p class="step__title">Call de diagnóstico</p><p class="step__text">Para você ver a mentoria por dentro.</p></div></div></div>
+        <div class="node" id="F-s4"><div class="step"><span class="ring-on"></span><span class="icon-box"><svg><use href="#i-route"></use></svg></span><div><p class="step__title">Decisão</p><p class="step__text">Vem depois, com a informação na mão.</p></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="layer" id="G">
+    <h2 class="hd" id="G-hd" style="top: 340px; font-size: 132px;">
+      <span class="line"><span class="w">Veja</span> <span class="w">por</span></span>
+      <span class="line"><span class="w">dentro.</span></span>
+      <span class="line"><span class="w">Depois</span></span>
+      <span class="line"><span class="hl" id="G-hl">decida.</span></span>
+    </h2>
+    <div class="counter" id="G-counter" style="top: 880px;">
+      <p class="count-num" id="G-count">0</p>
+      <div>
+        <p class="counter__label">meses de garantia</p>
+        <p class="badge" id="G-badge">Em contrato</p>
+      </div>
+    </div>
+    <div class="cta" id="G-cta" style="top: 1130px;">
+      <span class="btn btn--primary" id="btn">
+        <svg class="btn__icon" aria-hidden="true"><use href="#i-whatsapp"></use></svg>
+        <span>Conversar no WhatsApp</span>
+      </span>
+    </div>
+    <p class="sub" id="G-sub" style="top: 1300px;">Direto com uma pessoa da equipe.</p>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const DURATION = 24.0;
+const $ = (id) => document.getElementById(id);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const lerp = (a, b, k) => a + (b - a) * k;
+const EASE = {
+  lin: (x) => x,
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  out5: (x) => 1 - Math.pow(1 - x, 5),
+  in: (x) => x * x * x,
+  inOut: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  back: (x) => { const c = 1.4; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); },
+};
+const prog = (t, start, dur, ease = 'out5') => EASE[ease](clamp01((t - start) / dur));
+
+// Entrada/saída: [início, duração, de/para {o, x, y, s, r, blur}, easing].
+function motion(el, t, enter, exit, base) {
+  let o = 1, x = 0, y = 0, s = 1, r = 0, blur = 0;
+  if (enter) {
+    const [st, du, f, e] = enter;
+    const k = prog(t, st, du, e || 'out5');
+    o *= lerp(f.o ?? 0, 1, k);
+    x += (f.x || 0) * (1 - k);
+    y += (f.y || 0) * (1 - k);
+    s *= lerp(f.s ?? 1, 1, k);
+    r += (f.r || 0) * (1 - k);
+    blur += (f.blur || 0) * (1 - k);
+  }
+  if (exit) {
+    const [st, du, f, e] = exit;
+    const k = prog(t, st, du, e || 'in');
+    o *= lerp(1, f.o ?? 0, k);
+    x += (f.x || 0) * k;
+    y += (f.y || 0) * k;
+    s *= lerp(1, f.s ?? 1, k);
+    r += (f.r || 0) * k;
+    blur += (f.blur || 0) * k;
+  }
+  if (base) {
+    x += base.x || 0;
+    y += base.y || 0;
+    s *= base.s ?? 1;
+    r += base.r || 0;
+  }
+  el.style.opacity = o.toFixed(4);
+  el.style.visibility = o < 0.002 ? 'hidden' : 'visible';
+  el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotate(${r.toFixed(3)}deg) scale(${s.toFixed(4)})`;
+  el.style.filter = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : 'none';
+  return o;
+}
+
+// Marca-texto passando: revela da esquerda para a direita; some para a direita.
+function marker(el, t, inAt, inDur, outAt, outDur) {
+  const k = prog(t, inAt, inDur, 'out');
+  const q = outAt === undefined ? 0 : prog(t, outAt, outDur, 'in');
+  el.style.clipPath = `inset(-20% ${(100 - 100 * k).toFixed(2)}% -20% ${(100 * q - 3).toFixed(2)}%)`;
+  el.style.visibility = k <= 0 || q >= 1 ? 'hidden' : 'visible';
+}
+
+const exitUp = (st) => [st, 0.25, { y: -110, o: 0, blur: 10 }, 'in'];
+const exitLeft = (st) => [st, 0.25, { x: -340, o: 0, blur: 12 }, 'in'];
+const enterRight = (st, d = 0.5) => [st, d, { x: 340, blur: 12 }];
+
+// ------------------------------------------------ fundo com pontilhado
+const BG_W = 1080;
+const BG_H = 1920;
+const bgCtx = $('bg').getContext('2d');
+const bgImg = bgCtx.createImageData(BG_W, BG_H);
+function tokenRgb(name) {
+  const hex = getComputedStyle(document.documentElement).getPropertyValue(name).trim().replace('#', '');
+  return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+}
+function tokenAlpha(name) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name);
+  return Number(v.match(/rgba\([^)]*,\s*([\d.]+)\s*\)/)[1]);
+}
+const C_BG = tokenRgb('--bg');
+const C_AC = tokenRgb('--accent');
+const GLOW_ALPHA = tokenAlpha('--accent-glow');
+const VIG_ALPHA = tokenAlpha('--vignette');
+const VIG = new Float32Array(BG_W * BG_H);
+const NOISE = new Float32Array(BG_W * BG_H);
+(() => {
+  let seed = 20260930;
+  const rand = () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let r = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+  const rx = 1.2 * BG_W, ry = 0.85 * BG_H, cx = 0.5 * BG_W, cy = 0.46 * BG_H;
+  for (let y = 0, p = 0; y < BG_H; y++) {
+    for (let x = 0; x < BG_W; x++, p++) {
+      const q = Math.hypot((x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry);
+      VIG[p] = 1 - VIG_ALPHA * clamp01((q - 0.55) / 0.45);
+      NOISE[p] = rand() + rand() - 1;
+    }
+  }
+})();
+function drawBackground(cx, cy, scale, opacity) {
+  const data = bgImg.data;
+  const radius = 650 * Math.SQRT2 * 0.62 * scale;
+  const inv = 1 / radius;
+  const a0 = GLOW_ALPHA * opacity;
+  const dr = C_AC[0] - C_BG[0], dg = C_AC[1] - C_BG[1], db = C_AC[2] - C_BG[2];
+  for (let y = 0, p = 0, i = 0; y < BG_H; y++) {
+    const dy = y + 0.5 - cy;
+    const dy2 = dy * dy;
+    for (let x = 0; x < BG_W; x++, p++, i += 4) {
+      const dx = x + 0.5 - cx;
+      const d = Math.sqrt(dx * dx + dy2);
+      const ag = d < radius ? a0 * (1 - d * inv) : 0;
+      const v = VIG[p];
+      const n = NOISE[p] * 0.75;
+      data[i] = (C_BG[0] + dr * ag) * v + n;
+      data[i + 1] = (C_BG[1] + dg * ag) * v + n;
+      data[i + 2] = (C_BG[2] + db * ag) * v + n;
+      data[i + 3] = 255;
+    }
+  }
+  bgCtx.putImageData(bgImg, 0, 0);
+}
+// Luz ambiente acompanhando o foco de cada capítulo: [t, x, y, escala, opacidade].
+const GLOW = [
+  [0.0, 540, 1150, 0.95, 0.50],
+  [5.4, 540, 1150, 1.05, 0.55],
+  [7.0, 540, 1050, 1.05, 0.52],
+  [12.0, 540, 900, 1.00, 0.48],
+  [16.0, 540, 1080, 1.00, 0.50],
+  [19.5, 380, 1180, 0.95, 0.58],
+  [24.0, 380, 1180, 1.00, 0.62],
+];
+function glow(t) {
+  let i = 0;
+  while (i < GLOW.length - 2 && t >= GLOW[i + 1][0]) i++;
+  const a = GLOW[i], b = GLOW[i + 1];
+  const k = EASE.inOut(clamp01((t - a[0]) / (b[0] - a[0])));
+  drawBackground(lerp(a[1], b[1], k), lerp(a[2], b[2], k), lerp(a[3], b[3], k), lerp(a[4], b[4], k));
+}
+
+// ------------------------------------------------ palco 3D e fluxos
+function place(node, x, y, z = 2, s = 1) {
+  node.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, ${z.toFixed(2)}px) scale(${s.toFixed(4)})`;
+}
+
+const SVGNS = 'http://www.w3.org/2000/svg';
+// Liga os pontos com curvas em S; devolve os segmentos para o ponto andar.
+function buildFlow(svg, pts) {
+  const segs = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+    const dy = (y1 - y0) * 0.55;
+    const d = `M ${x0} ${y0} C ${x0} ${y0 + dy}, ${x1} ${y1 - dy}, ${x1} ${y1}`;
+    const base = document.createElementNS(SVGNS, 'path');
+    base.setAttribute('d', d);
+    base.setAttribute('class', 'flow__base');
+    const done = document.createElementNS(SVGNS, 'path');
+    done.setAttribute('d', d);
+    done.setAttribute('class', 'flow__done');
+    svg.append(base, done);
+    const len = done.getTotalLength();
+    done.style.strokeDasharray = `${len} ${len + 10}`;
+    done.style.strokeDashoffset = `${len}`;
+    segs.push({ done, base, len });
+  }
+  const dot = document.createElementNS(SVGNS, 'circle');
+  dot.setAttribute('r', '11');
+  dot.setAttribute('class', 'flow__dot');
+  svg.append(dot);
+  return { segs, dot };
+}
+
+// moves: [[início, duração], ...] um por segmento. O ponto para em cada nó.
+function runFlow(flow, t, moves, showAt, baseIn) {
+  const kb = prog(t, baseIn[0], baseIn[1], 'out');
+  flow.segs.forEach((sg) => { sg.base.style.opacity = kb.toFixed(3); });
+  let seg = 0, k = 0;
+  moves.forEach(([st, du], i) => {
+    const kk = prog(t, st, du, 'inOut');
+    flow.segs[i].done.style.strokeDashoffset = `${(flow.segs[i].len * (1 - kk)).toFixed(2)}`;
+    if (t >= st) { seg = i; k = kk; }
+  });
+  const sg = flow.segs[seg];
+  const p = sg.done.getPointAtLength(sg.len * k);
+  flow.dot.setAttribute('cx', p.x.toFixed(2));
+  flow.dot.setAttribute('cy', p.y.toFixed(2));
+  flow.dot.style.opacity = prog(t, showAt, 0.2, 'out').toFixed(3);
+}
+
+// Liga o anel de um card: sobe um pouco quando ativo, fica aceso depois se keep.
+function activate(node, t, on, off, pos, keep = false) {
+  const kOn = prog(t, on, 0.22, 'out');
+  const kOff = off === undefined ? 0 : prog(t, off, 0.2, 'out');
+  const lit = keep ? kOn : kOn * (1 - kOff);
+  const lift = kOn * (1 - kOff);
+  node.querySelector('.ring-on').style.opacity = lit.toFixed(3);
+  // Escurece com brightness, não com opacity: card translúcido deixaria a linha aparecer através.
+  node.firstElementChild.style.filter = `brightness(${(0.45 + 0.55 * Math.max(lit, lift)).toFixed(3)})`;
+  place(node, pos[0], pos[1] - 10 * lift, 2 + 50 * lift, 1 + 0.03 * lift);
+}
+
+// ------------------------------------------------ cenas
+const A_POS = [[-150, -180], [120, 20], [-110, 220]];
+const C_POS = [[-150, -290], [150, -95], [-150, 100], [150, 295]];
+const F_POS = [[-110, -240], [110, -80], [-110, 80], [110, 240]];
+const aFlow = buildFlow($('A-flow'), A_POS);
+const cFlow = buildFlow($('C-flow'), C_POS);
+const fFlow = buildFlow($('F-flow'), F_POS);
+
+// Grade de logos (a "grade de pessoas" da referência): linhas de 5, 5 e 4.
+const LOGOS = ['caterpillar', 'schneider-electric', 'siemens', 'abb', 'bosch', 'embraer',
+  'john-deere', 'bayer', 'dhl', 'hilton', 'marriott', 'totvs', 'sap', 'kia'];
+const tiles = LOGOS.map((name, i) => {
+  const row = i < 5 ? 0 : i < 10 ? 1 : 2;
+  const col = i - [0, 5, 10][row];
+  const cols = row === 2 ? 4 : 5;
+  const x = (col - (cols - 1) / 2) * 164;
+  const y = (row - 1) * 76;
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.innerHTML = `<div class="tile"><img src="../../assets/logos/${name}.svg" alt=""></div>`;
+  $('E-grid').appendChild(node);
+  return { node, x, y };
+});
+
+const words = (sel) => $$(sel + ' .w');
+const A_WORDS = words('#A-hd');
+const C_LETTERS = words('#C-hd');
+const G_WORDS = words('#G-hd');
+
+// Opacidade e blur vão no contêiner com perspectiva: no plano (preserve-3d),
+// qualquer um dos dois achataria o 3D e o card levantado "pularia" no fim da entrada.
+function plane(el, t, p) {
+  el.style.transform = `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) rotateX(${p.rx.toFixed(3)}deg) rotateZ(${p.rz.toFixed(3)}deg) scale(${p.s.toFixed(4)})`;
+  const box = el.parentElement;
+  box.style.opacity = p.o.toFixed(4);
+  box.style.filter = p.blur > 0.1 ? `blur(${p.blur.toFixed(2)}px)` : 'none';
+  box.style.visibility = p.o < 0.002 ? 'hidden' : 'visible';
+}
+
+// display, não visibility: filho com visibility: visible escaparia do pai escondido.
+function showLayer(id, t, from, to) {
+  $(id).style.display = t >= from && t < to ? 'block' : 'none';
+}
+
+function chrome(t) {
+  // Número do capítulo e progresso da moldura escura.
+  const ch = t < 7 ? 1 : t < 12 ? 2 : t < 16 ? 3 : 4;
+  $('chapterNum').textContent = `0${ch}`;
+  $$('#dashes .dash').forEach((d, i) => d.classList.toggle('is-on', i < ch || t >= 19.5));
+  motion($('chrome'), t, [0.0, 0.4, { y: -14 }]);
+}
+
+function sceneA(t) {
+  showLayer('A', t, 0, 5.6);
+  if (t >= 5.6) return;
+  const x = exitUp(5.25);
+  motion($('A-eb'), t, [0.05, 0.4, { y: 24 }], x);
+  A_WORDS.forEach((w, i) => motion(w, t, [0.10 + i * 0.09, 0.45, { y: 100, blur: 14 }], x));
+  marker($('A-h1'), t, 0.55, 0.25, 1.90, 0.15);
+  marker($('A-h2'), t, 2.05, 0.25, 3.25, 0.15);
+  marker($('A-h3a'), t, 3.40, 0.28);
+  marker($('A-h3b'), t, 3.52, 0.28);
+  motion($('A-h3'), t, null, x);
+
+  const kin = prog(t, 0.30, 0.8, 'out5');
+  const kx = prog(t, 5.25, 0.25, 'in');
+  plane($('A-plane'), t, {
+    x: 0,
+    y: lerp(300, 0, kin) - 30 * clamp01(t / 5.5),
+    rx: lerp(64, 26, kin),
+    rz: lerp(-12, -7, clamp01(t / 5.5)),
+    s: 1 + 0.35 * kx,
+    o: kin * (1 - kx),
+    blur: 12 * kx,
+  });
+  const cards = ['A-c1', 'A-c2', 'A-c3'].map($);
+  activate(cards[0], t, 0.55, 2.0, A_POS[0]);
+  activate(cards[1], t, 2.05, 3.35, A_POS[1]);
+  activate(cards[2], t, 3.40, undefined, A_POS[2]);
+  runFlow(aFlow, t, [[1.90, 0.25], [3.20, 0.25]], 0.55, [0.45, 0.6]);
+}
+
+function sceneB(t) {
+  showLayer('B', t, 5.35, 7.1);
+  if (t < 5.35 || t >= 7.1) return;
+  const kIn = prog(t, 5.40, 0.2, 'out');
+  const kOut = prog(t, 6.85, 0.2, 'in');
+  $('B').style.clipPath = `inset(${(100 - 100 * kIn).toFixed(2)}% 0 ${(100 * kOut).toFixed(2)}% 0)`;
+  const push = 1 + 0.03 * clamp01((t - 5.9) / 1.0);
+  motion($('B-word'), t, [5.52, 0.32, { s: 1.22, blur: 14 }], null, { s: push });
+  motion($('B-label'), t, [5.72, 0.35, { y: 24 }]);
+}
+
+function sceneC(t) {
+  showLayer('C', t, 6.9, 12.1);
+  if (t < 6.9 || t >= 12.1) return;
+  const x = exitLeft(11.75);
+  motion($('C-eb'), t, [6.98, 0.4, { y: 24 }], x);
+  C_LETTERS.forEach((w, i) => motion(w, t, [7.0 + i * 0.07, 0.45, { y: 110, blur: 14 }], x));
+  motion($('C-sub'), t, [7.40, 0.45, { y: 24 }], x);
+
+  const kin = prog(t, 6.95, 0.8, 'out5');
+  const kup = prog(t, 9.95, 0.45, 'inOut');
+  const kx = prog(t, 11.75, 0.25, 'in');
+  plane($('C-plane'), t, {
+    x: -340 * kx,
+    y: lerp(320, 0, kin) + lerp(40, -40, clamp01((t - 7) / 3)) - 150 * kup,
+    rx: lerp(62, 28, kin),
+    rz: lerp(-10, -6, clamp01((t - 7) / 5)),
+    s: 1 - 0.08 * kup,
+    o: kin * (1 - 0.55 * kup) * (1 - kx),
+    blur: 12 * kx,
+  });
+  const nodes = ['C-p1', 'C-p2', 'C-p3', 'C-p4'].map($);
+  [7.90, 8.50, 9.10, 9.70].forEach((on, i) => activate(nodes[i], t, on, i < 3 ? on + 0.6 : undefined, C_POS[i], true));
+  runFlow(cFlow, t, [[8.25, 0.25], [8.85, 0.25], [9.45, 0.25]], 7.9, [7.6, 0.6]);
+
+  motion($('C-toast'), t, [10.05, 0.5, { y: 130, s: 0.95, blur: 10 }], x);
+  const kc = prog(t, 10.25, 0.8, 'out');
+  $('C-count').textContent = String(Math.round(14 * kc));
+}
+
+function sceneE(t) {
+  showLayer('E', t, 11.9, 16.1);
+  if (t < 11.9 || t >= 16.1) return;
+  const x = exitUp(15.75);
+  motion($('E-eb'), t, enterRight(12.02, 0.45), x);
+  motion($('E-w1'), t, enterRight(12.06, 0.5), x);
+  marker($('E-hl'), t, 12.28, 0.3);
+  motion($('E-hl').parentElement, t, null, x);
+
+  const kin = prog(t, 12.15, 0.8, 'out5');
+  const kx = prog(t, 15.75, 0.25, 'in');
+  plane($('E-plane'), t, {
+    x: 0,
+    y: lerp(160, 0, kin) - 20 * clamp01((t - 12) / 4) - 110 * kx,
+    rx: lerp(58, 20, kin),
+    rz: lerp(-8, -4, clamp01((t - 12) / 4)),
+    s: 1,
+    o: kin * (1 - kx),
+    blur: 10 * kx,
+  });
+  [['E-p1', 12.30, -250, 12], ['E-p2', 12.45, 250, -12], ['E-p3', 12.60, 0, 0]].forEach(([id, st, px, r], i) => {
+    const k = prog(t, st, 0.6, 'out5');
+    const n = $(id);
+    n.style.opacity = k.toFixed(3);
+    n.style.visibility = k <= 0 ? 'hidden' : 'visible';
+    n.style.transform = `translate(-50%, -50%) translate3d(${px}px, ${lerp(520, 0, k).toFixed(2)}px, ${(2 + i * 6 + lerp(160, 0, k)).toFixed(2)}px) rotate(${lerp(r, r / 3, k).toFixed(3)}deg)`;
+  });
+  motion($('E-note1'), t, [13.0, 0.4, { y: 20 }], x);
+  motion($('E-eb2'), t, [13.85, 0.4, { y: 20 }], x);
+  const kg = prog(t, 13.85, 0.6, 'out5');
+  plane($('E-grid'), t, {
+    x: 0,
+    y: lerp(60, 0, kg) - 110 * kx,
+    rx: lerp(62, 40, kg),
+    rz: 0,
+    s: 1,
+    o: kg * (1 - kx),
+    blur: 10 * kx,
+  });
+  tiles.forEach((tl, i) => {
+    const k = prog(t, 14.0 + i * 0.045, 0.35, 'back');
+    tl.node.style.opacity = clamp01(k * 2).toFixed(3);
+    place(tl.node, tl.x, tl.y, 2 + lerp(60, 0, clamp01(k)), lerp(0.5, 1, k));
+  });
+  motion($('E-note2'), t, [14.35, 0.4, { y: 16 }], x);
+}
+
+function sceneF(t) {
+  showLayer('F', t, 15.9, 19.6);
+  if (t < 15.9 || t >= 19.6) return;
+  const kx = prog(t, 19.25, 0.25, 'in');
+  const x = [19.25, 0.25, { s: 1.2, o: 0, blur: 12 }, 'in'];
+  motion($('F-eb'), t, [16.02, 0.4, { y: 60, blur: 8 }], x);
+  motion($('F-w1'), t, [16.06, 0.45, { y: 110, blur: 14 }], x);
+  marker($('F-hl'), t, 16.24, 0.3);
+  motion($('F-hl').parentElement, t, null, x);
+  motion($('F-sub'), t, [16.45, 0.45, { y: 24 }], x);
+
+  const kin = prog(t, 16.15, 0.8, 'out5');
+  plane($('F-plane'), t, {
+    x: 0,
+    y: lerp(320, 0, kin) + lerp(30, -30, clamp01((t - 16) / 3.5)),
+    rx: lerp(62, 26, kin),
+    rz: lerp(8, 5, clamp01((t - 16) / 3.5)),
+    s: 1 + 0.3 * kx,
+    o: kin * (1 - kx),
+    blur: 12 * kx,
+  });
+  const nodes = ['F-s1', 'F-s2', 'F-s3', 'F-s4'].map($);
+  [16.80, 17.30, 17.80, 18.30].forEach((on, i) => activate(nodes[i], t, on, i < 3 ? on + 0.5 : undefined, F_POS[i], true));
+  runFlow(fFlow, t, [[17.12, 0.22], [17.62, 0.22], [18.12, 0.22]], 16.8, [16.5, 0.5]);
+}
+
+function sceneG(t) {
+  showLayer('G', t, 19.45, 99);
+  if (t < 19.45) return;
+  G_WORDS.forEach((w, i) => motion(w, t, [19.52 + i * 0.07, 0.45, { y: 100, blur: 14 }]));
+  marker($('G-hl'), t, 19.92, 0.3);
+  motion($('G-counter'), t, [20.30, 0.45, { y: 40 }]);
+  $('G-count').textContent = String(Math.round(8 * prog(t, 20.35, 0.6, 'out')));
+  motion($('G-badge'), t, [20.75, 0.3, { s: 1.5, r: -10 }, 'out'], null, { r: -3 });
+  motion($('G-cta'), t, [21.0, 0.5, { y: 50, s: 0.97 }]);
+  motion($('G-sub'), t, [21.3, 0.45, { y: 24 }]);
+  const btn = $('btn');
+  btn.style.setProperty('--sdr-angle', `${((200 + ((t - 19.5) / 4) * 360) % 360).toFixed(2)}deg`);
+  btn.style.setProperty('--shine-pos', `${(100 - 100 * prog(t, 22.2, 1.5, 'inOut')).toFixed(2)}%`);
+}
+
+function render(t) {
+  glow(t);
+  chrome(t);
+  sceneA(t);
+  sceneB(t);
+  sceneC(t);
+  sceneE(t);
+  sceneF(t);
+  sceneG(t);
+}
+
+// Eventos para a trilha (music.py lê de ../work/events.json).
+window.EVENTS = [
+  { t: 0.55, kind: 'pop', note: 69 }, { t: 2.05, kind: 'pop', note: 72 }, { t: 3.40, kind: 'pop', note: 74 },
+  { t: 5.25, kind: 'whoosh' }, { t: 5.40, kind: 'swell' }, { t: 5.52, kind: 'impact' },
+  { t: 6.85, kind: 'whoosh' },
+  { t: 7.90, kind: 'pluck', note: 77 }, { t: 8.50, kind: 'pluck', note: 81 },
+  { t: 9.10, kind: 'pluck', note: 84 }, { t: 9.70, kind: 'pluck', note: 88 },
+  { t: 10.05, kind: 'pop', note: 81 }, { t: 10.25, kind: 'ticks', n: 14, dur: 0.8 },
+  { t: 11.75, kind: 'whoosh' },
+  { t: 12.30, kind: 'swish', pan: -0.5 }, { t: 12.45, kind: 'swish', pan: 0.5 }, { t: 12.60, kind: 'swish', pan: 0 },
+  { t: 14.0, kind: 'ticks', n: 14, dur: 0.6, soft: true },
+  { t: 15.75, kind: 'whoosh' },
+  { t: 16.80, kind: 'pluck', note: 74 }, { t: 17.30, kind: 'pluck', note: 77 },
+  { t: 17.80, kind: 'pluck', note: 81 }, { t: 18.30, kind: 'pluck', note: 84 },
+  { t: 19.25, kind: 'whoosh' }, { t: 19.50, kind: 'impact', soft: true },
+  { t: 20.35, kind: 'ticks', n: 8, dur: 0.6 }, { t: 20.75, kind: 'stamp' },
+  { t: 21.0, kind: 'chime' }, { t: 22.2, kind: 'shimmer' },
+];
+
+window.DURATION = DURATION;
+window.render = render;
+window.__ready = (async () => {
+  await Promise.all([
+    document.fonts.load('800 100px Inter'),
+    document.fonts.load('700 30px Inter'),
+    document.fonts.load('400 30px Inter'),
+    document.fonts.load('800 100px Inter', 'ÉÊÃÇÁÍÓÚÂÔÕéêãçáíóúâôõ'),
+  ]);
+  await document.fonts.ready;
+  await Promise.all(Array.from(document.images).map((img) => img.decode().catch(() => {
+    throw new Error(`imagem não carregou: ${img.src}`);
+  })));
+  render(0);
+  return true;
+})();
+</script>
+</body>
+</html>
