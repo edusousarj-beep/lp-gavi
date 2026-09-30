@@ -51,6 +51,7 @@ assets/js/reveal.js     reveals no scroll, IntersectionObserver
 assets/logos/           logos das empresas dos mentorados (SVG)
 assets/img/             foto da Bruna, prints e capas dos vídeos
 tests/                  testes da página (npm test)
+anuncios/direct/        peças dos anúncios do Direct do Instagram (fora da página)
 package.json            só para os testes: Playwright preso em 1.56.1
 ```
 
