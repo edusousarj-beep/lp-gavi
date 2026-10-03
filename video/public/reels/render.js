@@ -92,7 +92,7 @@ export const T = {
   // 7 · final
   final: 22.5,
   land: 23.0, // a bolhinha pousa na logo
-  cta: [23.1, 23.22, 23.34],
+  cta: [22.625, 22.75, 22.875], // entra com a logo, em semicolcheias até o pouso (23,0): logo + chamada os 2,5 s finais
   ctaPulses: [23.5, 24.0, 24.5],
 };
 
