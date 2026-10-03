@@ -630,7 +630,8 @@ export function createScene({logo, photo, cta = 'saibamais', debug = null, makeC
     ctx.save();
     ctx.globalAlpha *= inA;
     ctx.translate(0, 70 * (1 - inA));
-    line(ctx, t, {y: 722, size: 64, words: [{text: 'Método', at: T.method}]});
+    // Título acima da "pista" da bolhinha (y 714): ela pula entre as letras sem cobrir o título.
+    line(ctx, t, {y: 600, size: 64, words: [{text: 'Método', at: T.method}]});
     ['M', 'O', 'V', 'E'].forEach((L, i) => {
       const x = 175 + i * 190;
       const y = 772;

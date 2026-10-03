@@ -196,7 +196,7 @@ const [sil0, sil1] = cues.silence ?? [-1, -1];
 if (cues.silence) {
   const aacFrame = 1024 / SR;
   const gap = rms(mp4Audio, sil0 + aacFrame, sil1 - aacFrame * 1.5);
-  check(`Silêncio da trava (${sil0.toFixed(3)}–${sil1.toFixed(3)} s)`, gap < -50, `${gap.toFixed(1)} dBFS`);
+  check(`Silêncio planejado (${sil0.toFixed(3)}–${sil1.toFixed(3)} s)`, gap < -50, `${gap.toFixed(1)} dBFS`);
 }
 
 const quiet: string[] = [];
