@@ -28,6 +28,8 @@ type Cues = {
   marks?: [string, number, number][];
   keys?: number[];
   expectedKeys?: number;
+  maxIdle?: number; // segundos: meta mais rígida que a regra fixa de 2,5 s
+  smooth?: boolean; // peça sem cortes secos (só transições)
 };
 const cues: Cues = JSON.parse(fs.readFileSync(cuesPath, 'utf8'));
 // Duração esperada: a da trilha (cada peça tem a sua); sem ela, a da peça principal.
@@ -122,6 +124,45 @@ for (let f = 1; f + 30 <= decoded; f += 30) {
   if (!moving && !inFreeze) stills.push(`${f}–${f + 29}`);
 }
 check('Imagem em movimento em todo segundo', stills.length === 0, stills.length ? stills.join(' ') : 'ok');
+
+// Regra de retenção (vale para toda peça): nunca mais de 2,5 s sem algo acontecendo.
+// "Evento" = em 0,1 s, pelo menos 0,3% da tela muda de verdade (> 14 níveis): palavra
+// entrando, card, número, pulso, transição. Brilho que deriva devagar e grão não contam.
+const LAG = 3;
+const isEvent = (f: number) => {
+  if (f < LAG) return false;
+  const fa = frameAt(f);
+  const fb = frameAt(f - LAG);
+  let c = 0;
+  for (let i = 0; i < frameSize; i++) if (Math.abs(fa[i] - fb[i]) > 14) c++;
+  return c / frameSize >= 0.003;
+};
+let idle = {from: 0, to: 0};
+for (let f = 0, start = 0; f <= decoded; f++) {
+  if (f < decoded && !isEvent(f)) continue;
+  if (f - start > idle.to - idle.from) idle = {from: start, to: f};
+  start = f + 1;
+}
+const idleS = (idle.to - idle.from) / FPS;
+const idleTxt = `maior intervalo ${idleS.toFixed(2)} s (${(idle.from / FPS).toFixed(2)}–${(idle.to / FPS).toFixed(2)} s)`;
+check('Nunca mais de 2,5 s sem algo acontecendo', idleS <= 2.5, idleTxt);
+if (cues.maxIdle !== undefined) {
+  check(`Algo acontecendo a cada ${String(cues.maxIdle).replace('.', ',')} s`, idleS <= cues.maxIdle, idleTxt);
+}
+
+// Sem corte seco: de um quadro para o seguinte, nenhuma troca de mais de 30% da tela
+// (> 40 níveis) de uma vez. Uma fusão de 6 quadros fica abaixo; um corte, ~100%.
+if (cues.smooth) {
+  let worst = {f: 0, frac: 0};
+  for (let f = 1; f < decoded; f++) {
+    const fa = frameAt(f);
+    const fb = frameAt(f - 1);
+    let c = 0;
+    for (let i = 0; i < frameSize; i++) if (Math.abs(fa[i] - fb[i]) > 40) c++;
+    if (c / frameSize > worst.frac) worst = {f, frac: c / frameSize};
+  }
+  check('Sem corte seco (nenhum quadro troca ≥ 30% da tela)', worst.frac < 0.3, `pior troca: quadro ${worst.f} (${(worst.f / FPS).toFixed(2)} s) ${(worst.frac * 100).toFixed(1)}% da tela`);
+}
 
 /* ----------------------------------------------------------------- áudio */
 

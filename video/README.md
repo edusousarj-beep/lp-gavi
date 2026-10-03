@@ -56,11 +56,28 @@ E uma peça **modelada em outro anúncio** (formato próprio, 16 s):
   `perfil.jpg` é a foto de perfil recortada acima do texto que vinha
   embutido; `retrato.jpg` sem alteração.
 
+E um **Reels desenhado num canvas só** (25 s):
+
+- **Call** (`GaviCall` e `GaviCallBio`, `public/reels/`): toda a animação é uma
+  função `render(ctx, t)` em JavaScript puro que desenha um canvas de
+  1080×1920; o Remotion só chama essa função quadro a quadro. Trilha e efeitos
+  em Web Audio API (`public/reels/audio.js`), gerados no Chromium com
+  `OfflineAudioContext` no ritmo das animações (120 BPM, drop em 3,0 s).
+  Gancho em contagem ("Call com o time de fora em 3… 2… 1…" → silêncio →
+  "…e dessa vez quem conduz é você."), estilo luz e vidro nas cores da logo +
+  branco, e a bolhinha "…" da logo acompanhando o vídeo inteiro até pousar na
+  bolhinha da logo. Transições só com luz, zoom ou líquido (sem corte seco).
+  A logo é o PNG original recortado sem perda e desenhado 1:1
+  (`public/reels/logo.png`); a checagem compara pixel a pixel. **Dois finais**,
+  porque Reels orgânico não tem botão: `GaviCall` diz "Toque em Saiba mais"
+  (para turbinar/anúncio) e `GaviCallBio` diz "Acesse o link na bio" (para
+  só publicar).
+
 | | |
 | --- | --- |
-| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` (720 quadros), `out/gavi-pordentro-16s.mp4` (480 quadros) — H.264, 1080×1920, 30 fps |
+| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` (720 quadros), `out/gavi-pordentro-16s.mp4` (480 quadros), `out/gavi-call-25s{,-linknabio}.mp4` (750 quadros) — H.264, 1080×1920, 30 fps |
 | Áudio | AAC 320 kbps, 48 kHz estéreo, −14 LUFS, pico real ≤ −1 dBTP |
-| Grade | 100 BPM = 18 quadros por tempo (Por dentro: 120 BPM = 15); cenas cortam no tempo da música |
+| Grade | 100 BPM = 18 quadros por tempo (Por dentro e Call: 120 BPM = 15); cenas cortam no tempo da música |
 
 ## Rodar
 
@@ -72,7 +89,9 @@ npm run build    # gera tudo, renderiza as duas versões e verifica as duas
 ```
 
 Só uma versão: `npm run assets && npm run render:claro` (ou `render:escuro`,
-`render:post`, `render:noticia`, `render:conversa`, `render:pordentro`).
+`render:post`, `render:noticia`, `render:conversa`, `render:pordentro`,
+`render:call`, `render:callbio`). Checagens do canvas do Call (texto na área
+segura em todos os quadros, logo idêntica ao arquivo): `npm run reels:check`.
 
 O avatar das variações Post e Conversa (`public/post/avatar-bruna.png`) foi
 recortado do próprio post e tem resolução baixa: troque pela foto original no
@@ -92,6 +111,8 @@ Chromium: `REMOTION_BROWSER_EXECUTABLE=/caminho/do/headless_shell npm run build`
 | Uma cena | `src/scenes/*.tsx` |
 | A imagem editorial | `src/editorial/*` (seed, prédios, sala; luz em `palette.ts`) |
 | Música e efeitos | `scripts/compose-audio.ts` (arranjo), `scripts/audio/*` (síntese) |
+| Reels Call: cenas, textos, tempos (`T`), cores | `public/reels/render.js` |
+| Reels Call: trilha e efeitos (Web Audio) | `public/reels/audio.js` — lê os tempos de `render.js` |
 
 **Mudou texto digitado ou tempo? Rode `npm run audio`** (o `dev`/`build` já
 rodam). A trilha é gerada a partir da mesma `timeline.ts` das cenas: cada
@@ -116,8 +137,16 @@ scripts/
                      medidor de loudness BS.1770
   audio/*.ts         instrumentos e efeitos
   mux.ts             junta vídeo + trilha em AAC direto no MP4
-  verify.ts          checa o MP4 final (quadros, áudio, sincronia)
+  verify.ts          checa o MP4 final (quadros, áudio, sincronia, retenção)
   preview-frames.ts  renderiza quadros avulsos para revisão
+  reels/browser.ts   abre o Chromium (Playwright) servindo public/, com a Inter
+  reels/audio.ts     roda audio.js no OfflineAudioContext → public/audio/call.wav
+  reels/check.ts     checagens do canvas do Call (área segura, logo)
+public/reels/
+  render.js          o Reels Call inteiro: render(ctx, t) num canvas 1080×1920
+  audio.js           trilha e efeitos em Web Audio API
+  logo.png           logo original recortada sem perda (logo-original.png)
+src/call/CallAd.tsx  composição que só hospeda o canvas e chama render(t)
 ```
 
 **Por que o áudio não sai direto do Remotion:** ele comprime o AAC em ADTS e
@@ -140,6 +169,16 @@ evento. O que é específico de cada vídeo (o congelamento de "travar", o
 silêncio planejado, os cortes, as teclas) vem do `.cues.json` que a trilha
 grava ao lado do WAV. Cada vídeo ganha um relatório ao lado:
 `out/<nome>.verify.json`.
+
+**Regra fixa de retenção: nunca mais de 2,5 s sem algo acontecendo.** Vale
+para toda peça e a verificação mede no MP4: "evento" é, em 0,1 s, pelo menos
+0,3% da tela mudar de verdade (palavra entrando, card, número, pulso,
+transição); brilho de fundo que deriva devagar e textura não contam. O
+relatório traz o maior intervalo sem evento. Peça com meta mais rígida põe
+`maxIdle` no `.cues.json` (o Call usa 0,5 s). Peça sem corte seco põe
+`smooth: true`: aí nenhum quadro pode trocar ≥ 30% da tela de uma vez em
+relação ao anterior (uma fusão de 6 quadros fica abaixo disso; um corte, perto
+de 100%).
 
 ## Regras da marca respeitadas
 

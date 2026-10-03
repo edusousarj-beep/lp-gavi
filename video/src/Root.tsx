@@ -3,6 +3,7 @@ import {ensureFonts} from './brand/fonts';
 import {EDITORIAL_H, EDITORIAL_W, EditorialCity} from './editorial/EditorialCity';
 import {EditorialRoom} from './editorial/EditorialRoom';
 import {GaviAd} from './GaviAd';
+import {CallAd} from './call/CallAd';
 import {ConversaAd} from './conversa/ConversaAd';
 import {NoticiaAd} from './noticia/NoticiaAd';
 import {PorDentroAd} from './pordentro/PorDentroAd';
@@ -35,6 +36,9 @@ export const RemotionRoot: React.FC = () => (
         height={HEIGHT}
         defaultProps={{tema: 'escuro' as const, aviso: null as string | null}}
       />
+      {/* Reels "Call" (25 s): um único canvas desenhado por public/reels/render.js — render(t). */}
+      <Composition id="GaviCall" component={CallAd} durationInFrames={750} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{cta: 'saibamais' as const}} />
+      <Composition id="GaviCallBio" component={CallAd} durationInFrames={750} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{cta: 'linknabio' as const}} />
       {/* Modelada no anúncio de diagnóstico da turaCRM: 4 blocos, 16 s, 120 BPM. */}
       <Composition id="GaviPorDentro" component={PorDentroAd} durationInFrames={PD_DURATION} fps={FPS} width={WIDTH} height={HEIGHT} />
     </Folder>
