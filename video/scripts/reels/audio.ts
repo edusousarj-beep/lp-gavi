@@ -1,5 +1,5 @@
 /*
- * Gera public/audio/call.wav: a trilha de public/reels/audio.js (Web Audio API)
+ * Gera public/audio/carreira.wav: a trilha de public/reels/audio.js (Web Audio API)
  * renderizada num OfflineAudioContext dentro do Chromium, quadro a quadro com
  * a animação. Depois só o master: −14 LUFS e pico real ≤ −2 dBTP (dsp.ts).
  *
@@ -50,31 +50,30 @@ for (let iter = 0; iter < 8; iter++) {
   gain *= dbToGain(-14 - loudness);
 }
 
-const T = rendered.T as {drop: number; land: number; silence: [number, number]};
+const T = rendered.T as {anos: number; clareza: number; final: number};
 const dir = path.resolve('public/audio');
 fs.mkdirSync(dir, {recursive: true});
-fs.writeFileSync(path.join(dir, 'call.wav'), toWav(out));
+fs.writeFileSync(path.join(dir, 'carreira.wav'), toWav(out));
 const frame = (s: number) => Math.round(s * 30);
 fs.writeFileSync(
-  path.join(dir, 'call.cues.json'),
+  path.join(dir, 'carreira.cues.json'),
   JSON.stringify(
     {
       fps: 30,
       sampleRate: SR,
       duration: out.length / SR,
-      silence: T.silence,
       // peça sem cortes secos e com algo acontecendo a cada meio segundo (briefing)
       smooth: true,
       maxIdle: 0.5,
-      sync: {drop: T.drop, virada: 19.0, logo: T.land},
+      sync: {anos: T.anos, clareza: T.clareza, logo: T.final},
       marks: [
-        ['drop', T.drop, frame(T.drop)],
-        ['virada', 19.0, frame(19.0)],
-        ['logo', T.land, frame(T.land)],
+        ['anos', T.anos, frame(T.anos)],
+        ['clareza', T.clareza, frame(T.clareza)],
+        ['logo', T.final, frame(T.final)],
       ],
     },
     null,
     2,
   ),
 );
-console.log(JSON.stringify({trilha: 'call', segundos: out.length / SR, lufs: +loudness.toFixed(2), ganhoDb: +(20 * Math.log10(gain)).toFixed(2)}));
+console.log(JSON.stringify({trilha: 'carreira', segundos: out.length / SR, lufs: +loudness.toFixed(2), ganhoDb: +(20 * Math.log10(gain)).toFixed(2)}));

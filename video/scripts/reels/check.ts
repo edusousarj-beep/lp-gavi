@@ -1,10 +1,9 @@
 /*
- * Checagens do Reels "Call" direto no canvas (sem compressão de vídeo):
+ * Checagens do Reels "Carreira" direto no canvas (sem compressão de vídeo):
  *  1. textos longe das bordas — a caixa de todo texto, em todos os 750 quadros,
  *     dentro da área segura (SAFE em render.js);
  *  2. logo original — no final, os pixels da logo no canvas são idênticos aos
- *     do arquivo (nada redesenhado, nada reamostrado);
- *  3. a bolhinha pousa exatamente na bolhinha da logo.
+ *     do arquivo (nada redesenhado, nada reamostrado), com branco puro em volta.
  *
  *   npx tsx scripts/reels/check.ts
  */
@@ -19,10 +18,12 @@ const result = await withPage((page) =>
       new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
-        img.onerror = reject;
+        img.onerror = () => reject(new Error(src));
         img.src = src;
       });
-    const [logo, photo] = await Promise.all([load(urls.logo), load(urls.photo)]);
+    const entries = await Promise.all(Object.entries(mod.ASSETS as Record<string, string>).map(async ([k, p]) => [k, await load('/' + p)] as const));
+    const images = Object.fromEntries(entries);
+    const logo = images.logo;
     const debug = {boxes: [] as {t: number; a: number; x0: number; x1: number; y0: number; y1: number}[]};
     const canvas = document.createElement('canvas');
     canvas.width = mod.W;
@@ -32,7 +33,7 @@ const result = await withPage((page) =>
 
     for (const cta of ['saibamais', 'linknabio']) {
       debug.boxes.length = 0;
-      const scene = mod.createScene({logo, photo, cta, debug});
+      const scene = mod.createScene({images, cta, debug});
       const frames = Math.round(mod.DURATION * mod.FPS);
       for (let f = 0; f < frames; f++) scene.render(ctx, f / mod.FPS);
       const S = mod.SAFE;
@@ -88,12 +89,12 @@ const result = await withPage((page) =>
       };
     }
     return report;
-  }, {render: '/reels/render.js', logo: '/reels/logo.png', photo: '/pordentro/retrato.jpg'}),
+  }, {render: '/reels/render.js'}),
 );
 
 console.log(JSON.stringify(result, null, 2));
 fs.mkdirSync('out', {recursive: true});
-fs.writeFileSync(path.join('out', 'gavi-call.canvas-check.json'), JSON.stringify(result, null, 2));
+fs.writeFileSync(path.join('out', 'gavi-carreira.canvas-check.json'), JSON.stringify(result, null, 2));
 const ok = Object.values(result as Record<string, {outsideSafe: number; logoMaxDiff: number; whiteAroundLogoMin: number}>).every(
   (r) => r.outsideSafe === 0 && r.logoMaxDiff === 0 && r.whiteAroundLogoMin === 255,
 );

@@ -1,25 +1,32 @@
 /*
- * Inglês com a Gavi — Reels "Call" (25 s, 1080×1920, 30 fps).
+ * Inglês com a Gavi — Reels "Carreira" (25 s, 1080×1920, 30 fps).
  *
  * TODA a animação é desenhada num único <canvas> pela função render(ctx, t),
  * com t em segundos. Nada aqui depende de quadro anterior: qualquer instante
  * pode ser desenhado sozinho (é o que permite renderizar em paralelo).
  *
- * Roteiro aprovado (7 cenas, sem corte seco — toda troca é luz, zoom ou líquido):
- *   1  0–3 s      gancho: "Call com o time de fora em… 3 2 1"
- *   2  3–6 s      virada: "…e dessa vez quem conduz é você."
- *   3  6–9,65 s   para quem é: mentoria funcional, cards, executivos de diversas áreas
- *   4  9,65–14,6  como funciona: 20 min por dia, inglês da sua área, M.O.V.E.
- *   5  14,6–18,6  quem conduz (cena clara): Bruna Gavioli
- *   6  18,6–22    convite: "Na próxima call, quem conduz é você."
- *   7  22–25 s    final (2,5 s a partir de 22,5): logo original + chamada
+ * Modelado no exemplo do Pinterest que a cliente mandou: cenas pretas e
+ * brancas, palavra-chave em vermelho, objetos e emojis, cartão com tachinha,
+ * faixa curva cinza. Texto próprio da mentoria, em português (roteiro aprovado):
+ *   1   0–2      "Você estuda inglês há anos."
+ *   2   2–4      executivo em retícula: "Mas e a sua carreira?" / "no mesmo lugar."
+ *   3   4–6      "Porque inglês sem prática real"
+ *   4   6–7,5    "é só decoreba." + 🦜
+ *   5   7,5–10   chamada de vídeo: "E é na reunião / que se decide a promoção."
+ *   6   10–12,5  cartão com tachinha: "Sem inglês funcional:" …
+ *   7   12,5–14  "O mercado não premia esforço."
+ *   8   14–15    "Premia clareza."
+ *   9   15–17    cartão da Bruna (foto real)
+ *   10  17–18,5  "Você já se esforça muito." + 💻
+ *   11  18,5–20  "Mas não do jeito certo." + 🎯
+ *   12  20–22,5  "Toque em Saiba mais e mude isso." (ou "Link na bio para mudar isso.")
+ *   13  22,5–25  logo original + chamada (2,5 s)
  *
- * Elemento contínuo: a bolhinha "…" (vem da logo). No fim ela pousa
- * exatamente sobre a bolhinha da logo. A logo é o arquivo original,
- * recortado sem alterar pixel e desenhado em escala 1:1 — nunca redesenhada.
- *
- * Grade musical: 120 BPM → uma batida a cada 0,5 s; a trilha (audio.js) lê
- * os mesmos tempos daqui, então todo som cai no quadro do seu evento.
+ * Elemento contínuo: a faixa curva cinza do exemplo, em todas as cenas.
+ * Transições: círculo que abre, luz branca, cruzada com zoom — nenhum corte seco.
+ * Logo: o PNG original recortado sem perda, desenhado 1:1 no fim — nunca redesenhado.
+ * Grade musical: 120 BPM, uma batida a cada 0,5 s; a trilha (audio.js) lê os
+ * mesmos tempos daqui, então todo som cai no quadro do seu evento.
  */
 
 export const W = 1080;
@@ -30,82 +37,121 @@ export const BPM = 120;
 export const BEAT = 60 / BPM; // 0,5 s
 
 export const COLORS = {
-  petrol: '#063642', // fundo (da logo)
-  navy: '#072837', // texto escuro da logo
-  teal: '#1E5A66',
-  aqua: '#98D9E0',
-  red: '#DC2343', // vermelho vivo do "G"
+  black: '#0B0B0C',
+  ink: '#111214',
   white: '#FFFFFF',
+  grey: '#9C9CA2',
+  red: '#DC2343', // vermelho da marca (o "G" da logo)
+  navy: '#072837',
 };
 
-/* Recorte da logo (476×588, borda branca) e onde fica a bolhinha dela. */
-export const LOGO = {w: 476, h: 588, left: 302, top: 560, bubble: {x: 378.5, y: 54.5, r: 30.5}};
+/** Recorte da logo original (public/reels/logo.png) e onde ela fica no final. */
+export const LOGO = {w: 476, h: 588, left: 302, top: 560};
 
-/* Área segura: textos nunca saem daqui (longe das bordas e da interface do Reels). */
+/** Área segura dos textos: longe das bordas e da interface do Reels embaixo. */
 export const SAFE = {x0: 110, x1: 970, y0: 280, y1: 1470};
 
-/* Janelas de transição (clarão, líquido, portal, luz): ali o texto está sendo coberto ou atravessado. */
-export const TRANSITIONS = [
-  [2.85, 3.4],
-  [5.5, 6.45],
-  [9.65, 10.3],
-  [14.6, 15.35],
-  [18.6, 19.35],
-  [22.0, 22.5],
-];
+/** Arquivos que a cena usa (caminhos dentro de public/). */
+export const ASSETS = {
+  logo: 'reels/logo.png',
+  photo: 'pordentro/retrato.jpg',
+  parrot: 'emoji/emoji_u1f99c.svg',
+  silent: 'emoji/emoji_u1f636.svg',
+  globe: 'emoji/emoji_u1f30e.svg',
+  chartDown: 'emoji/emoji_u1f4c9.svg',
+  laptop: 'emoji/emoji_u1f4bb.svg',
+  target: 'emoji/emoji_u1f3af.svg',
+};
 
-/* ------------------------------------------------------------- linha do tempo */
-
+/** Tempos (s). Palavras-chave e batidas caem no tempo da música (múltiplos de 0,5 s). */
 export const T = {
   // 1 · gancho
-  s1: [-0.24, -0.12, -0.02, 0.08, 0.22, 0.32, 0.44], // Call com o time | de fora em… (já em cena no quadro 0)
-  count: [1.0, 1.5, 2.0], // 3 · 2 · 1
-  silence: [2.5, 2.75], // a música para por um instante
-  drop: 3.0, // clarão + batida cheia
-  // 2 · virada
-  s2: [3.1, 3.22, 3.34, 3.5, 3.62, 4.0, 4.1], // …e dessa vez | quem conduz | é você.
-  s2Rings: [4.5, 5.0],
-  liquid1: 5.5, // mancha líquida azul-água (cobre até 6,0; revela até 6,45)
-  // 3 · para quem é
-  s3Title: [6.08, 6.18, 6.28, 6.42], // Mentoria de inglês | funcional
-  cards: [6.5, 7.0, 7.5, 8.0],
-  s3Aud: [8.1, 8.2, 8.35, 8.45, 8.62, 8.74], // para executivos | e profissionais | de diversas áreas.
-  portal: 9.65, // zoom para dentro do anel (até 10,3)
-  // 4 · como funciona
-  ring: 10.2, // relógio se enche até 12,2
-  counter: [10.3, 11.3], // 0 → 20
-  s4: [11.3, 11.62, 11.72, 11.82, 12.0, 12.1], // por dia, | com o inglês | da sua área.
-  s4Out: 12.6,
-  method: 12.82,
-  tiles: [13.0, 13.5, 14.0, 14.5], // M · O · V · E
-  bloom: 14.6, // clarão para a cena clara (até 15,35)
-  // 5 · quem conduz
-  photo: 15.0,
-  arc: 15.15,
-  s5: [15.55, 15.68, 16.3, 16.38, 16.46, 16.56, 17.0, 17.08, 17.16, 17.24, 17.32],
-  liquid2: 18.6, // mancha escura (cobre até 19,0; revela até 19,35)
-  // 6 · convite
-  s6: [19.3, 19.4, 19.52, 19.8, 19.95, 20.3, 20.42],
-  s6Rings: [21.0, 21.5],
-  grow: 21.85, // a bolhinha cresce e brilha
-  flood: 22.0, // luz branca toma a tela (até 22,5)
-  // 7 · final
+  s1: [-0.24, -0.12, 0.0, 0.5, 0.75],
+  anos: 1.0,
+  // 2 · executivo
+  figure: 1.85,
+  bubble: 2.15,
+  s2: [2.25, 2.33, 2.41, 2.25],
+  carreira: 2.5,
+  lugar: [2.85, 3.0], // "no mesmo" · "lugar."
+  // 3
+  s3: [3.85, 3.95, 4.05, 4.5],
+  pratica: 5.0,
+  // 4
+  s4: [6.05, 6.15],
+  decoreba: 6.5,
+  parrot: 6.5,
+  // 5 · chamada de vídeo
+  call: 7.5,
+  tiles: [7.6, 7.7, 7.8, 7.9],
+  s5a: [7.6, 7.68, 7.76, 7.85],
+  reuniao: 8.0,
+  s5b: [8.5, 8.58, 8.66, 8.74, 8.85],
+  promocao: 9.0,
+  // 6 · cartão
+  card: 10.0,
+  pin: 10.35,
+  title: 10.4,
+  items: [10.75, 11.25, 11.75],
+  // 7
+  circle: 12.35,
+  mercado: 12.45,
+  s7: [13.1, 13.25, 13.4],
+  premia: 13.5,
+  strike: 13.6,
+  // 8
+  s8: [13.95, 14.25],
+  clareza: 14.5,
+  // 9 · Bruna
+  bruna: 15.0,
+  avatar: 15.1,
+  name: 15.3,
+  lines: [15.5, 15.7],
+  chips: [16.0, 16.25],
+  dot: 16.5,
+  // 10
+  laptop: 17.0,
+  s10: [17.05, 17.15, 17.25, 17.3, 17.4],
+  esforca: 17.5,
+  typing: [17.75, 18.0],
+  // 11
+  s11: [18.5, 18.6, 18.7, 18.8, 18.9],
+  certo: 19.0,
+  target: 19.0,
+  // 12 · chamada
+  s12: [20.05, 20.15, 20.3, 20.9, 21.0, 21.1],
+  saiba: 20.5,
+  mude: 21.0,
+  arrows: [21.25, 21.5, 22.0],
+  // 13 · final
   final: 22.5,
-  land: 23.0, // a bolhinha pousa na logo
-  cta: [22.625, 22.75, 22.875], // entra com a logo, em semicolcheias até o pouso (23,0): logo + chamada os 2,5 s finais
+  cta: [22.625, 22.75, 22.875],
   ctaPulses: [23.5, 24.0, 24.5],
 };
 
-/** Instantes em que o contador 0→20 muda de número (a trilha toca um tique em cada). */
-export function counterTimes() {
-  const [a, b] = T.counter;
-  const out = [];
-  for (let k = 1; k <= 20; k++) {
-    const y = k / 20; // easeOut(p) = y  →  p = 1 − (1 − y)^(1/3)
-    out.push(a + (b - a) * (1 - Math.cbrt(1 - y)));
-  }
-  return out;
-}
+/**
+ * Transição da cena i para a i+1, de a até b (s).
+ *   cross: mesma cor de fundo; a cena que sai dá zoom e some, a nova entra palavra por palavra
+ *   iris:  um círculo abre a partir de um ponto com a cena nova dentro (área coberta constante)
+ *   bloom: luz branca que nasce num ponto e toma a tela
+ */
+const TR = [
+  {a: 1.75, b: 2.1, type: 'cross'},
+  {a: 3.75, b: 4.1, type: 'cross'},
+  {a: 5.75, b: 6.1, type: 'iris', from: {x: 540, y: 1100}},
+  {a: 7.2, b: 7.55, type: 'iris', from: {x: 560, y: 1290}},
+  {a: 9.7, b: 10.1, type: 'iris', from: {x: -60, y: 1990}},
+  {a: 12.25, b: 12.6, type: 'cross'},
+  {a: 13.85, b: 14.15, type: 'cross'},
+  {a: 14.75, b: 15.1, type: 'iris', from: {x: 540, y: 960}},
+  {a: 16.75, b: 17.1, type: 'iris', from: {x: 1090, y: 1930}},
+  {a: 18.25, b: 18.6, type: 'cross'},
+  {a: 19.7, b: 20.05, type: 'iris', from: {x: 560, y: 1290}},
+  {a: 22.1, b: 22.5, type: 'bloom', from: {x: 540, y: 860}},
+];
+
+/** Janelas de transição (texto pode passar da área segura enquanto sai de cena). */
+export const TRANSITIONS = TR.map(({a, b}) => [a, b]);
 
 /* ------------------------------------------------------------------ util */
 
@@ -114,27 +160,18 @@ const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const lerp = (a, b, t) => a + (b - a) * t;
 const prog = (t, start, dur) => clamp((t - start) / dur);
 const easeOut = (x) => 1 - Math.pow(1 - x, 3);
-const easeIn = (x) => x * x * x;
 const easeInOut = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 /** Seno ida e volta: inclinação máxima π/2 — usada nas transições de tela inteira. */
 const sineInOut = (x) => 0.5 - 0.5 * Math.cos(Math.PI * x);
-/** Distância de um ponto até o canto da tela mais distante. */
-const reach = (x, y) => Math.max(Math.hypot(x, y), Math.hypot(W - x, y), Math.hypot(x, H - y), Math.hypot(W - x, H - y));
-const easeOutBack = (x) => {
-  const s = 1.70158;
+/** Saída com um leve passo além (sem quicar): para objetos que "batem" no lugar. */
+const easeOutSoft = (x) => {
+  const s = 0.9;
   return 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
 };
 /** Pulso 0→1→0 que dura `dur` a partir de `at`. */
 const bump = (t, at, dur = 0.3) => (t >= at && t < at + dur ? Math.sin((Math.PI * (t - at)) / dur) : 0);
-
-/** Mistura duas cores hex (k = 0 → a, 1 → b) com alpha. */
-function mixColor(a, b, k, alpha) {
-  const p = (hex) => [(parseInt(hex.slice(1), 16) >> 16) & 255, (parseInt(hex.slice(1), 16) >> 8) & 255, parseInt(hex.slice(1), 16) & 255];
-  const [r1, g1, b1] = p(a);
-  const [r2, g2, b2] = p(b);
-  const c = (x, y) => Math.round(lerp(x, y, k));
-  return `rgba(${c(r1, r2)}, ${c(g1, g2)}, ${c(b1, b2)}, ${clamp(alpha).toFixed(4)})`;
-}
+/** Distância de um ponto até o canto da tela mais distante. */
+const reach = (x, y) => Math.max(Math.hypot(x, y), Math.hypot(W - x, y), Math.hypot(x, H - y), Math.hypot(W - x, H - y));
 
 function rgba(hex, a) {
   const n = parseInt(hex.slice(1), 16);
@@ -153,14 +190,8 @@ function seeded(seed) {
   };
 }
 
-/** Batida da música: 1 no tempo, decaindo. Para no silêncio; meio tempo na cena clara. */
-function beatEnv(t) {
-  if (t >= T.silence[0] && t < T.drop) return 0;
-  if (t < T.count[0]) return 0.5 * Math.exp(-(t % BEAT) / 0.12);
-  const half = t >= 15.0 && t < 19.0;
-  const period = half ? 2 * BEAT : BEAT;
-  return Math.exp(-(t % period) / 0.13);
-}
+/** Batida da música: 1 no tempo, decaindo. */
+const beatEnv = (t) => Math.exp(-(((t % BEAT) + BEAT) % BEAT) / 0.12);
 
 function roundRect(ctx, x, y, w, h, r) {
   const rr = Math.max(0, Math.min(r, w / 2, h / 2));
@@ -185,15 +216,31 @@ function camera(ctx, cx, cy, s, fn) {
 /* --------------------------------------------------------------- a cena */
 
 /**
- * createScene({logo, photo, cta}) → { render(ctx, t) }
- *   logo:  imagem do recorte da logo (476×588)
- *   photo: retrato da Bruna
- *   cta:   'saibamais' (anúncio/turbinado) ou 'linknabio' (só publicar)
- *   debug: { boxes: [] } recebe a caixa de cada texto desenhado (checagem de bordas)
+ * createScene({images, cta}) → { render(ctx, t) }
+ *   images: as imagens de ASSETS, já carregadas (mesmas chaves)
+ *   cta:    'saibamais' (anúncio/turbinado) ou 'linknabio' (só publicar)
+ *   debug:  { boxes: [] } recebe a caixa de cada texto desenhado (checagem de bordas)
  */
-export function createScene({logo, photo, cta = 'saibamais', debug = null, makeCanvas = defaultCanvas}) {
+export function createScene({images, cta = 'saibamais', debug = null, makeCanvas = defaultCanvas}) {
+  const img = images;
   const grain = makeGrain(makeCanvas);
-  const specks = makeSpecks();
+  const figure = makeHalftone(makeCanvas);
+
+  const SC = [
+    {bg: 'black', draw: scene1},
+    {bg: 'black', draw: scene2},
+    {bg: 'black', draw: scene3},
+    {bg: 'white', draw: scene4},
+    {bg: 'black', draw: scene5},
+    {bg: 'white', draw: scene6},
+    {bg: 'white', draw: scene7},
+    {bg: 'white', draw: scene8},
+    {bg: 'black', draw: scene9},
+    {bg: 'white', draw: scene10},
+    {bg: 'white', draw: scene11},
+    {bg: 'black', draw: scene12},
+    {bg: 'final', draw: scene13},
+  ];
 
   function render(ctx, tIn) {
     const t = clamp(tIn, 0, DURATION - 1e-6);
@@ -207,718 +254,812 @@ export function createScene({logo, photo, cta = 'saibamais', debug = null, makeC
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
-    let grainAmt = 0.085;
+    let i = 0;
+    while (i < TR.length && t >= TR[i].b) i++;
+    const tr = TR[i];
+    let grainAmt = SC[i].bg === 'final' ? 0 : 0.05;
 
-    if (t < T.drop) {
-      bgDark(ctx, t);
-      scene1(ctx, t);
-      flash(ctx, t);
-    } else if (t < T.liquid1) {
-      bgDark(ctx, t);
-      scene2(ctx, t);
-      flash(ctx, t);
-    } else if (t < T.liquid1 + 0.5) {
-      bgDark(ctx, t);
-      scene2(ctx, t);
-      liquidCover(ctx, t, bubbleAt(t), prog(t, T.liquid1, 0.5), COLORS.aqua, COLORS.teal, 11);
-    } else if (t < T.liquid1 + 0.95) {
-      bgDark(ctx, t);
-      scene3(ctx, t);
-      liquidReveal(ctx, t, {x: 540, y: 560}, prog(t, T.liquid1 + 0.5, 0.45), COLORS.aqua, COLORS.teal, 11);
-    } else if (t < T.portal) {
-      bgDark(ctx, t);
-      scene3(ctx, t);
-    } else if (t < T.portal + 0.65) {
-      portal(ctx, t);
-    } else if (t < T.bloom) {
-      bgDark(ctx, t);
-      scene4(ctx, t);
-    } else if (t < T.bloom + 0.4) {
-      bgDark(ctx, t);
-      scene4(ctx, t);
-      whiteBloom(ctx, bubbleAt(t), prog(t, T.bloom, 0.4));
-    } else if (t < T.liquid2) {
-      bgLight(ctx, t);
-      scene5(ctx, t);
-      const fade = 1 - prog(t, T.bloom + 0.4, 0.35);
-      if (fade > 0) fillAll(ctx, rgba(COLORS.white, fade));
-      grainAmt = 0.05;
-    } else if (t < T.liquid2 + 0.4) {
-      bgLight(ctx, t);
-      scene5(ctx, t);
-      liquidCover(ctx, t, bubbleAt(t), prog(t, T.liquid2, 0.4), '#0A4552', '#04212B', 23);
-      grainAmt = 0.05 + 0.035 * prog(t, T.liquid2, 0.4);
-    } else if (t < T.liquid2 + 0.75) {
-      bgDark(ctx, t);
-      scene6(ctx, t);
-      liquidReveal(ctx, t, {x: 540, y: 920}, prog(t, T.liquid2 + 0.4, 0.35), '#0A4552', '#04212B', 23);
-    } else if (t < T.flood) {
-      bgDark(ctx, t);
-      scene6(ctx, t);
-    } else if (t < T.final) {
-      bgDark(ctx, t);
-      scene6(ctx, t);
-      whiteBloom(ctx, bubbleAt(t), prog(t, T.flood, 0.5));
-      grainAmt = 0.085 * (1 - prog(t, T.flood, 0.5));
+    if (!tr || t < tr.a) {
+      drawScene(ctx, i, t, 0);
     } else {
-      bgFinal(ctx, t);
-      grainAmt = 0;
+      const p = (t - tr.a) / (tr.b - tr.a);
+      if (tr.type === 'cross') {
+        drawBg(ctx, SC[i].bg, t);
+        SC[i].draw(ctx, t, sineInOut(p));
+        SC[i + 1].draw(ctx, t, 0);
+      } else if (tr.type === 'iris') {
+        drawScene(ctx, i, t, 0);
+        const R = coverRadius(tr.from, sineInOut(p));
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(tr.from.x, tr.from.y, R, 0, TAU);
+        ctx.clip();
+        drawScene(ctx, i + 1, t, 0);
+        ctx.restore();
+        // borda do círculo: um fio de luz (para o branco) ou de sombra (para o preto)
+        const toWhite = SC[i + 1].bg !== 'black';
+        ctx.save();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = toWhite ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.35)';
+        ctx.shadowColor = toWhite ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 30;
+        ctx.beginPath();
+        ctx.arc(tr.from.x, tr.from.y, R, 0, TAU);
+        ctx.stroke();
+        ctx.restore();
+      } else {
+        drawScene(ctx, i, t, 0);
+        whiteBloom(ctx, tr.from, p);
+        grainAmt *= 1 - p;
+      }
     }
 
     if (grainAmt > 0.001) applyGrain(ctx, grain, grainAmt);
-    if (t >= T.final) scene7(ctx, t); // a logo fica fora do grão: pixels intactos
-    drawBubble(ctx, t, bubbleAt(t));
     ctx.restore();
   }
+
+  function drawScene(ctx, i, t, out) {
+    drawBg(ctx, SC[i].bg, t);
+    SC[i].draw(ctx, t, out);
+  }
+
+  /** A cena que sai numa transição cruzada: zoom para a frente e some. */
+  function leaving(ctx, out, fn) {
+    if (out <= 0) return fn();
+    ctx.save();
+    ctx.globalAlpha *= 1 - out;
+    camera(ctx, 540, 960, 1 + 0.3 * out, fn);
+    ctx.restore();
+  }
+
+  /** Empurrão lento de câmera durante a cena (nunca fica parado). */
+  const push = (t, start, dur) => 1 + 0.035 * prog(t, start, dur);
 
   /* ----------------------------------------------------------- fundos */
 
-  function bgDark(ctx, t) {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#073742');
-    g.addColorStop(0.55, '#052C36');
-    g.addColorStop(1, '#031A21');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-
-    const p = beatEnv(t);
-    ctx.save();
-    ctx.globalCompositeOperation = 'screen';
-    glow(ctx, 300 + 130 * Math.sin(t * 0.31), 420 + 90 * Math.cos(t * 0.27), 680, COLORS.teal, 0.62 + 0.12 * p);
-    glow(ctx, 860 + 90 * Math.sin(t * 0.23 + 1), 1320 + 140 * Math.sin(t * 0.19), 780, COLORS.aqua, 0.15 + 0.07 * p);
-    glow(ctx, 120 + 80 * Math.cos(t * 0.21), 1660, 560, COLORS.teal, 0.5);
-    glow(ctx, 840, 250 + 60 * Math.sin(t * 0.4), 440, COLORS.aqua, 0.1 + 0.06 * p);
-    ctx.restore();
-
-    // anéis finos de luz e um pulso que se abre a cada batida
-    ring(ctx, 905, 330, 390 + 12 * Math.sin(t * 0.5), rgba(COLORS.aqua, 0.07), 2);
-    ring(ctx, 150, 1520, 540 + 10 * Math.cos(t * 0.4), rgba(COLORS.aqua, 0.05), 2);
-    const ph = (t % BEAT) / BEAT;
-    if (beatEnv(t) > 0.01 && t >= T.count[0]) ring(ctx, 540, 960, 260 + 640 * easeOut(ph), rgba(COLORS.aqua, 0.05 * (1 - ph)), 3);
-
-    drawSpecks(ctx, t, specks, COLORS.aqua);
-
-    const v = ctx.createRadialGradient(540, 900, 320, 540, 900, 1300);
-    v.addColorStop(0, 'rgba(0,0,0,0)');
-    v.addColorStop(1, 'rgba(0,0,0,0.42)');
-    ctx.fillStyle = v;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  function bgLight(ctx, t) {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#FFFFFF');
-    g.addColorStop(1, '#EAF6F8');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-    const p = beatEnv(t);
-    glow(ctx, 120 + 60 * Math.sin(t * 0.4), 260, 640, COLORS.aqua, 0.42 + 0.08 * p);
-    glow(ctx, 980, 1600 + 60 * Math.cos(t * 0.33), 760, COLORS.aqua, 0.38 + 0.08 * p);
-    glow(ctx, 900, 380, 420, COLORS.teal, 0.08);
-    ring(ctx, 920, 300, 360 + 10 * Math.sin(t * 0.6), rgba(COLORS.teal, 0.08), 2);
-    ring(ctx, 140, 1560, 480, rgba(COLORS.teal, 0.07), 2);
-  }
-
-  /* Final: branco puro onde a logo fica (o fundo dela é branco); luz só nos cantos. */
-  function bgFinal(ctx, t) {
-    ctx.fillStyle = COLORS.white;
-    ctx.fillRect(0, 0, W, H);
-    const p = beatEnv(t);
-    const breathe = 0.5 + 0.5 * Math.sin((t - T.final) * 2.2);
-    glow(ctx, -40, -40, 560, COLORS.aqua, 0.5 + 0.1 * breathe + 0.08 * p);
-    glow(ctx, 1120, 1960, 680, COLORS.aqua, 0.48 + 0.1 * (1 - breathe) + 0.08 * p);
-    ring(ctx, 1040, 1820, 300 + 14 * breathe, rgba(COLORS.teal, 0.09), 2);
-    ring(ctx, 40, 140, 240 + 14 * (1 - breathe), rgba(COLORS.teal, 0.08), 2);
-  }
-
-  /* ----------------------------------------------------------- cena 1 */
-
-  function scene1(ctx, t) {
-    const breath = easeInOut(prog(t, T.silence[0], 0.45));
-    const push = (1 + 0.035 * prog(t, 0, 2.5)) * (1 - 0.04 * breath);
-    camera(ctx, 540, 900, push, () => {
-      const w = T.s1;
-      line(ctx, t, {y: 650, size: 86, words: [{text: 'Call', at: w[0], hl: true}, {text: 'com', at: w[1]}, {text: 'o', at: w[2]}, {text: 'time', at: w[3]}]});
-      line(ctx, t, {y: 752, size: 86, words: [{text: 'de', at: w[4]}, {text: 'fora', at: w[5]}, {text: 'em…', at: w[6]}]});
-      countdown(ctx, t, breath);
-    });
-  }
-
-  function countdown(ctx, t, breath) {
-    const cx = 540;
-    const cy = 1060;
-    // anel do cronômetro: aparece antes do "3" e esvazia a cada meio segundo
-    const ringIn = easeOut(prog(t, 0.45, 0.5));
-    if (ringIn > 0) {
-      ctx.save();
-      ctx.globalAlpha *= ringIn;
-      ring(ctx, cx, cy, 230, rgba(COLORS.white, 0.1), 10);
-      let frac = 1;
-      if (t >= T.count[0]) frac = t < T.silence[0] ? 1 - ((t - T.count[0]) % BEAT) / BEAT : 0;
-      else frac = ringIn;
-      ctx.lineCap = 'round';
-      ctx.shadowColor = COLORS.aqua;
-      ctx.shadowBlur = 26;
-      ctx.strokeStyle = COLORS.aqua;
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 230, -Math.PI / 2, -Math.PI / 2 + TAU * Math.max(0.0001, frac));
-      ctx.stroke();
-      ctx.restore();
-    }
-    ['3', '2', '1'].forEach((d, i) => {
-      const at = T.count[i];
-      const next = T.count[i + 1];
-      if (t < at - 0.02) return;
-      const p = easeOut(prog(t, at, 0.24));
-      let scale = lerp(1.75, 1, p);
-      let alpha = p;
-      let blur = (1 - p) * 18;
-      if (next !== undefined) {
-        const q = easeIn(prog(t, next - 0.02, 0.2));
-        scale *= lerp(1, 1.45, q);
-        alpha *= 1 - q;
-        blur += q * 14;
-      } else {
-        scale *= 1 - 0.08 * breath;
-      }
-      if (alpha <= 0.003) return;
-      ctx.save();
-      ctx.globalAlpha *= alpha;
-      ctx.translate(cx, cy);
-      ctx.scale(scale, scale);
-      ctx.font = '800 400px Inter, Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = COLORS.white;
-      ctx.shadowColor = rgba(COLORS.aqua, 0.85);
-      ctx.shadowBlur = 40 + 30 * (1 - p);
-      if (blur > 0.3) ctx.filter = `blur(${blur.toFixed(2)}px)`;
-      ctx.fillText(d, 0, 145);
-      ctx.restore();
-      record(ctx, cx - 125 * scale, cy - 150 * scale, cx + 125 * scale, cy + 150 * scale, t);
-    });
-  }
-
-  /* Clarão do drop: a luz nasce no "1" no fim do silêncio, toma a tela com o swell,
-     pico no drop (3,0 s) e abre a cena 2 em 0,45 s; um anel de luz se expande.
-     Cada pixel clareia ao longo de ~7 quadros: nenhum quadro carrega o salto sozinho. */
-  const FLASH = {x: 540, y: 1000, up: 0.35, spread: 0.35};
-  function flash(ctx, t) {
-    const up = prog(t, T.drop - FLASH.up, FLASH.up);
-    const down = Math.pow(1 - prog(t, T.drop, 0.45), 1.7);
-    if (t < T.drop - FLASH.up || (t >= T.drop && down < 0.002)) {
-      // nada
-    } else {
-      const sorted = screenDistances(FLASH.x, FLASH.y);
-      const D = reach(FLASH.x, FLASH.y) + 2;
-      const g = ctx.createRadialGradient(FLASH.x, FLASH.y, 0, FLASH.x, FLASH.y, D);
-      const M = 20;
-      for (let j = 0; j <= M; j++) {
-        const d = quantile(sorted, j / M);
-        // perfil do pico: branco no centro, puxando para o aqua na borda
-        const u = d / 1400;
-        const edge = clamp((u - 0.6) / 0.4);
-        const peak = u < 0.6 ? lerp(0.96, 0.883, u / 0.6) : lerp(0.883, 0.672, edge);
-        const k = t < T.drop ? clamp((up - (FLASH.spread * j) / M) / (1 - FLASH.spread)) : down;
-        g.addColorStop(Math.min(1, d / D), mixColor(COLORS.white, COLORS.aqua, edge, peak * k));
-      }
+  function drawBg(ctx, kind, t) {
+    if (kind === 'black') {
+      ctx.fillStyle = COLORS.black;
+      ctx.fillRect(0, 0, W, H);
+      const g = ctx.createRadialGradient(540, 900, 0, 540, 900, 1250);
+      g.addColorStop(0, '#1B1B1E');
+      g.addColorStop(0.55, '#0E0E10');
+      g.addColorStop(1, '#050506');
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
-    }
-    const r = prog(t, T.drop - 0.1, 0.45);
-    if (r > 0 && r < 1) {
-      ctx.save();
-      ctx.strokeStyle = rgba(COLORS.white, 0.9 * (1 - r));
-      ctx.shadowColor = COLORS.aqua;
-      ctx.shadowBlur = 40;
-      ctx.lineWidth = lerp(36, 3, r);
-      ctx.beginPath();
-      ctx.arc(540, 1000, lerp(60, 1500, easeOut(r)), 0, TAU);
-      ctx.stroke();
-      ctx.restore();
+      ribbon(ctx, t, 'dark');
+    } else {
+      ctx.fillStyle = COLORS.white;
+      ctx.fillRect(0, 0, W, H);
+      if (kind === 'white') {
+        const g = ctx.createLinearGradient(0, 1150, 0, H);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0.085)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+      }
+      ribbon(ctx, t, 'light');
     }
   }
 
-  /* ----------------------------------------------------------- cena 2 */
+  /**
+   * A faixa curva (o elemento que acompanha o vídeo todo): um arco grande pela
+   * esquerda, com sombreado de tubo. Respira devagar; no final recua para o canto.
+   */
+  function ribbon(ctx, t, tone) {
+    const k = 210 * easeInOut(prog(t, T.final - 0.4, 0.9));
+    const a = {x: 800 + 90 * Math.sin(t * 0.55) - k, y: -150};
+    const b = {x: -260 - k, y: 420 + 110 * Math.sin(t * 0.43 + 1)};
+    const c = {x: -150 - k, y: 1480 + 60 * Math.sin(t * 0.37)};
+    const d = {x: 780 - 0.6 * k, y: 2110};
+    const cols = tone === 'dark' ? ['#151517', '#1A1A1D', '#202024', '#27272B'] : ['#C9C9CC', '#D4D4D7', '#DFDFE2', '#EAEAEC'];
+    ctx.save();
+    ctx.lineCap = 'round';
+    [176, 136, 96, 52].forEach((w, i) => {
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.bezierCurveTo(b.x, b.y, c.x, c.y, d.x, d.y);
+      ctx.lineWidth = w;
+      ctx.strokeStyle = cols[i];
+      if (i === 0) {
+        ctx.shadowColor = tone === 'dark' ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.16)';
+        ctx.shadowBlur = 44;
+        ctx.shadowOffsetY = 26;
+      } else {
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+      }
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
 
-  function scene2(ctx, t) {
-    const z = 1.2 - 0.2 * easeOut(prog(t, T.drop, 0.7));
-    const push = 1 + 0.03 * prog(t, 3.7, 2.3);
-    const w = T.s2;
-    camera(ctx, 540, 860, z * push, () => {
-      line(ctx, t, {y: 700, size: 84, words: [{text: '…e', at: w[0]}, {text: 'dessa', at: w[1]}, {text: 'vez', at: w[2]}]});
-      line(ctx, t, {y: 832, size: 106, words: [{text: 'quem', at: w[3]}, {text: 'conduz', at: w[4]}]});
-      line(ctx, t, {y: 1010, size: 142, words: [{text: 'é', at: w[5]}, {text: 'você.', at: w[6], hl: true}]});
-      T.s2Rings.forEach((at) => pulseRing(ctx, t, at, 600, 955));
+  /* ----------------------------------------------------------- cenas */
+
+  // 1 · "Você estuda inglês / há anos."
+  function scene1(ctx, t, out) {
+    const w = T.s1;
+    leaving(ctx, out, () =>
+      camera(ctx, 540, 960, push(t, 0, 2), () => {
+        words(ctx, t, {y: 880, items: [
+          {text: 'Você', at: w[0], size: 88},
+          {text: 'estuda', at: w[1], size: 88},
+          {text: 'inglês', at: w[2], size: 88},
+        ]});
+        words(ctx, t, {y: 1130, items: [
+          {text: 'há', at: w[3], size: 88},
+          {text: 'anos.', at: w[4], size: 220, weight: 800, color: COLORS.red, glow: true, hits: [T.anos, 1.5]},
+        ]});
+      }),
+    );
+  }
+
+  // 2 · executivo em retícula: "Mas e a sua carreira?" / "no mesmo lugar."
+  function scene2(ctx, t, out) {
+    leaving(ctx, out, () => {
+      const fp = easeOut(prog(t, T.figure, 0.5));
+      if (fp > 0) {
+        const s = 1 + 0.05 * prog(t, T.figure, 2.2);
+        const fw = figure.width * s;
+        ctx.save();
+        ctx.globalAlpha *= fp;
+        ctx.drawImage(figure, 540 - fw / 2, 560 + 220 * (1 - fp), fw, figure.height * s);
+        ctx.restore();
+        // escurece a base para o texto grande ler bem por cima da figura
+        const g = ctx.createLinearGradient(0, 1040, 0, 1560);
+        g.addColorStop(0, 'rgba(8,8,9,0)');
+        g.addColorStop(1, 'rgba(8,8,9,0.92)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 1040, W, H - 1040);
+      }
+      // balão no lugar do rosto
+      const bp = easeOutSoft(prog(t, T.bubble, 0.32));
+      if (bp > 0) {
+        ctx.save();
+        ctx.globalAlpha *= clamp(bp * 1.4);
+        camera(ctx, 610, 640, lerp(0.7, 1, bp), () => {
+          ctx.shadowColor = 'rgba(0,0,0,0.5)';
+          ctx.shadowBlur = 40;
+          ctx.shadowOffsetY = 16;
+          roundRect(ctx, 175, 300, 730, 330, 70);
+          ctx.fillStyle = COLORS.white;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(560, 600);
+          ctx.lineTo(660, 600);
+          ctx.lineTo(600, 700);
+          ctx.closePath();
+          ctx.fill();
+          ctx.shadowColor = 'transparent';
+          const w = T.s2;
+          words(ctx, t, {y: 425, items: [
+            {text: 'Mas', at: w[0], size: 66, color: COLORS.ink},
+            {text: 'e', at: w[1], size: 66, color: COLORS.ink},
+            {text: 'a sua', at: w[2], size: 66, color: COLORS.ink},
+          ]});
+          words(ctx, t, {y: 572, items: [{text: 'carreira?', at: T.carreira - 0.2, size: 132, weight: 800, color: COLORS.red, hits: [T.carreira]}]});
+        });
+        ctx.restore();
+      }
+      words(ctx, t, {y: 1270, items: [{text: 'no mesmo', at: T.lugar[0], size: 160, weight: 800, shadow: true}]});
+      words(ctx, t, {y: 1425, items: [{text: 'lugar.', at: T.lugar[1], size: 160, weight: 800, shadow: true, hits: [T.lugar[1] + 0.5]}]});
     });
   }
 
-  /* ----------------------------------------------------------- cena 3 */
+  // 3 · "Porque inglês sem / prática real"
+  function scene3(ctx, t, out) {
+    const w = T.s3;
+    leaving(ctx, out, () =>
+      camera(ctx, 540, 960, push(t, 3.85, 2), () => {
+        words(ctx, t, {y: 900, items: [
+          {text: 'Porque', at: w[0], size: 90},
+          {text: 'inglês', at: w[1], size: 90},
+          {text: 'sem', at: w[2], size: 90},
+        ]});
+        words(ctx, t, {y: 1100, items: [{text: 'prática real', at: w[3], size: 140, weight: 800, color: COLORS.red, glow: true, hits: [T.pratica, T.pratica + 0.5]}]});
+      }),
+    );
+  }
 
-  const CARDS = [
-    {text: 'Reunião', x: 140, y: 680, w: 350},
-    {text: 'Call', x: 600, y: 720, w: 270},
-    {text: 'Entrevista', x: 210, y: 852, w: 390},
-    {text: 'Viagem de trabalho', x: 320, y: 1010, w: 560},
+  // 4 · "é só decoreba." + 🦜
+  function scene4(ctx, t, out) {
+    leaving(ctx, out, () => {
+      camera(ctx, 540, 960, push(t, 6, 1.5), () => {
+        words(ctx, t, {y: 760, items: [{text: 'é só', at: T.s4[0], size: 110, color: COLORS.ink}]});
+        words(ctx, t, {y: 960, items: [{text: 'decoreba.', at: T.s4[1], size: 155, weight: 800, color: COLORS.red, hits: [T.decoreba, T.decoreba + 0.5]}]});
+      });
+      // papagaio: entra no tempo, inclina a cabeça a cada batida
+      const p = easeOutSoft(prog(t, T.parrot, 0.35));
+      if (p > 0 && img.parrot) {
+        const tilt = 0.09 * Math.sin((t - T.parrot) * Math.PI * 2) * clamp((t - T.parrot) / 0.3);
+        emoji(ctx, img.parrot, 560, 1290, 420 * lerp(0.4, 1, p), tilt - 0.06, clamp(p * 1.5));
+      }
+    });
+  }
+
+  // 5 · chamada de vídeo: "E é na reunião / que se decide a promoção."
+  function scene5(ctx, t, out) {
+    leaving(ctx, out, () => {
+      callWindow(ctx, t);
+      const a = T.s5a;
+      words(ctx, t, {y: 470, items: [
+        {text: 'E', at: a[0], size: 82},
+        {text: 'é', at: a[1], size: 82},
+        {text: 'na', at: a[2], size: 82},
+        {text: 'reunião', at: a[3], size: 140, weight: 800, color: COLORS.red, glow: true, hits: [T.reuniao]},
+      ]});
+      const b = T.s5b;
+      words(ctx, t, {y: 1268, items: [
+        {text: 'que', at: b[0], size: 82},
+        {text: 'se', at: b[1], size: 82},
+        {text: 'decide', at: b[2], size: 82},
+        {text: 'a', at: b[3], size: 82},
+      ]});
+      words(ctx, t, {y: 1422, items: [{text: 'promoção.', at: b[4], size: 144, weight: 800, color: COLORS.red, glow: true, hits: [T.promocao, T.promocao + 0.5]}]});
+    });
+  }
+
+  const PEOPLE = [
+    {name: 'Michael', city: 'Nova York', initials: 'MJ', color: '#3B4C5E'},
+    {name: 'Sarah', city: 'Londres', initials: 'SL', color: '#55405A'},
+    {name: 'Kenji', city: 'Tóquio', initials: 'KT', color: '#3E5A4C'},
+    {name: 'Você', city: '', initials: '', color: '#45454B', you: true},
   ];
 
-  function scene3(ctx, t) {
-    const push = 1 + 0.03 * prog(t, T.liquid1 + 0.5, 3.6);
-    const a = T.s3Title;
-    const b = T.s3Aud;
-    camera(ctx, 540, 900, push, () => {
-      line(ctx, t, {y: 458, size: 76, words: [{text: 'Mentoria', at: a[0]}, {text: 'de', at: a[1]}, {text: 'inglês', at: a[2]}]});
-      line(ctx, t, {y: 575, size: 96, words: [{text: 'funcional', at: a[3], hl: true}]});
-      CARDS.forEach((c, i) => glassCard(ctx, t, c, T.cards[i]));
-      line(ctx, t, {y: 1222, size: 64, words: [{text: 'para', at: b[0]}, {text: 'executivos', at: b[1]}]});
-      line(ctx, t, {y: 1304, size: 64, words: [{text: 'e', at: b[2]}, {text: 'profissionais', at: b[3]}]});
-      line(ctx, t, {y: 1396, size: 66, words: [{text: 'de', at: b[4]}, {text: 'diversas áreas.', at: b[5], hl: true}]});
+  function callWindow(ctx, t) {
+    const x0 = 120;
+    const y0 = 560;
+    const w = 840;
+    const h = 600;
+    const inP = easeOut(prog(t, T.call, 0.4));
+    if (inP <= 0) return;
+    ctx.save();
+    ctx.globalAlpha *= inP;
+    camera(ctx, 540, 860, lerp(0.9, 1, inP) * push(t, T.call, 2.5), () => {
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.7)';
+      ctx.shadowBlur = 60;
+      ctx.shadowOffsetY = 30;
+      roundRect(ctx, x0, y0, w, h, 30);
+      ctx.fillStyle = '#141416';
+      ctx.fill();
+      ctx.restore();
+      roundRect(ctx, x0, y0, w, h, 30);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#2A2A2F';
+      ctx.stroke();
+      // cabeçalho: nome da reunião e cronômetro andando
+      ctx.font = '600 30px Inter, Arial, sans-serif';
+      ctx.fillStyle = '#A4A4AB';
+      ctx.textAlign = 'left';
+      ctx.fillText('Reunião · time global', x0 + 70, y0 + 52);
+      ctx.beginPath();
+      ctx.arc(x0 + 44, y0 + 42, 9, 0, TAU);
+      ctx.fillStyle = '#5BD47A';
+      ctx.fill();
+      const secs = 4 + Math.max(0, Math.floor(t - T.call));
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#A4A4AB';
+      ctx.fillText(`12:${String(secs).padStart(2, '0')}`, x0 + w - 34, y0 + 52);
+      ctx.textAlign = 'left';
+      // quatro pessoas
+      const tw = 390;
+      const th = 236;
+      PEOPLE.forEach((p, k) => {
+        const tx = x0 + 20 + (k % 2) * (tw + 20);
+        const ty = y0 + 84 + Math.floor(k / 2) * (th + 20);
+        const pp = easeOutSoft(prog(t, T.tiles[k], 0.3));
+        if (pp <= 0) return;
+        ctx.save();
+        ctx.globalAlpha *= clamp(pp * 1.4);
+        camera(ctx, tx + tw / 2, ty + th / 2, lerp(0.85, 1, pp), () => {
+          roundRect(ctx, tx, ty, tw, th, 18);
+          ctx.fillStyle = '#1F1F23';
+          ctx.fill();
+          const cx = tx + tw / 2;
+          const cy = ty + th / 2 - 16;
+          if (p.you) {
+            // silhueta (câmera ligada), borda vermelha quando fala
+            ctx.save();
+            roundRect(ctx, tx, ty, tw, th, 18);
+            ctx.clip();
+            ctx.fillStyle = '#5A5A61';
+            ctx.beginPath();
+            ctx.arc(cx, cy - 12, 44, 0, TAU);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + 110, 108, 78, 0, Math.PI, TAU);
+            ctx.fill();
+            ctx.restore();
+            const talk = clamp((t - T.reuniao) / 0.15);
+            if (talk > 0) {
+              ctx.save();
+              ctx.globalAlpha *= talk;
+              roundRect(ctx, tx + 2, ty + 2, tw - 4, th - 4, 17);
+              ctx.lineWidth = 6;
+              ctx.strokeStyle = COLORS.red;
+              ctx.shadowColor = rgba(COLORS.red, 0.8);
+              ctx.shadowBlur = 24;
+              ctx.stroke();
+              ctx.restore();
+              // barras de voz no tempo da música
+              for (let b = 0; b < 3; b++) {
+                const hgt = 10 + 26 * Math.abs(Math.sin(t * 9 + b * 1.7)) * (0.5 + 0.5 * beatEnv(t));
+                ctx.fillStyle = COLORS.red;
+                roundRect(ctx, tx + tw - 70 + b * 16, ty + th - 26 - hgt, 10, hgt, 5);
+                ctx.fill();
+              }
+            }
+          } else {
+            ctx.beginPath();
+            ctx.arc(cx, cy, 58, 0, TAU);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+            ctx.font = '700 44px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = COLORS.white;
+            ctx.fillText(p.initials, cx, cy + 16);
+            ctx.textAlign = 'left';
+          }
+          // etiqueta do nome sobre fundo escuro, como nos apps de chamada
+          ctx.font = '600 27px Inter, Arial, sans-serif';
+          const nw = ctx.measureText(p.name).width;
+          const cw = p.city ? ctx.measureText(` · ${p.city}`).width : 0;
+          roundRect(ctx, tx + 12, ty + th - 56, nw + cw + 24, 42, 12);
+          ctx.fillStyle = 'rgba(0,0,0,0.55)';
+          ctx.fill();
+          ctx.fillStyle = '#E2E2E6';
+          ctx.fillText(p.name, tx + 24, ty + th - 26);
+          if (p.city) {
+            ctx.fillStyle = '#8E8E96';
+            ctx.fillText(` · ${p.city}`, tx + 24 + nw, ty + th - 26);
+          }
+        });
+        ctx.restore();
+      });
+    });
+    ctx.restore();
+  }
+
+  // 6 · cartão com tachinha: "Sem inglês funcional:"
+  const ITEMS = [
+    {icon: 'silent', text: 'sem voz na reunião'},
+    {icon: 'globe', text: 'sem a vaga lá fora'},
+    {icon: 'chartDown', text: 'sem a promoção'},
+  ];
+
+  function scene6(ctx, t, out) {
+    leaving(ctx, out, () => {
+      const p = easeOutSoft(prog(t, T.card, 0.42));
+      if (p <= 0) return;
+      const cw = 800;
+      const ch = 690;
+      const cx = 540;
+      const cy = 930 - 1150 * (1 - p);
+      const settle = 0.025 * Math.sin((t - T.pin) * 9) * Math.exp(-Math.max(0, t - T.pin) * 5) * (t >= T.pin ? 1 : 0);
+      const rot = lerp(-0.22, -0.035, p) + settle;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rot);
+      ctx.translate(-cw / 2, -ch / 2);
+      // papel
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.26)';
+      ctx.shadowBlur = 50;
+      ctx.shadowOffsetY = 30;
+      const g = ctx.createLinearGradient(0, 0, 0, ch);
+      g.addColorStop(0, '#F4F4F5');
+      g.addColorStop(1, '#E2E2E4');
+      ctx.fillStyle = g;
+      roundRect(ctx, 0, 0, cw, ch, 14);
+      ctx.fill();
+      ctx.restore();
+      // título e itens
+      words(ctx, t, {x: 60, y: 135, align: 'left', items: [{text: 'Sem inglês funcional:', at: T.title, size: 60, weight: 800, color: COLORS.ink}]});
+      const lp = easeOut(prog(t, T.title + 0.1, 0.35));
+      if (lp > 0) {
+        ctx.fillStyle = '#C4C4C8';
+        ctx.fillRect(60, 178, 680 * lp, 4);
+      }
+      ITEMS.forEach((it, k) => {
+        const at = T.items[k];
+        const q = easeOut(prog(t, at, 0.32));
+        if (q <= 0) return;
+        const by = 300 + k * 130;
+        if (img[it.icon]) emoji(ctx, img[it.icon], 98, by - 22, 80 * lerp(0.5, 1, easeOutSoft(prog(t, at, 0.3))), 0, q);
+        words(ctx, t, {x: 165 - 30 * (1 - q), y: by, align: 'left', items: [{text: it.text, at, size: 54, color: '#1D1D20'}]});
+      });
+      ctx.restore();
+      // tachinha
+      const pin = prog(t, T.pin, 0.18);
+      if (pin > 0) pushpin(ctx, cx + Math.sin(rot) * (ch / 2 - 30), cy - Math.cos(rot) * (ch / 2 - 30), lerp(1.7, 1, easeOut(pin)), clamp(pin * 2));
     });
   }
 
-  function glassCard(ctx, t, c, at) {
-    const p = prog(t, at, 0.42);
-    if (p <= 0) return;
-    const e = easeOutBack(p);
-    const h = 112;
-    const bob = Math.sin((t - at) * 2.1 + c.x * 0.01) * 6;
+  function pushpin(ctx, x, y, s, a) {
     ctx.save();
-    ctx.globalAlpha *= clamp(p * 2.2);
-    const cx = c.x + c.w / 2;
-    const cy = c.y + h / 2 + bob;
-    ctx.translate(cx, cy);
-    ctx.scale(lerp(0.75, 1, e), lerp(0.75, 1, e));
-    ctx.translate(-c.w / 2, -h / 2);
-    if (p < 1) ctx.filter = `blur(${((1 - easeOut(p)) * 10).toFixed(2)}px)`;
-    glass(ctx, 0, 0, c.w, h, 28);
-    // ponto de luz + texto
-    const dot = 0.6 + 0.4 * beatEnv(t);
-    ctx.fillStyle = rgba(COLORS.aqua, dot);
-    ctx.shadowColor = COLORS.aqua;
-    ctx.shadowBlur = 18;
+    ctx.globalAlpha *= a;
+    ctx.translate(x, y);
+    ctx.scale(s, s);
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur = 16;
+    ctx.shadowOffsetX = 8;
+    ctx.shadowOffsetY = 12;
+    const g = ctx.createRadialGradient(-10, -12, 4, 0, 0, 34);
+    g.addColorStop(0, '#FF7A8E');
+    g.addColorStop(0.45, COLORS.red);
+    g.addColorStop(1, '#8E1028');
+    ctx.fillStyle = g;
     ctx.beginPath();
-    ctx.arc(46, h / 2, 9, 0, TAU);
+    ctx.arc(0, 0, 32, 0, TAU);
     ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.font = '700 44px Inter, Arial, sans-serif';
-    ctx.fillStyle = COLORS.white;
-    ctx.fillText(c.text, 76, h / 2 + 16);
+    ctx.shadowColor = 'transparent';
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath();
+    ctx.ellipse(-11, -13, 9, 6, -0.6, 0, TAU);
+    ctx.fill();
     ctx.restore();
-    record(ctx, c.x, c.y + bob, c.x + c.w, c.y + h + bob, t);
   }
 
-  function glass(ctx, x, y, w, h, r) {
+  // 7 · "O mercado / não premia esforço."
+  function scene7(ctx, t, out) {
+    leaving(ctx, out, () =>
+      camera(ctx, 540, 960, push(t, 12.35, 1.8), () => {
+        const cp = easeOutSoft(prog(t, T.circle, 0.42));
+        if (cp > 0) {
+          ctx.beginPath();
+          ctx.arc(540, 880, 330 * cp, 0, TAU);
+          ctx.fillStyle = '#F8E1E6';
+          ctx.fill();
+        }
+        // "O mercado" se escreve da esquerda para a direita
+        const wp = easeInOut(prog(t, T.mercado, 0.5));
+        if (wp > 0) {
+          ctx.save();
+          ctx.font = '800 140px Inter, Arial, sans-serif';
+          const tw = ctx.measureText('O mercado').width;
+          const x = 540 - tw / 2;
+          ctx.beginPath();
+          ctx.rect(x - 10, 700, (tw + 20) * wp, 300);
+          ctx.clip();
+          ctx.fillStyle = COLORS.ink;
+          ctx.fillText('O mercado', x, 925);
+          ctx.restore();
+          record(ctx, x, 925 - 140 * 0.8, x + tw * wp, 925 + 140 * 0.24, t);
+        }
+        const w = T.s7;
+        words(ctx, t, {y: 1120, items: [
+          {text: 'não', at: w[0], size: 80, color: COLORS.ink},
+          {text: 'premia', at: w[1], size: 80, weight: 800, color: COLORS.red, hits: [T.premia]},
+          {text: 'esforço.', at: w[2], size: 80, color: '#A2A2A8', strike: T.strike},
+        ]});
+      }),
+    );
+  }
+
+  // 8 · "Premia / clareza."
+  function scene8(ctx, t, out) {
+    leaving(ctx, out, () =>
+      camera(ctx, 540, 960, push(t, 13.95, 1.2), () => {
+        words(ctx, t, {y: 830, items: [{text: 'Premia', at: T.s8[0], size: 112, color: COLORS.ink}]});
+        words(ctx, t, {y: 1060, items: [{text: 'clareza.', at: T.s8[1], size: 190, weight: 800, color: COLORS.red, hits: [T.clareza]}]});
+      }),
+    );
+  }
+
+  // 9 · cartão da Bruna (foto real)
+  function scene9(ctx, t, out) {
+    leaving(ctx, out, () => {
+      const p = easeOut(prog(t, T.bruna, 0.4));
+      if (p <= 0) return;
+      ctx.save();
+      ctx.globalAlpha *= p;
+      camera(ctx, 540, 880, push(t, T.bruna, 2), () => {
+        ctx.translate(0, 90 * (1 - p));
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 70;
+        ctx.shadowOffsetY = 30;
+        roundRect(ctx, 130, 500, 820, 760, 40);
+        ctx.fillStyle = '#151517';
+        ctx.fill();
+        ctx.restore();
+        roundRect(ctx, 130, 500, 820, 760, 40);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#2A2A2F';
+        ctx.stroke();
+        // foto
+        const ap = easeOutSoft(prog(t, T.avatar, 0.35));
+        if (ap > 0 && img.photo) {
+          const r = 132 * lerp(0.8, 1, ap);
+          const cx = 540;
+          const cy = 690;
+          ctx.save();
+          ctx.globalAlpha *= clamp(ap * 1.5);
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, TAU);
+          ctx.save();
+          ctx.clip();
+          const s = (r / 132) * 0.6;
+          ctx.drawImage(img.photo, cx - 400 * s, cy - 310 * s, img.photo.width * s, img.photo.height * s);
+          ctx.restore();
+          ctx.lineWidth = 6;
+          ctx.strokeStyle = COLORS.red;
+          ctx.stroke();
+          // pontinho de notificação, como no perfil do exemplo
+          const dp = 1 + 0.35 * bump(t, T.dot, 0.3);
+          ctx.beginPath();
+          ctx.arc(cx + r * 0.72, cy - r * 0.72, 17 * dp, 0, TAU);
+          ctx.fillStyle = COLORS.red;
+          ctx.fill();
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = '#151517';
+          ctx.stroke();
+          ctx.restore();
+        }
+        words(ctx, t, {y: 920, items: [{text: 'Bruna Gavioli', at: T.name, size: 72, weight: 800, color: COLORS.white}]});
+        words(ctx, t, {y: 995, items: [{text: 'Mentoria de inglês funcional', at: T.lines[0], size: 50, color: '#C9C9CF'}]});
+        words(ctx, t, {y: 1058, items: [{text: 'para executivos', at: T.lines[1], size: 50, weight: 800, color: COLORS.red}]});
+        chips(ctx, t);
+      });
+      ctx.restore();
+    });
+  }
+
+  function chips(ctx, t) {
+    const labels = ['Método M.O.V.E.', '20 min por dia'];
     ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.35)';
-    ctx.shadowBlur = 40;
-    ctx.shadowOffsetY = 18;
-    roundRect(ctx, x, y, w, h, r);
-    ctx.fillStyle = 'rgba(255,255,255,0.07)';
-    ctx.fill();
+    ctx.font = '700 38px Inter, Arial, sans-serif';
+    const pad = 30;
+    const dot = 26;
+    const ws = labels.map((l) => ctx.measureText(l).width + 2 * pad + dot);
+    const gap = 22;
+    let x = 540 - (ws[0] + ws[1] + gap) / 2;
+    labels.forEach((l, k) => {
+      const p = easeOutSoft(prog(t, T.chips[k], 0.3));
+      if (p > 0) {
+        ctx.save();
+        ctx.globalAlpha *= clamp(p * 1.5);
+        camera(ctx, x + ws[k] / 2, 1150, lerp(0.7, 1, p), () => {
+          roundRect(ctx, x, 1150 - 38, ws[k], 76, 38);
+          ctx.fillStyle = '#232327';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(x + pad + 7, 1150, 7, 0, TAU);
+          ctx.fillStyle = COLORS.red;
+          ctx.fill();
+          ctx.fillStyle = COLORS.white;
+          ctx.fillText(l, x + pad + dot, 1150 + 13);
+          record(ctx, x, 1150 - 38, x + ws[k], 1150 + 38, t);
+        });
+        ctx.restore();
+      }
+      x += ws[k] + gap;
+    });
     ctx.restore();
+  }
+
+  // 10 · "Você já se / esforça / muito." + 💻
+  function scene10(ctx, t, out) {
+    const w = T.s10;
+    leaving(ctx, out, () => {
+      const lp = easeOut(prog(t, T.laptop, 0.45));
+      if (lp > 0 && img.laptop) {
+        const shake = 0.02 * (bump(t, T.typing[0], 0.18) - bump(t, T.typing[1], 0.18));
+        emoji(ctx, img.laptop, 840 + 520 * (1 - lp), 1450, 600, -0.24 + shake, 1);
+      }
+      camera(ctx, 540, 960, push(t, 17, 1.5), () => {
+        words(ctx, t, {y: 660, items: [
+          {text: 'Você', at: w[0], size: 100, color: COLORS.ink},
+          {text: 'já', at: w[1], size: 100, color: COLORS.ink},
+          {text: 'se', at: w[2], size: 100, color: COLORS.ink},
+        ]});
+        words(ctx, t, {y: 860, items: [{text: 'esforça', at: w[3], size: 190, weight: 800, color: COLORS.red, hits: [T.esforca]}]});
+        words(ctx, t, {y: 1060, items: [{text: 'muito.', at: w[4], size: 190, weight: 800, color: COLORS.red, hits: [T.esforca, 18.0]}]});
+      });
+    });
+  }
+
+  // 11 · "Mas não do / jeito / certo." + 🎯
+  function scene11(ctx, t, out) {
+    const w = T.s11;
+    leaving(ctx, out, () => {
+      camera(ctx, 540, 960, push(t, 18.5, 1.5), () => {
+        words(ctx, t, {y: 660, items: [
+          {text: 'Mas', at: w[0], size: 100, color: COLORS.ink},
+          {text: 'não', at: w[1], size: 100, color: COLORS.ink},
+          {text: 'do', at: w[2], size: 100, color: COLORS.ink},
+        ]});
+        words(ctx, t, {y: 860, items: [{text: 'jeito', at: w[3], size: 190, weight: 800, color: COLORS.red, hits: [T.certo]}]});
+        words(ctx, t, {y: 1060, items: [{text: 'certo.', at: w[4], size: 190, weight: 800, color: COLORS.red, hits: [T.certo, T.certo + 0.5]}]});
+      });
+      const p = easeOutSoft(prog(t, T.target, 0.3));
+      if (p > 0 && img.target) {
+        const wob = 0.12 * Math.sin((t - T.target) * 22) * Math.exp(-(t - T.target) * 5);
+        emoji(ctx, img.target, 560, 1340, 400 * lerp(0.3, 1, p), wob, clamp(p * 1.5));
+      }
+    });
+  }
+
+  // 12 · chamada: "Toque em / Saiba mais / e mude isso." (ou "Link na bio / para mudar isso.")
+  function scene12(ctx, t, out) {
+    const w = T.s12;
+    leaving(ctx, out, () =>
+      camera(ctx, 540, 960, push(t, 20, 2.5), () => {
+        if (cta === 'linknabio') {
+          words(ctx, t, {y: 860, items: [{text: 'Link na bio', at: w[2], size: 146, weight: 800, color: COLORS.red, glow: true, hits: [T.saiba, 21.5]}]});
+          words(ctx, t, {y: 1050, items: [
+            {text: 'para', at: w[3], size: 92},
+            {text: 'mudar', at: w[4], size: 92, weight: 800, color: COLORS.red, glow: true, hits: [T.mude]},
+            {text: 'isso.', at: w[5], size: 92},
+          ]});
+        } else {
+          words(ctx, t, {y: 700, items: [
+            {text: 'Toque', at: w[0], size: 100},
+            {text: 'em', at: w[1], size: 100},
+          ]});
+          words(ctx, t, {y: 900, items: [{text: 'Saiba mais', at: w[2], size: 146, weight: 800, color: COLORS.red, glow: true, hits: [T.saiba, 21.5]}]});
+          words(ctx, t, {y: 1080, items: [
+            {text: 'e', at: w[3], size: 100},
+            {text: 'mude', at: w[4], size: 100, weight: 800, color: COLORS.red, glow: true, hits: [T.mude]},
+            {text: 'isso.', at: w[5], size: 100},
+          ]});
+          arrow(ctx, t);
+        }
+      }),
+    );
+  }
+
+  /** Seta para baixo (o botão "Saiba mais" fica embaixo do vídeo no anúncio). */
+  function arrow(ctx, t) {
+    const p = easeOut(prog(t, T.arrows[0], 0.3));
+    if (p <= 0) return;
+    let b = 0;
+    T.arrows.slice(1).forEach((at) => (b = Math.max(b, bump(t, at, 0.35))));
+    const y = 1230 + 34 * b;
     ctx.save();
-    roundRect(ctx, x, y, w, h, r);
-    const g = ctx.createLinearGradient(x, y, x + w, y + h);
-    g.addColorStop(0, 'rgba(255,255,255,0.20)');
-    g.addColorStop(0.5, 'rgba(255,255,255,0.05)');
-    g.addColorStop(1, rgba(COLORS.aqua, 0.12));
-    ctx.fillStyle = g;
-    ctx.fill();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.globalAlpha *= p;
+    ctx.strokeStyle = COLORS.white;
+    ctx.lineWidth = 12;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(540, y);
+    ctx.lineTo(540, y + 120);
+    ctx.moveTo(490, y + 72);
+    ctx.lineTo(540, y + 122);
+    ctx.lineTo(590, y + 72);
     ctx.stroke();
     ctx.restore();
   }
 
-  /* --------------------------------------------- portal (cena 3 → cena 4) */
-
-  function portal(ctx, t) {
-    const p = easeInOut(prog(t, T.portal, 0.65));
-    bgDark(ctx, t);
-    ctx.save();
-    ctx.globalAlpha *= 1 - p;
-    camera(ctx, 540, 700, 1 + 1.7 * p, () => scene3(ctx, t));
-    ctx.restore();
-    const R = lerp(0, 1500, easeIn(prog(t, T.portal + 0.1, 0.55)));
-    if (R > 1) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(540, 700, R, 0, TAU);
-      ctx.clip();
-      bgDark(ctx, t);
-      scene4(ctx, t);
-      ctx.restore();
-      ctx.save();
-      ctx.strokeStyle = rgba(COLORS.aqua, 0.95);
-      ctx.shadowColor = COLORS.aqua;
-      ctx.shadowBlur = 50;
-      ctx.lineWidth = lerp(18, 3, prog(t, T.portal + 0.1, 0.55));
-      ctx.beginPath();
-      ctx.arc(540, 700, R, 0, TAU);
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-
-  /* ----------------------------------------------------------- cena 4 */
-
-  function scene4(ctx, t) {
-    const push = 1 + 0.03 * prog(t, T.ring, 4.4);
-    const out = easeInOut(prog(t, T.s4Out, 0.3));
-    camera(ctx, 540, 900, push, () => {
-      if (out < 1) {
-        ctx.save();
-        ctx.globalAlpha *= 1 - out;
-        ctx.translate(0, -140 * out);
-        clock(ctx, t);
-        const w = T.s4;
-        line(ctx, t, {y: 1088, size: 84, words: [{text: 'por', at: w[0]}, {text: 'dia,', at: w[0] + 0.1}]});
-        line(ctx, t, {y: 1190, size: 70, words: [{text: 'com', at: w[1]}, {text: 'o', at: w[2]}, {text: 'inglês', at: w[3]}]});
-        line(ctx, t, {y: 1296, size: 80, words: [{text: 'da', at: w[4]}, {text: 'sua área.', at: w[5], hl: true}]});
-        ctx.restore();
-      }
-      if (t >= T.method - 0.05) method(ctx, t);
-    });
-  }
-
-  function clock(ctx, t) {
-    const cx = 540;
-    const cy = 700;
-    const r = 250;
-    const inA = easeOut(prog(t, T.ring - 0.25, 0.4));
-    if (inA <= 0) return;
-    ctx.save();
-    ctx.globalAlpha *= inA;
-    ring(ctx, cx, cy, r, rgba(COLORS.white, 0.1), 16);
-    for (let k = 0; k < 20; k++) {
-      const a = -Math.PI / 2 + (TAU * k) / 20;
-      const lit = prog(t, T.ring, 2.0) * 20 > k;
-      ctx.strokeStyle = lit ? rgba(COLORS.aqua, 0.9) : rgba(COLORS.white, 0.18);
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(cx + Math.cos(a) * (r - 34), cy + Math.sin(a) * (r - 34));
-      ctx.lineTo(cx + Math.cos(a) * (r - 52), cy + Math.sin(a) * (r - 52));
-      ctx.stroke();
-    }
-    const f = easeInOut(prog(t, T.ring, 2.0));
-    if (f > 0) {
-      ctx.lineCap = 'round';
-      ctx.shadowColor = COLORS.aqua;
-      ctx.shadowBlur = 30;
-      ctx.strokeStyle = COLORS.aqua;
-      ctx.lineWidth = 16;
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + TAU * f);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
-    const n = Math.round(20 * easeOut(prog(t, T.counter[0], T.counter[1] - T.counter[0])));
-    const pop = bump(t, T.counter[1], 0.3);
-    ctx.textAlign = 'center';
-    ctx.fillStyle = COLORS.white;
-    ctx.font = `800 ${Math.round(230 * (1 + 0.08 * pop))}px Inter, Arial, sans-serif`;
-    ctx.fillText(String(n), cx, cy + 70);
-    ctx.font = '700 54px Inter, Arial, sans-serif';
-    ctx.fillStyle = COLORS.aqua;
-    ctx.fillText('minutos', cx, cy + 150);
-    ctx.restore();
-    record(ctx, cx - 140, cy - 100, cx + 140, cy + 160, t);
-  }
-
-  function method(ctx, t) {
-    const inA = easeOut(prog(t, T.method, 0.35));
-    ctx.save();
-    ctx.globalAlpha *= inA;
-    ctx.translate(0, 70 * (1 - inA));
-    // Título acima da "pista" da bolhinha (y 714): ela pula entre as letras sem cobrir o título.
-    line(ctx, t, {y: 600, size: 64, words: [{text: 'Método', at: T.method}]});
-    ['M', 'O', 'V', 'E'].forEach((L, i) => {
-      const x = 175 + i * 190;
-      const y = 772;
-      const w = 160;
-      const h = 200;
-      const lit = easeOut(prog(t, T.tiles[i], 0.22));
-      const pop = bump(t, T.tiles[i], 0.32);
-      ctx.save();
-      ctx.translate(x + w / 2, y + h / 2);
-      ctx.scale(1 + 0.08 * pop, 1 + 0.08 * pop);
-      ctx.translate(-w / 2, -h / 2);
-      glass(ctx, 0, 0, w, h, 26);
-      if (lit > 0) {
-        ctx.save();
-        ctx.globalAlpha *= lit;
-        roundRect(ctx, 0, 0, w, h, 26);
-        ctx.fillStyle = COLORS.red;
-        ctx.shadowColor = COLORS.red;
-        ctx.shadowBlur = 40;
-        ctx.fill();
-        ctx.restore();
-      }
-      ctx.font = '800 124px Inter, Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = rgba(COLORS.white, 0.35 + 0.65 * lit);
-      ctx.fillText(L, w / 2, h / 2 + 45);
-      ctx.restore();
-      record(ctx, x, y, x + w, y + h, t);
-    });
-    ctx.restore();
-  }
-
-  /* ----------------------------------------------------------- cena 5 (clara) */
-
-  function scene5(ctx, t) {
-    const push = 1 + 0.03 * prog(t, T.photo, 3.6);
-    camera(ctx, 540, 900, push, () => {
-      portrait(ctx, t);
-      const w = T.s5;
-      line(ctx, t, {y: 1182, size: 70, color: COLORS.navy, words: [{text: 'Com', at: w[0]}, {text: 'Bruna Gavioli,', at: w[1], hl: true}]});
-      line(ctx, t, {y: 1276, size: 46, weight: 700, color: COLORS.navy, words: [{text: 'criadora', at: w[2]}, {text: 'do', at: w[3]}, {text: 'método', at: w[4]}, {text: 'M.O.V.E.', at: w[5]}]});
-      line(ctx, t, {y: 1342, size: 40, weight: 400, color: COLORS.teal, words: [{text: 'especialista', at: w[6]}, {text: 'em', at: w[7]}, {text: 'inglês', at: w[8]}, {text: 'para', at: w[9]}, {text: 'adultos.', at: w[10]}]});
-    });
-  }
-
-  function portrait(ctx, t) {
-    const cx = 540;
-    const cy = 770;
-    const r = 250;
-    const inP = easeOut(prog(t, T.photo, 0.5));
-    if (inP <= 0) return;
-    ctx.save();
-    ctx.globalAlpha *= inP;
-    // sombra suave + foto recortada no círculo
-    ctx.save();
-    ctx.shadowColor = rgba(COLORS.teal, 0.35);
-    ctx.shadowBlur = 60;
-    ctx.shadowOffsetY = 24;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r * lerp(0.86, 1, inP), 0, TAU);
-    ctx.fillStyle = COLORS.white;
-    ctx.fill();
-    ctx.restore();
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, r * lerp(0.86, 1, inP), 0, TAU);
-    ctx.clip();
-    if (photo) {
-      const kb = lerp(1.1, 1.0, easeOut(prog(t, T.photo, 3.6)));
-      const s = 0.9 * kb;
-      const fw = photo.width * s;
-      const fh = photo.height * s;
-      // rosto (~x 400, y 285 no retrato) no centro do círculo
-      ctx.drawImage(photo, cx - 400 * s, cy - 285 * s, fw, fh);
-    }
-    ctx.restore();
-    // arco de luz se desenhando + anel fino girando
-    const a = easeInOut(prog(t, T.arc, 1.0));
-    if (a > 0) {
-      ctx.save();
-      const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
-      g.addColorStop(0, COLORS.teal);
-      g.addColorStop(1, COLORS.aqua);
-      ctx.strokeStyle = g;
-      ctx.lineCap = 'round';
-      ctx.lineWidth = 14;
-      ctx.shadowColor = COLORS.aqua;
-      ctx.shadowBlur = 24;
-      ctx.beginPath();
-      ctx.arc(cx, cy, r + 30, -Math.PI * 0.8, -Math.PI * 0.8 + TAU * 0.78 * a);
-      ctx.stroke();
-      ctx.restore();
-    }
-    ctx.save();
-    ctx.setLineDash([4, 18]);
-    ctx.lineDashOffset = -t * 40;
-    ring(ctx, cx, cy, r + 62, rgba(COLORS.teal, 0.35), 3);
-    ctx.restore();
-    ctx.restore();
-  }
-
-  /* ----------------------------------------------------------- cena 6 */
-
-  function scene6(ctx, t) {
-    const z = 1.15 - 0.15 * easeOut(prog(t, T.liquid2 + 0.4, 0.6));
-    const push = 1 + 0.03 * prog(t, 19.4, 2.6);
-    const w = T.s6;
-    camera(ctx, 540, 900, z * push, () => {
-      line(ctx, t, {y: 772, size: 82, words: [{text: 'Na', at: w[0]}, {text: 'próxima', at: w[1]}, {text: 'call,', at: w[2]}]});
-      line(ctx, t, {y: 902, size: 102, words: [{text: 'quem', at: w[3]}, {text: 'conduz', at: w[4]}]});
-      line(ctx, t, {y: 1066, size: 132, words: [{text: 'é', at: w[5]}, {text: 'você.', at: w[6], hl: true}]});
-      T.s6Rings.forEach((at) => pulseRing(ctx, t, at, 590, 1015));
-    });
-  }
-
-  /* ----------------------------------------------------------- cena 7 (final) */
-
-  function scene7(ctx, t) {
+  // 13 · final: logo original + chamada (2,5 s)
+  function scene13(ctx, t) {
     const a = easeOut(prog(t, T.final, 0.45));
     const s = lerp(0.94, 1, a);
     if (a >= 1) {
       // 1:1, coordenadas inteiras, sem suavização: os pixels do arquivo, intactos.
       ctx.save();
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(logo, LOGO.left, LOGO.top);
+      ctx.drawImage(img.logo, LOGO.left, LOGO.top);
       ctx.restore();
     } else if (a > 0) {
       ctx.save();
       ctx.globalAlpha *= a;
       ctx.translate(LOGO.left + LOGO.w / 2, LOGO.top + LOGO.h / 2);
       ctx.scale(s, s);
-      ctx.drawImage(logo, -LOGO.w / 2, -LOGO.h / 2);
+      ctx.drawImage(img.logo, -LOGO.w / 2, -LOGO.h / 2);
       ctx.restore();
     }
     const c = T.cta;
-    const words =
+    const items =
       cta === 'linknabio'
-        ? [{text: 'Acesse', at: c[0]}, {text: 'o', at: c[1]}, {text: 'link na bio', at: c[2], hl: true, pulses: T.ctaPulses}]
-        : [{text: 'Toque', at: c[0]}, {text: 'em', at: c[1]}, {text: 'Saiba mais', at: c[2], hl: true, pulses: T.ctaPulses}];
-    line(ctx, t, {y: 1300, size: 64, color: COLORS.navy, words});
-  }
-
-  /* ----------------------------------------------------------- bolhinha */
-
-  // [t, x, y, raio, salto]
-  const BUB = [
-    [-0.3, 540, 470, 0],
-    [0.08, 540, 470, 46],
-    [2.5, 540, 470, 46],
-    [2.92, 540, 505, 40],
-    [3.65, 885, 935, 46],
-    [5.45, 885, 935, 46],
-    [6.5, 476, 662, 42, 110],
-    [7.0, 850, 702, 42, 90],
-    [7.5, 586, 834, 42, 90],
-    [8.0, 866, 992, 42, 90],
-    [8.85, 912, 1296, 40, 70],
-    [9.62, 912, 1296, 40],
-    [10.2, 540, 450, 40],
-    [12.2, 540, 450, 40],
-    [12.98, 255, 714, 40, 90],
-    [13.5, 445, 714, 40, 70],
-    [14.0, 635, 714, 40, 70],
-    [14.5, 825, 714, 40, 70],
-    [14.62, 825, 714, 40],
-    [15.55, 806, 540, 46],
-    [18.58, 806, 540, 46],
-    [19.75, 885, 990, 46],
-    [21.85, 885, 990, 46],
-    [22.15, 540, 760, 86],
-    [22.55, 610, 690, 64],
-    [T.land, LOGO.left + LOGO.bubble.x, LOGO.top + LOGO.bubble.y, LOGO.bubble.r],
-  ];
-
-  function bubbleAt(t) {
-    // órbita no relógio da cena 4: a bolhinha é a ponta que enche o anel
-    if (t >= T.ring && t < T.ring + 2.0) {
-      const th = -Math.PI / 2 + TAU * easeInOut(prog(t, T.ring, 2.0));
-      return {x: 540 + 250 * Math.cos(th), y: 700 + 250 * Math.sin(th), r: 40, alpha: 1, glow: 0.8};
-    }
-    let i = 0;
-    while (i < BUB.length - 1 && t >= BUB[i + 1][0]) i++;
-    const k0 = BUB[i];
-    const k1 = BUB[Math.min(i + 1, BUB.length - 1)];
-    let x = k0[1];
-    let y = k0[2];
-    let r = k0[3];
-    if (k1 !== k0 && t >= k0[0]) {
-      const p = easeInOut(prog(t, k0[0], k1[0] - k0[0]));
-      x = lerp(k0[1], k1[1], p);
-      y = lerp(k0[2], k1[2], p) - (k1[4] || 0) * Math.sin(Math.PI * p);
-      r = lerp(k0[3], k1[3], p);
-    }
-    if (t < BUB[0][0]) r = 0;
-    // pulsa nos números da contagem
-    T.count.forEach((at) => (r *= 1 + 0.16 * bump(t, at, 0.25)));
-    const onLight = (t >= T.bloom + 0.4 && t < T.liquid2 + 0.4) || t >= T.final;
-    const grow = prog(t, T.grow, 0.3) * (1 - prog(t, T.final, 0.5));
-    const alpha = 1 - prog(t, T.land, 0.12);
-    return {x, y, r, alpha, glow: onLight ? 0.15 + grow : 0.8 + 1.2 * grow};
-  }
-
-  function drawBubble(ctx, t, b) {
-    if (b.alpha <= 0.003 || b.r <= 0.5) return;
-    ctx.save();
-    ctx.globalAlpha *= b.alpha;
-    if (b.glow > 0.01) {
-      glow(ctx, b.x, b.y, b.r * 3.2, COLORS.aqua, 0.35 * b.glow);
-    }
-    const {x, y, r} = b;
-    const lw = Math.max(2.5, r * 0.19);
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, TAU);
-    // rabinho (embaixo, à esquerda), como o da bolhinha da logo
-    ctx.moveTo(x - r * 0.62, y + r * 0.78);
-    ctx.lineTo(x - r * 0.98, y + r * 1.22);
-    ctx.lineTo(x - r * 0.18, y + r * 0.98);
-    ctx.fillStyle = COLORS.white;
-    ctx.fill();
-    ctx.lineWidth = lw;
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = COLORS.navy;
-    // contorno contínuo: arco de uma base do rabinho à outra, passando pela ponta
-    ctx.beginPath();
-    ctx.arc(x, y, r, Math.atan2(0.78, -0.62), Math.atan2(0.98, -0.18) + TAU);
-    ctx.lineTo(x - r * 0.98, y + r * 1.22);
-    ctx.closePath();
-    ctx.stroke();
-    // três pontinhos: uma onda a cada batida (param no silêncio)
-    const phase = ((t % BEAT) + BEAT) % BEAT;
-    const silent = t >= T.silence[0] && t < T.drop;
-    for (let k = 0; k < 3; k++) {
-      const local = phase - k * 0.07;
-      const wave = !silent && local >= 0 && local < 0.22 ? Math.sin((Math.PI * local) / 0.22) : 0;
-      ctx.fillStyle = COLORS.navy;
-      ctx.globalAlpha = b.alpha * (0.55 + 0.45 * wave);
-      ctx.beginPath();
-      ctx.arc(x + (k - 1) * r * 0.42, y - wave * r * 0.18, r * 0.13 * (1 + 0.25 * wave), 0, TAU);
-      ctx.fill();
-    }
-    ctx.restore();
+        ? [{text: 'Acesse', at: c[0]}, {text: 'o', at: c[1]}, {text: 'link na bio', at: c[2], box: true, pulses: T.ctaPulses}]
+        : [{text: 'Toque', at: c[0]}, {text: 'em', at: c[1]}, {text: 'Saiba mais', at: c[2], box: true, pulses: T.ctaPulses}];
+    boxLine(ctx, t, {y: 1300, size: 64, color: COLORS.ink, items});
   }
 
   /* ----------------------------------------------------------- texto */
 
   /**
-   * Uma linha de texto que entra palavra por palavra (sobe, desfoca → nítido).
-   * A palavra com hl:true é a principal: entra numa caixa vermelha que se desenha.
+   * Uma linha de palavras com tamanhos próprios, na mesma linha de base,
+   * entrando uma a uma (desfoque → nítido, crescendo de 92% a 100%). `hits`: batidas em que
+   * a palavra dá um soco no tempo. `glow`: brilho vermelho (no fundo preto).
+   * `strike`: tempo em que um traço vermelho risca a palavra.
    */
-  function line(ctx, t, s) {
-    const {x = 540, y, size, weight = 800, color = COLORS.white, words, dur = 0.34} = s;
+  function words(ctx, t, {x = 540, y, items, align = 'center', dur = 0.3}) {
     ctx.save();
-    ctx.font = `${weight} ${size}px Inter, Arial, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    const ms = items.map((it) => {
+      const font = `${it.weight ?? 700} ${it.size}px Inter, Arial, sans-serif`;
+      ctx.font = font;
+      return {...it, font, w: ctx.measureText(it.text).width};
+    });
+    const gap = (k) => 0.26 * Math.min(ms[k].size, ms[k - 1].size);
+    let total = 0;
+    ms.forEach((m, k) => (total += m.w + (k ? gap(k) : 0)));
+    let cx = align === 'center' ? x - total / 2 : x;
+    ms.forEach((m, k) => {
+      if (k) cx += gap(k);
+      const e = easeOut(prog(t, m.at, dur));
+      if (e > 0) {
+        let hit = 0;
+        (m.hits || []).forEach((h) => (hit = Math.max(hit, bump(t, h, 0.28))));
+        // entra crescendo de 92% a 100% e ganhando foco: nunca maior que o tamanho final
+        const s = lerp(0.92, 1, e) * (1 + 0.07 * hit);
+        const mx = cx + m.w / 2;
+        const my = y - m.size * 0.36;
+        ctx.save();
+        ctx.translate(mx, my);
+        ctx.scale(s, s);
+        ctx.translate(-mx, -my);
+        ctx.globalAlpha *= e;
+        ctx.font = m.font;
+        if (m.glow) {
+          ctx.shadowColor = rgba(COLORS.red, 0.75);
+          ctx.shadowBlur = 26 + 40 * hit;
+        } else if (m.shadow) {
+          ctx.shadowColor = 'rgba(0,0,0,0.85)';
+          ctx.shadowBlur = 30;
+          ctx.shadowOffsetY = 8;
+        }
+        const blur = (1 - e) * 14;
+        if (blur > 0.4) ctx.filter = `blur(${blur.toFixed(2)}px)`;
+        ctx.fillStyle = m.color ?? COLORS.white;
+        ctx.fillText(m.text, cx, y);
+        ctx.filter = 'none';
+        if (m.strike !== undefined) {
+          const q = easeOut(prog(t, m.strike, 0.25));
+          if (q > 0) {
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = COLORS.red;
+            ctx.fillRect(cx - 8, y - m.size * 0.34, (m.w + 16) * q, Math.max(6, m.size * 0.09));
+          }
+        }
+        if (e > 0.05) record(ctx, cx, y - m.size * 0.8, cx + m.w, y + m.size * 0.24, t);
+        ctx.restore();
+      }
+      cx += m.w;
+    });
+    ctx.restore();
+  }
+
+  /** Linha do final: a palavra com box:true entra numa caixa vermelha (o botão). */
+  function boxLine(ctx, t, {x = 540, y, size, color, items, dur = 0.34}) {
+    ctx.save();
+    ctx.font = `800 ${size}px Inter, Arial, sans-serif`;
     ctx.textAlign = 'left';
     const space = size * 0.27;
     const pad = size * 0.17;
-    const ws = words.map((w) => ({...w, width: ctx.measureText(w.text).width}));
-    const total = ws.reduce((acc, w) => acc + w.width + (w.hl ? 2 * pad : 0), 0) + space * (ws.length - 1);
+    const ws = items.map((w) => ({...w, width: ctx.measureText(w.text).width}));
+    const total = ws.reduce((acc, w) => acc + w.width + (w.box ? 2 * pad : 0), 0) + space * (ws.length - 1);
     let cx = x - total / 2;
     for (const w of ws) {
-      const full = w.width + (w.hl ? 2 * pad : 0);
-      const p = prog(t, w.at, dur);
-      if (p > 0) {
-        const e = easeOut(p);
+      const full = w.width + (w.box ? 2 * pad : 0);
+      const e = easeOut(prog(t, w.at, dur));
+      if (e > 0) {
         const rise = (1 - e) * size * 0.42;
         const blur = (1 - e) * 12;
-        if (w.hl) {
+        if (w.box) {
           const q = easeOut(prog(t, w.at + 0.05, 0.3));
           let pulse = 0;
           (w.pulses || []).forEach((at) => (pulse = Math.max(pulse, bump(t, at, 0.3))));
-          const bx = cx;
           const by = y - size * 0.86;
-          const bw = full;
           const bh = size * 1.12;
           ctx.save();
-          ctx.translate(bx + bw / 2, by + bh / 2);
-          ctx.scale(1 + 0.06 * pulse, 1 + 0.06 * pulse);
-          ctx.translate(-(bx + bw / 2), -(by + bh / 2));
-          ctx.save();
-          ctx.globalAlpha *= clamp(e * 1.5);
-          ctx.shadowColor = rgba(COLORS.red, 0.55);
-          ctx.shadowBlur = 30 + 30 * pulse;
-          roundRect(ctx, bx, by, Math.max(1, bw * q), bh, size * 0.14);
-          ctx.fillStyle = COLORS.red;
-          ctx.fill();
-          ctx.restore();
-          drawWord(ctx, w.text, cx + pad, y + rise, e, blur, COLORS.white);
+          camera(ctx, cx + full / 2, by + bh / 2, 1 + 0.07 * pulse, () => {
+            ctx.save();
+            ctx.globalAlpha *= clamp(e * 1.5);
+            ctx.shadowColor = rgba(COLORS.red, 0.5);
+            ctx.shadowBlur = 24 + 36 * pulse;
+            roundRect(ctx, cx, by, Math.max(1, full * q), bh, size * 0.14);
+            ctx.fillStyle = COLORS.red;
+            ctx.fill();
+            ctx.restore();
+            drawWord(ctx, w.text, cx + pad, y + rise, e, blur, COLORS.white);
+          });
           ctx.restore();
         } else {
           drawWord(ctx, w.text, cx, y + rise, e, blur, color);
@@ -939,18 +1080,16 @@ export function createScene({logo, photo, cta = 'saibamais', debug = null, makeC
     ctx.restore();
   }
 
-  /* Anel de luz que se abre a partir de um ponto (pulsos no tempo). */
-  function pulseRing(ctx, t, at, x, y) {
-    const p = prog(t, at, 0.5);
-    if (p <= 0 || p >= 1) return;
+  /** Emoji (SVG da Noto) centrado em (x, y), com lado `size`, girado `rot`. */
+  function emoji(ctx, image, x, y, size, rot, alpha) {
     ctx.save();
-    ctx.strokeStyle = rgba(COLORS.aqua, 0.5 * (1 - p));
-    ctx.lineWidth = lerp(10, 2, p);
-    ctx.shadowColor = COLORS.aqua;
-    ctx.shadowBlur = 20;
-    ctx.beginPath();
-    ctx.arc(x, y, lerp(120, 520, easeOut(p)), 0, TAU);
-    ctx.stroke();
+    ctx.globalAlpha *= alpha;
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    ctx.shadowColor = 'rgba(0,0,0,0.22)';
+    ctx.shadowBlur = size * 0.08;
+    ctx.shadowOffsetY = size * 0.05;
+    ctx.drawImage(image, -size / 2, -size / 2, size, size);
     ctx.restore();
   }
 
@@ -968,47 +1107,6 @@ export function createScene({logo, photo, cta = 'saibamais', debug = null, makeC
 
 /* ----------------------------------------------------------- transições */
 
-/** Mancha líquida que cresce a partir de um ponto até cobrir a tela. */
-function liquidCover(ctx, t, from, p, inner, outer, seed) {
-  const R = liquidRadius(from, p);
-  if (R < 1) return;
-  ctx.save();
-  blobPath(ctx, from.x, from.y, R, t, seed);
-  const g = ctx.createRadialGradient(from.x, from.y, 0, from.x, from.y, R);
-  g.addColorStop(0, inner);
-  g.addColorStop(1, outer);
-  ctx.fillStyle = g;
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 6;
-  ctx.shadowColor = 'rgba(255,255,255,0.6)';
-  ctx.shadowBlur = 24;
-  ctx.stroke();
-  ctx.restore();
-}
-
-/** A mesma mancha cobrindo a tela, com um buraco líquido que cresce e revela a cena nova. */
-function liquidReveal(ctx, t, from, p, inner, outer, seed) {
-  const R = liquidRadius(from, p);
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(0, 0, W, H);
-  blobPath(ctx, from.x, from.y, R, t, seed + 7, true);
-  const g = ctx.createRadialGradient(from.x, from.y, R, from.x, from.y, R + 1400);
-  g.addColorStop(0, inner);
-  g.addColorStop(1, outer);
-  ctx.fillStyle = g;
-  ctx.fill('evenodd');
-  ctx.beginPath();
-  blobPath(ctx, from.x, from.y, R, t, seed + 7, true);
-  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth = 6;
-  ctx.shadowColor = 'rgba(255,255,255,0.6)';
-  ctx.shadowBlur = 24;
-  ctx.stroke();
-  ctx.restore();
-}
-
 /** Distâncias de um ponto a uma grade da tela (cantos incluídos), em ordem crescente. */
 function screenDistances(x, y) {
   const d = [];
@@ -1023,31 +1121,11 @@ function quantile(sorted, q) {
   return lerp(sorted[i0], sorted[Math.min(sorted.length - 1, i0 + 1)], i - i0);
 }
 
-/**
- * Raio da mancha: a área coberta da tela cresce em ritmo suave e constante
- * (nada de cobrir meia tela num quadro). A mancha oscila ±14,5%, então no fim
- * o raio mínimo dela passa do canto mais distante (+ borda de luz).
- */
-function liquidRadius(from, p) {
-  const e = sineInOut(p);
-  return quantile(screenDistances(from.x, from.y), e) * (1 + 0.17 * e * e) + 40 * e;
+/** Raio do círculo que abre: a área coberta da tela cresce em ritmo constante. */
+function coverRadius(from, q) {
+  return quantile(screenDistances(from.x, from.y), q) + 8 * q;
 }
 
-function blobPath(ctx, cx, cy, R, t, seed, append = false) {
-  if (!append) ctx.beginPath();
-  const N = 180;
-  for (let i = 0; i <= N; i++) {
-    const a = (i / N) * TAU;
-    const k = 1 + 0.07 * Math.sin(3 * a + t * 2.3 + seed) + 0.045 * Math.sin(5 * a - t * 3.1 + seed * 2) + 0.03 * Math.sin(8 * a + t * 4.7 + seed);
-    const x = cx + R * k * Math.cos(a);
-    const y = cy + R * k * Math.sin(a);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.closePath();
-}
-
-/** Luz branca que se espalha a partir de um ponto até tomar a tela. */
 function whiteBloom(ctx, from, p) {
   // Cada pixel clareia numa rampa de 55% da transição, começando antes perto do
   // ponto: a luz nasce ali e toma a tela, sem nenhum quadro carregar o salto.
@@ -1064,46 +1142,7 @@ function whiteBloom(ctx, from, p) {
   ctx.fillRect(0, 0, W, H);
 }
 
-function fillAll(ctx, style) {
-  ctx.fillStyle = style;
-  ctx.fillRect(0, 0, W, H);
-}
-
 /* ----------------------------------------------------------- desenho base */
-
-function glow(ctx, x, y, r, color, a) {
-  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0, rgba(color, a));
-  g.addColorStop(1, rgba(color, 0));
-  ctx.fillStyle = g;
-  ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
-}
-
-function ring(ctx, x, y, r, style, lw) {
-  ctx.save();
-  ctx.strokeStyle = style;
-  ctx.lineWidth = lw;
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, TAU);
-  ctx.stroke();
-  ctx.restore();
-}
-
-function makeSpecks() {
-  const rnd = seeded(77);
-  return Array.from({length: 28}, () => ({x: rnd() * W, y: rnd() * H, r: 3 + rnd() * 7, v: 8 + rnd() * 26, ph: rnd() * TAU}));
-}
-
-function drawSpecks(ctx, t, specks, color) {
-  ctx.save();
-  ctx.globalCompositeOperation = 'screen';
-  for (const s of specks) {
-    const y = (((s.y - t * s.v) % H) + H) % H;
-    const a = 0.18 + 0.18 * Math.sin(t * 1.7 + s.ph);
-    glow(ctx, s.x + Math.sin(t * 0.6 + s.ph) * 14, y, s.r * 3, color, a);
-  }
-  ctx.restore();
-}
 
 function defaultCanvas(w, h) {
   if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
@@ -1113,9 +1152,8 @@ function defaultCanvas(w, h) {
   return c;
 }
 
-/* Textura de vidro fosco: um ladrilho de ruído fixo, sobreposto (overlay) e parado.
-   Grão que muda a cada quadro custava 26 Mbps (82 MB) e virava riscos quando a rede
-   recomprime; parado, ~6 Mbps e a textura sobrevive à recompressão. */
+/* Textura fixa (vidro fosco): um ladrilho de ruído sobreposto e parado.
+   Grão que muda a cada quadro custa ~26 Mbps e vira riscos quando a rede recomprime. */
 function makeGrain(makeCanvas) {
   const size = 256;
   const c = makeCanvas(size, size);
@@ -1134,15 +1172,220 @@ function makeGrain(makeCanvas) {
 }
 
 function applyGrain(ctx, tile, amount) {
-  const rnd = seeded(9974);
-  const ox = Math.floor(rnd() * 256);
-  const oy = Math.floor(rnd() * 256);
   ctx.save();
   ctx.globalAlpha = amount;
   ctx.globalCompositeOperation = 'overlay';
-  const pat = ctx.createPattern(tile, 'repeat');
-  ctx.translate(-ox, -oy);
-  ctx.fillStyle = pat;
-  ctx.fillRect(0, 0, W + 256, H + 256);
+  ctx.fillStyle = ctx.createPattern(tile, 'repeat');
+  ctx.fillRect(0, 0, W, H);
   ctx.restore();
+}
+
+/**
+ * Executivo de terno em retícula (pontos brancos no preto), como a foto do
+ * exemplo: um "retrato" em tons de cinza desenhado por código e convertido em
+ * pontos uma vez só. O rosto não aparece — o balão fica na frente.
+ */
+function makeHalftone(makeCanvas) {
+  const w = 1080;
+  const h = 1240;
+  const src = makeCanvas(w, h);
+  const g = src.getContext('2d');
+  const grey = (l) => {
+    const v = Math.round(clamp(l) * 255);
+    return `rgb(${v},${v},${v})`;
+  };
+  g.fillStyle = '#000';
+  g.fillRect(0, 0, w, h);
+
+  // pescoço (atrás do balão)
+  let gr = g.createLinearGradient(460, 0, 620, 0);
+  gr.addColorStop(0, grey(0.22));
+  gr.addColorStop(0.5, grey(0.5));
+  gr.addColorStop(1, grey(0.22));
+  g.fillStyle = gr;
+  g.beginPath();
+  g.moveTo(474, 0);
+  g.lineTo(606, 0);
+  g.lineTo(624, 190);
+  g.lineTo(456, 190);
+  g.closePath();
+  g.fill();
+
+  // camisa: V estreito entre as lapelas
+  gr = g.createLinearGradient(0, 140, 0, 600);
+  gr.addColorStop(0, grey(0.95));
+  gr.addColorStop(1, grey(0.7));
+  g.fillStyle = gr;
+  g.beginPath();
+  g.moveTo(452, 140);
+  g.lineTo(628, 140);
+  g.lineTo(590, 470);
+  g.lineTo(540, 590);
+  g.lineTo(490, 470);
+  g.closePath();
+  g.fill();
+
+  // gravata: nó + lâmina com listras diagonais
+  g.fillStyle = grey(0.3);
+  g.beginPath();
+  g.moveTo(514, 236);
+  g.lineTo(566, 236);
+  g.lineTo(557, 296);
+  g.lineTo(523, 296);
+  g.closePath();
+  g.fill();
+  g.save();
+  g.beginPath();
+  g.moveTo(523, 296);
+  g.lineTo(557, 296);
+  g.lineTo(584, 600);
+  g.lineTo(540, 660);
+  g.lineTo(496, 600);
+  g.closePath();
+  g.fillStyle = grey(0.2);
+  g.fill();
+  g.clip();
+  g.strokeStyle = grey(0.36);
+  g.lineWidth = 9;
+  for (let k = -20; k < 30; k++) {
+    g.beginPath();
+    g.moveTo(440, 300 + k * 30);
+    g.lineTo(640, 390 + k * 30);
+    g.stroke();
+  }
+  g.restore();
+
+  // gola: duas pontas brancas, com sombra embaixo
+  for (const side of [-1, 1]) {
+    const X = (x) => 540 + side * (x - 540);
+    g.fillStyle = grey(0.08);
+    g.beginPath();
+    g.moveTo(X(446), 150);
+    g.lineTo(X(540), 262);
+    g.lineTo(X(486), 312);
+    g.lineTo(X(432), 222);
+    g.closePath();
+    g.fill();
+    g.fillStyle = grey(1);
+    g.beginPath();
+    g.moveTo(X(448), 132);
+    g.lineTo(X(540), 240);
+    g.lineTo(X(488), 290);
+    g.lineTo(X(432), 200);
+    g.closePath();
+    g.fill();
+  }
+
+  // paletó: escuro, luz no alto do ombro, contorno com luz de recorte
+  for (const side of [-1, 1]) {
+    const X = (x) => 540 + side * (x - 540);
+    const body = () => {
+      g.beginPath();
+      g.moveTo(X(436), 150);
+      g.bezierCurveTo(X(330), 172, X(190), 196, X(118), 248);
+      g.bezierCurveTo(X(70), 284, X(52), 340, X(46), 420);
+      g.lineTo(X(30), h);
+      g.lineTo(X(540), h);
+      g.lineTo(X(540), 700);
+      g.lineTo(X(476), 470);
+      g.lineTo(X(398), 392);
+      g.lineTo(X(452), 360);
+      g.closePath();
+    };
+    body();
+    g.fillStyle = grey(0.09);
+    g.fill();
+    g.save();
+    body();
+    g.clip();
+    gr = g.createRadialGradient(X(220), 236, 10, X(220), 300, 330);
+    gr.addColorStop(0, grey(0.46));
+    gr.addColorStop(0.5, grey(0.2));
+    gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr;
+    g.fillRect(0, 0, w, h);
+    // lapela: faixa um pouco mais clara ao longo da abertura
+    g.fillStyle = grey(0.17);
+    g.beginPath();
+    g.moveTo(X(436), 152);
+    g.lineTo(X(452), 360);
+    g.lineTo(X(398), 392);
+    g.lineTo(X(476), 470);
+    g.lineTo(X(540), 700);
+    g.lineTo(X(470), 700);
+    g.lineTo(X(360), 410);
+    g.lineTo(X(400), 360);
+    g.lineTo(X(392), 170);
+    g.closePath();
+    g.fill();
+    g.restore();
+    // luz de recorte no ombro e na borda da lapela
+    g.strokeStyle = grey(0.62);
+    g.lineWidth = 7;
+    g.lineJoin = 'round';
+    g.beginPath();
+    g.moveTo(X(436), 150);
+    g.bezierCurveTo(X(330), 172, X(190), 196, X(118), 248);
+    g.bezierCurveTo(X(70), 284, X(52), 340, X(46), 420);
+    g.lineTo(X(36), 760);
+    g.stroke();
+    g.strokeStyle = grey(0.52);
+    g.lineWidth = 5;
+    g.beginPath();
+    g.moveTo(X(436), 152);
+    g.lineTo(X(452), 360);
+    g.lineTo(X(398), 392);
+    g.lineTo(X(476), 470);
+    g.lineTo(X(540), 700);
+    g.stroke();
+  }
+  // lenço no bolso e botões
+  g.fillStyle = grey(0.85);
+  g.beginPath();
+  g.moveTo(232, 610);
+  g.lineTo(318, 592);
+  g.lineTo(300, 640);
+  g.lineTo(240, 648);
+  g.closePath();
+  g.fill();
+  g.fillStyle = grey(0.42);
+  [820, 1000].forEach((y) => {
+    g.beginPath();
+    g.arc(540, y, 11, 0, TAU);
+    g.fill();
+  });
+  // a figura some no preto embaixo
+  gr = g.createLinearGradient(0, 760, 0, h);
+  gr.addColorStop(0, 'rgba(0,0,0,0)');
+  gr.addColorStop(1, 'rgba(0,0,0,0.92)');
+  g.fillStyle = gr;
+  g.fillRect(0, 760, w, h - 760);
+
+  // retícula: um ponto por célula, área proporcional à luz
+  const data = g.getImageData(0, 0, w, h).data;
+  const dst = makeCanvas(w, h);
+  const d = dst.getContext('2d');
+  d.fillStyle = '#F2F2F2';
+  const step = 12;
+  for (let y = step / 2; y < h; y += step) {
+    const row = Math.floor(y / step);
+    const off = row % 2 ? step / 2 : 0; // grade em quincôncio, como impressão
+    for (let x = step / 2 + off; x < w; x += step) {
+      let sum = 0;
+      for (let dy = -3; dy <= 3; dy += 3) {
+        for (let dx = -3; dx <= 3; dx += 3) {
+          const px = Math.min(w - 1, Math.max(0, Math.round(x + dx)));
+          const py = Math.min(h - 1, Math.max(0, Math.round(y + dy)));
+          sum += data[(py * w + px) * 4];
+        }
+      }
+      const lum = sum / 9 / 255;
+      const r = step * 0.62 * Math.pow(lum, 0.85);
+      if (r < 0.7) continue;
+      d.beginPath();
+      d.arc(x, y, r, 0, TAU);
+      d.fill();
+    }
+  }
+  return dst;
 }
