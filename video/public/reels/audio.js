@@ -8,9 +8,10 @@
  *
  * 120 BPM, escura e seca (como o exemplo): compasso de 2 s a partir de 0,
  * bumbo/palma no tempo, sub-grave, um som de passagem a cada troca de cena e
- * uma batida forte em cada palavra vermelha.
+ * uma batida forte em cada palavra vermelha. Nas telas de leitura longa (o
+ * cartão e a Bruna) o groove abre espaço: meio tempo e arpejo.
  */
-import {BEAT, DURATION, T} from './render.js';
+import {BEAT, DURATION, SCENE_TRANSITIONS, T} from './render.js';
 
 const BAR = 4 * BEAT;
 const STEP = BEAT / 4; // semicolcheia: 0,125 s
@@ -24,17 +25,21 @@ const CHORDS = {
   Cmaj9: {bass: 36, notes: [60, 64, 67, 71, 74]},
 };
 
-// acorde de cada compasso (2 s, começando em 0)
-const BARS = ['Am9', 'Am9', 'Fmaj9', 'Fmaj9', 'Dm9', 'Am9', 'Fmaj9', 'G6', 'Cmaj7', 'Fmaj9', 'Am9'];
+// acorde de cada compasso (2 s, começando em 0); o final (40,5 s) tem acorde próprio
+const BARS = [
+  'Am9', 'Am9', 'Fmaj9', 'Fmaj9', 'Dm9', 'Am9', 'Fmaj9', 'Dm9', 'Am9', 'Fmaj9', // 0–20
+  'Dm9', 'G6', 'Am9', 'Cmaj7', 'Fmaj9', 'Cmaj7', 'Am9', 'Fmaj9', 'Dm9', 'G6', // 20–40
+];
 
-// seções do groove no tempo (s): o respiro cai exatamente no cartão da Bruna
+// seções do groove no tempo (s)
 const SECTIONS = [
-  {from: 0, to: 2, groove: 'intro'}, // gancho
-  {from: 2, to: 12, groove: 'full'},
-  {from: 12, to: 14, groove: 'build'}, // o mercado… → virada para "clareza"
-  {from: 14, to: 15, groove: 'full'},
-  {from: 15, to: 17, groove: 'light'}, // Bruna
-  {from: 17, to: 22, groove: 'full'}, // esforço → chamada
+  {from: 0, to: 2.5, groove: 'intro'}, // gancho
+  {from: 2.5, to: 15.5, groove: 'full'}, // executivo → reunião
+  {from: 15.5, to: 20.5, groove: 'half'}, // cartão: meio tempo, espaço para ler
+  {from: 20.5, to: 23.5, groove: 'build'}, // o mercado… → virada para "clareza"
+  {from: 23.5, to: 25.5, groove: 'full'},
+  {from: 25.5, to: 32.5, groove: 'light'}, // Bruna: respira
+  {from: 32.5, to: 40, groove: 'full'}, // esforço → chamada
 ];
 
 const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
@@ -452,8 +457,8 @@ export function buildSoundtrack(ac, {cta = 'saibamais'} = {}) {
 
   BARS.forEach((chord, n) => {
     const t0 = n * BAR;
-    const light = t0 >= 15 && t0 < 17;
-    pad(t0, chord, Math.min(BAR, DURATION - t0), light ? 0.42 : 0.32, light ? 1900 : 950);
+    const light = t0 >= 25.5 && t0 < 32.5;
+    pad(t0, chord, BAR, light ? 0.42 : 0.32, light ? 1900 : 950);
   });
   const chordAt = (t) => CHORDS[BARS[Math.min(BARS.length - 1, Math.floor(t / BAR + 1e-6))]];
 
@@ -469,6 +474,16 @@ export function buildSoundtrack(ac, {cta = 'saibamais'} = {}) {
           kick(t, 0.8);
           sub(t, ch.bass, 0.9, 0.6);
         }
+      } else if (groove === 'half') {
+        // meio tempo: bumbo no 1, palma no 3, chimbal leve
+        if (s === 0) {
+          kick(t, 0.9);
+          sub(t, ch.bass, STEP * 7, 0.75);
+        }
+        if (s === 10) kick(t, 0.5);
+        if (s === 8) clap(t, 0.65);
+        if (s % 2 === 0) hat(t, false, s % 4 ? 0.1 : 0.15);
+        if (s === 6) stab(t, Object.keys(CHORDS).find((n) => CHORDS[n] === ch), 0.12, 0.12);
       } else if (groove === 'light') {
         // Bruna: respira — bumbo leve, arpejo limpo
         if (s === 0 || s === 8) {
@@ -493,86 +508,87 @@ export function buildSoundtrack(ac, {cta = 'saibamais'} = {}) {
     }
   }
 
+  /* ------------------------------------------------ passagens (uma por troca de cena) */
+
+  for (const tr of SCENE_TRANSITIONS) {
+    if (tr.type === 'cross') whoosh(tr.a - 0.05, 0.4, 3500, 500, 0.2);
+    else if (tr.type === 'bloom') whoosh(tr.a - 0.02, 0.45, 500, 7000, 0.28);
+    else if (tr.to === 'white') whoosh(tr.a - 0.03, 0.4, 600, 6000, 0.26);
+    else whoosh(tr.a - 0.03, 0.4, 5000, 400, 0.26);
+  }
+
   /* ------------------------------------------------ cenas */
+
+  const ticks = (times, g = 0.05) => times.forEach((t, i) => tick(Math.max(0, t + 0.02), 2800 + (i % 4) * 140, g, i % 2 ? 0.25 : -0.25));
 
   // 1 · gancho
   impact(0, 0.45);
-  T.s1.forEach((t, i) => tick(Math.max(0, t + 0.02), 3000 + i * 140, 0.05, i % 2 ? 0.25 : -0.25));
+  ticks(T.s1);
   wordHit(T.anos, 'Am9', 1.1);
   crash(T.anos, 0.1);
-  whoosh(1.7, 0.4, 3500, 500, 0.22);
   // 2 · executivo
   whoosh(T.figure, 0.5, 300, 1500, 0.16);
   pop(T.bubble, 0.22);
-  T.s2.slice(0, 3).forEach((t, i) => tick(t + 0.02, 2800 + i * 150, 0.05));
+  ticks(T.s2);
   wordHit(T.carreira, 'Am9');
-  wordHit(T.lugar[1], 'Am9', 1.2);
-  snare(T.lugar[1], 0.5);
   tick(T.lugar[0] + 0.02, 2600, 0.06);
-  whoosh(3.7, 0.4, 3500, 500, 0.22);
+  wordHit(T.lugarHit, 'Fmaj9', 1.2);
+  snare(T.lugarHit, 0.5);
   // 3
-  T.s3.slice(0, 3).forEach((t, i) => tick(t + 0.02, 2800 + i * 150, 0.05));
-  wordHit(T.pratica, 'Fmaj9', 1.1);
-  riser(5.25, 0.5, 0.16);
-  whoosh(5.72, 0.4, 600, 6000, 0.26); // círculo branco
+  ticks(T.s3.slice(0, 3));
+  wordHit(T.pratica, 'Dm9', 1.1);
+  riser(SCENE_TRANSITIONS[2].a - 0.5, 0.5, 0.16);
   // 4
-  wordHit(T.decoreba, 'Fmaj9');
+  wordHit(T.decoreba, 'Dm9');
   pop(T.parrot + 0.03, 0.18, 700, 1500);
-  whoosh(7.17, 0.4, 5000, 400, 0.26); // círculo preto
   // 5 · reunião
   chime(T.call + 0.02, 0.2);
   T.tiles.forEach((t, i) => tick(t, 2200 + i * 200, 0.06, -0.3 + i * 0.2));
-  wordHit(T.reuniao, 'Dm9');
-  T.s5b.slice(0, 4).forEach((t, i) => tick(t + 0.02, 2800 + i * 120, 0.045));
-  wordHit(T.promocao, 'Dm9', 1.1);
+  wordHit(T.reuniao, 'Am9');
+  ticks(T.s5b.slice(0, 4), 0.045);
+  wordHit(T.promocao, 'Fmaj9', 1.1);
   crash(T.promocao, 0.08);
-  whoosh(9.67, 0.45, 600, 6000, 0.26, -0.5, 0.4);
   // 6 · cartão
   whoosh(T.card, 0.33, 2500, 400, 0.18);
   thud(T.pin, 0.5);
   click(T.pin + 0.01, 0.22);
   T.items.forEach((t) => nope(t, 0.15));
-  whoosh(12.22, 0.4, 3500, 500, 0.2);
-  // 7 · o mercado
+  // 7 · o mercado / clareza
   pop(T.circle, 0.16, 300, 700);
   scribble(T.mercado, 0.5, 0.11);
-  wordHit(T.premia, 'Fmaj9', 0.8);
+  wordHit(T.premia, 'Dm9', 0.8);
   scratch(T.strike, 0.16);
-  whoosh(13.82, 0.35, 3500, 500, 0.2);
-  // 8 · clareza: virada na caixa e batida grande
-  for (let i = 0; i < 8; i++) snare(14.0 + i * (STEP / 2), 0.1 + i * 0.04);
-  riser(13.95, 0.55, 0.18);
+  tick(T.s7b[0] + 0.02, 2600, 0.06);
+  for (let i = 0; i < 8; i++) snare(T.clareza - 0.5 + i * (STEP / 2), 0.1 + i * 0.04);
+  riser(T.clareza - 0.55, 0.55, 0.18);
   wordHit(T.clareza, 'G6', 1.3);
   impact(T.clareza, 0.7);
   crash(T.clareza, 0.16);
-  whoosh(14.72, 0.4, 5000, 400, 0.26);
-  // 9 · Bruna
+  // 8 · Bruna: cada linha que entra tem um toque suave
   pop(T.avatar, 0.18);
+  tick(T.heading + 0.02, 2400, 0.05);
   tick(T.name + 0.02, 2600, 0.06);
-  T.lines.forEach((t) => tick(t + 0.02, 3000, 0.04));
+  T.creds.forEach((t) => tick(t + 0.02, 3000, 0.04));
+  pluck(T.offer, 72, 0.3);
   T.chips.forEach((t, i) => pluck(t, [76, 79][i], 0.3, i ? 0.25 : -0.25));
-  bell(T.dot, 88, 0.16, 0.2);
-  bell(T.dot + 0.09, 95, 0.13, 0.2);
-  whoosh(16.72, 0.4, 600, 6000, 0.26); // círculo branco
-  // 10 · esforço
-  swipe(T.laptop, 0.16);
-  wordHit(T.esforca, 'Cmaj7');
-  T.typing.forEach((t0) => [0, 0.06, 0.11, 0.17].forEach((d) => keyClick(t0 + d)));
-  whoosh(18.22, 0.4, 3500, 500, 0.2);
-  // 11 · jeito certo + dardo
-  T.s11.slice(0, 3).forEach((t, i) => tick(t + 0.02, 2800 + i * 150, 0.05));
+  T.dot.forEach((t) => {
+    bell(t, 88, 0.14, 0.2);
+    bell(t + 0.09, 95, 0.11, 0.2);
+  });
+  // 9 · esforço / jeito certo + dardo
+  ticks(T.s9a.slice(0, 3));
+  wordHit(T.esforca, 'Am9');
+  ticks(T.s9b.slice(0, 3));
   wordHit(T.certo, 'Fmaj9', 1.1);
   dart(T.target + 0.01, 0.4);
-  whoosh(19.67, 0.4, 5000, 400, 0.26); // círculo preto
-  // 12 · chamada
-  T.s12.forEach((t, i) => tick(Math.max(20.0, t + 0.02), 2800 + (i % 3) * 150, 0.045));
-  wordHit(T.saiba, 'Am9', 1.2);
+  // 10 · chamada
+  ticks(T.s10, 0.045);
+  wordHit(T.saiba, 'Dm9', 1.2);
   crash(T.saiba, 0.1);
-  wordHit(T.mude, 'Am9', 0.9);
+  wordHit(T.mude, 'Dm9', 0.9);
   T.arrows.forEach((t) => tick(t, 2200, 0.07));
-  riser(21.5, 0.6, 0.2);
-  whoosh(22.08, 0.45, 500, 7000, 0.28); // luz branca
-  // 13 · final: logo + acorde aberto + chamada
+  riser(SCENE_TRANSITIONS[9].a - 0.6, 0.6, 0.2);
+  // 11 · final: logo + acorde aberto + chamada
   impact(T.final, 0.55);
   kick(T.final, 0.8);
   bell(T.final + 0.02, 84, 0.24, -0.1);

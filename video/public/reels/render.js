@@ -1,5 +1,5 @@
 /*
- * Inglês com a Gavi — Reels "Carreira" (25 s, 1080×1920, 30 fps).
+ * Inglês com a Gavi — Reels "Carreira" (43,5 s, 1080×1920, 30 fps).
  *
  * TODA a animação é desenhada num único <canvas> pela função render(ctx, t),
  * com t em segundos. Nada aqui depende de quadro anterior: qualquer instante
@@ -7,22 +7,25 @@
  *
  * Modelado no exemplo do Pinterest que a cliente mandou: cenas pretas e
  * brancas, palavra-chave em vermelho, objetos e emojis, cartão com tachinha,
- * faixa curva cinza. Texto próprio da mentoria, em português (roteiro aprovado):
- *   1   0–2      "Você estuda inglês há anos."
- *   2   2–4      executivo em retícula: "Mas e a sua carreira?" / "no mesmo lugar."
- *   3   4–6      "Porque inglês sem prática real"
- *   4   6–7,5    "é só decoreba." + 🦜
- *   5   7,5–10   chamada de vídeo: "E é na reunião / que se decide a promoção."
- *   6   10–12,5  cartão com tachinha: "Sem inglês funcional:" …
- *   7   12,5–14  "O mercado não premia esforço."
- *   8   14–15    "Premia clareza."
- *   9   15–17    cartão da Bruna (foto real)
- *   10  17–18,5  "Você já se esforça muito." + 💻
- *   11  18,5–20  "Mas não do jeito certo." + 🎯
- *   12  20–22,5  "Toque em Saiba mais e mude isso." (ou "Link na bio para mudar isso.")
- *   13  22,5–25  logo original + chamada (2,5 s)
+ * faixa curva cinza. Texto próprio da mentoria, em português.
  *
- * Elemento contínuo: a faixa curva cinza do exemplo, em todas as cenas.
+ * Cadência de leitura (pedido da cliente: o lead precisa entender): cada tela
+ * fica o tempo de ler (~0,3 s por palavra + entrada + um respiro); ideias que
+ * se contrapõem ficam juntas na mesma tela.
+ *   1   0–2,5     "Você estuda inglês há anos."
+ *   2   2,5–6,5   executivo em retícula: "Mas e a sua carreira?" / "no mesmo lugar."
+ *   3   6,5–9     "Porque inglês sem prática real"
+ *   4   9–11      "é só decoreba." + 🦜
+ *   5   11–15,5   chamada de vídeo: "E é na reunião / que se decide a promoção."
+ *   6   15,5–21   cartão com tachinha: "Sem inglês funcional:" …
+ *   7   21–25,5   "O mercado não premia esforço. / Premia clareza."
+ *   8   25,5–32,5 "Quem conduz a mentoria:" cartão da Bruna (foto real)
+ *   9   32,5–37   "Você já se esforça muito. / Mas não do jeito certo." + 🎯
+ *   10  37–40,5   "Toque em Saiba mais e mude isso." (ou "Link na bio para mudar isso.")
+ *   11  40,5–43,5 logo original + chamada
+ *
+ * Elemento contínuo: a faixa curva cinza do exemplo, em todas as cenas, com um
+ * brilho que corre por ela — enquanto o texto fica parado para ler, a tela vive.
  * Transições: círculo que abre, luz branca, cruzada com zoom — nenhum corte seco.
  * Logo: o PNG original recortado sem perda, desenhado 1:1 no fim — nunca redesenhado.
  * Grade musical: 120 BPM, uma batida a cada 0,5 s; a trilha (audio.js) lê os
@@ -32,7 +35,7 @@
 export const W = 1080;
 export const H = 1920;
 export const FPS = 30;
-export const DURATION = 25;
+export const DURATION = 43.5;
 export const BPM = 120;
 export const BEAT = 60 / BPM; // 0,5 s
 
@@ -59,74 +62,77 @@ export const ASSETS = {
   silent: 'emoji/emoji_u1f636.svg',
   globe: 'emoji/emoji_u1f30e.svg',
   chartDown: 'emoji/emoji_u1f4c9.svg',
-  laptop: 'emoji/emoji_u1f4bb.svg',
   target: 'emoji/emoji_u1f3af.svg',
 };
 
 /** Tempos (s). Palavras-chave e batidas caem no tempo da música (múltiplos de 0,5 s). */
 export const T = {
-  // 1 · gancho
+  // 1 · gancho (0–2,5)
   s1: [-0.24, -0.12, 0.0, 0.5, 0.75],
   anos: 1.0,
-  // 2 · executivo
-  figure: 1.85,
-  bubble: 2.15,
-  s2: [2.25, 2.33, 2.41, 2.25],
-  carreira: 2.5,
-  lugar: [2.85, 3.0], // "no mesmo" · "lugar."
-  // 3
-  s3: [3.85, 3.95, 4.05, 4.5],
-  pratica: 5.0,
-  // 4
-  s4: [6.05, 6.15],
-  decoreba: 6.5,
-  parrot: 6.5,
-  // 5 · chamada de vídeo
-  call: 7.5,
-  tiles: [7.6, 7.7, 7.8, 7.9],
-  s5a: [7.6, 7.68, 7.76, 7.85],
-  reuniao: 8.0,
-  s5b: [8.5, 8.58, 8.66, 8.74, 8.85],
-  promocao: 9.0,
-  // 6 · cartão
-  card: 10.0,
-  pin: 10.35,
-  title: 10.4,
-  items: [10.75, 11.25, 11.75],
-  // 7
-  circle: 12.35,
-  mercado: 12.45,
-  s7: [13.1, 13.25, 13.4],
-  premia: 13.5,
-  strike: 13.6,
-  // 8
-  s8: [13.95, 14.25],
-  clareza: 14.5,
-  // 9 · Bruna
-  bruna: 15.0,
-  avatar: 15.1,
-  name: 15.3,
-  lines: [15.5, 15.7],
-  chips: [16.0, 16.25],
-  dot: 16.5,
-  // 10
-  laptop: 17.0,
-  s10: [17.05, 17.15, 17.25, 17.3, 17.4],
-  esforca: 17.5,
-  typing: [17.75, 18.0],
-  // 11
-  s11: [18.5, 18.6, 18.7, 18.8, 18.9],
-  certo: 19.0,
-  target: 19.0,
-  // 12 · chamada
-  s12: [20.05, 20.15, 20.3, 20.9, 21.0, 21.1],
-  saiba: 20.5,
-  mude: 21.0,
-  arrows: [21.25, 21.5, 22.0],
-  // 13 · final
-  final: 22.5,
-  cta: [22.625, 22.75, 22.875],
-  ctaPulses: [23.5, 24.0, 24.5],
+  // 2 · executivo (2,5–6,5)
+  figure: 2.35,
+  bubble: 2.7,
+  s2: [2.8, 2.88, 2.96],
+  carreira: 3.5, // "carreira?" entra em 3,3 e bate no tempo
+  lugar: [4.25, 4.4], // "no mesmo" · "lugar."
+  lugarHit: 4.5,
+  // 3 · (6,5–9)
+  scene3: 6.35,
+  s3: [6.35, 6.45, 6.55, 7.0],
+  pratica: 7.5,
+  // 4 · (9–11)
+  scene4: 9.0,
+  s4: [9.05, 9.25],
+  decoreba: 9.5,
+  parrot: 9.5,
+  // 5 · chamada de vídeo (11–15,5)
+  call: 11.0,
+  tiles: [11.1, 11.2, 11.3, 11.4],
+  s5a: [11.1, 11.18, 11.26, 11.35],
+  reuniao: 11.5,
+  s5b: [12.5, 12.58, 12.66, 12.74, 12.85],
+  promocao: 13.0,
+  // 6 · cartão (15,5–21): um item por segundo
+  card: 15.5,
+  pin: 15.85,
+  title: 15.9,
+  items: [16.5, 17.5, 18.5],
+  // 7 · o mercado (21–25,5)
+  circle: 20.85,
+  mercado: 20.95,
+  s7: [21.75, 21.85, 21.95],
+  premia: 22.0,
+  strike: 22.5,
+  s7b: [23.0, 23.25],
+  clareza: 23.5,
+  // 8 · Bruna (25,5–32,5): uma linha de cada vez
+  bruna: 25.5,
+  heading: 25.6,
+  avatar: 25.9,
+  name: 26.4,
+  creds: [27.1, 27.7, 27.85], // criadora · especialista em ensino de · inglês para adultos
+  divider: 28.3,
+  offer: 28.6, // mentoria de inglês funcional
+  chips: [29.2, 29.6],
+  dot: [30.5, 31.5],
+  // 9 · esforço (32,5–37)
+  scene9: 32.5,
+  s9a: [32.55, 32.65, 32.75, 32.85],
+  esforca: 33.0,
+  s9b: [34.0, 34.1, 34.2, 34.3],
+  certo: 34.5,
+  target: 34.5,
+  // 10 · chamada (37–40,5)
+  scene10: 37.0,
+  s10: [37.05, 37.15, 37.3, 38.0, 38.1, 38.2],
+  saiba: 37.5,
+  mude: 38.5,
+  arrows: [38.75, 39.0, 39.5, 40.0],
+  // 11 · final (40,5–43,5)
+  final: 40.5,
+  cta: [40.625, 40.75, 40.875],
+  ctaPulses: [41.5, 42.0, 42.5, 43.0],
 };
 
 /**
@@ -135,20 +141,19 @@ export const T = {
  *   iris:  um círculo abre a partir de um ponto com a cena nova dentro (área coberta constante)
  *   bloom: luz branca que nasce num ponto e toma a tela
  */
-const TR = [
-  {a: 1.75, b: 2.1, type: 'cross'},
-  {a: 3.75, b: 4.1, type: 'cross'},
-  {a: 5.75, b: 6.1, type: 'iris', from: {x: 540, y: 1100}},
-  {a: 7.2, b: 7.55, type: 'iris', from: {x: 560, y: 1290}},
-  {a: 9.7, b: 10.1, type: 'iris', from: {x: -60, y: 1990}},
-  {a: 12.25, b: 12.6, type: 'cross'},
-  {a: 13.85, b: 14.15, type: 'cross'},
-  {a: 14.75, b: 15.1, type: 'iris', from: {x: 540, y: 960}},
-  {a: 16.75, b: 17.1, type: 'iris', from: {x: 1090, y: 1930}},
-  {a: 18.25, b: 18.6, type: 'cross'},
-  {a: 19.7, b: 20.05, type: 'iris', from: {x: 560, y: 1290}},
-  {a: 22.1, b: 22.5, type: 'bloom', from: {x: 540, y: 860}},
+export const SCENE_TRANSITIONS = [
+  {a: 2.25, b: 2.6, type: 'cross'},
+  {a: 6.25, b: 6.6, type: 'cross'},
+  {a: 8.75, b: 9.1, type: 'iris', to: 'white', from: {x: 540, y: 1100}},
+  {a: 10.75, b: 11.1, type: 'iris', to: 'black', from: {x: 560, y: 1290}},
+  {a: 15.25, b: 15.65, type: 'iris', to: 'white', from: {x: -60, y: 1990}},
+  {a: 20.75, b: 21.1, type: 'cross'},
+  {a: 25.25, b: 25.6, type: 'iris', to: 'black', from: {x: 540, y: 1250}},
+  {a: 32.25, b: 32.6, type: 'iris', to: 'white', from: {x: 1090, y: 1930}},
+  {a: 36.75, b: 37.1, type: 'iris', to: 'black', from: {x: 560, y: 1320}},
+  {a: 40.1, b: 40.5, type: 'bloom', from: {x: 540, y: 860}},
 ];
+const TR = SCENE_TRANSITIONS;
 
 /** Janelas de transição (texto pode passar da área segura enquanto sai de cena). */
 export const TRANSITIONS = TR.map(({a, b}) => [a, b]);
@@ -234,12 +239,10 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
     {bg: 'black', draw: scene5},
     {bg: 'white', draw: scene6},
     {bg: 'white', draw: scene7},
-    {bg: 'white', draw: scene8},
-    {bg: 'black', draw: scene9},
-    {bg: 'white', draw: scene10},
-    {bg: 'white', draw: scene11},
-    {bg: 'black', draw: scene12},
-    {bg: 'final', draw: scene13},
+    {bg: 'black', draw: scene8},
+    {bg: 'white', draw: scene9},
+    {bg: 'black', draw: scene10},
+    {bg: 'final', draw: scene11},
   ];
 
   function render(ctx, tIn) {
@@ -372,6 +375,28 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
       }
       ctx.stroke();
     });
+    // dois brilhos que correm pela parte visível da faixa (meia volta de diferença):
+    // enquanto o texto fica parado para ler, a tela nunca congela
+    const bez = (u, p0, p1, p2, p3) => (1 - u) ** 3 * p0 + 3 * (1 - u) ** 2 * u * p1 + 3 * (1 - u) * u * u * p2 + u ** 3 * p3;
+    ctx.lineWidth = 80;
+    ctx.shadowBlur = 36;
+    ctx.shadowOffsetY = 0;
+    for (const offset of [0, 0.5]) {
+      const ph = (((t * 0.4 + offset) % 1) + 1) % 1;
+      const u0 = 0.08 + 0.7 * ph;
+      const alpha = Math.sin(Math.PI * ph);
+      ctx.beginPath();
+      for (let k = 0; k <= 18; k++) {
+        const u = u0 + (k / 18) * 0.13;
+        const x = bez(u, a.x, b.x, c.x, d.x);
+        const y = bez(u, a.y, b.y, c.y, d.y);
+        if (k) ctx.lineTo(x, y);
+        else ctx.moveTo(x, y);
+      }
+      ctx.strokeStyle = tone === 'dark' ? `rgba(96,96,108,${(0.55 * alpha).toFixed(3)})` : `rgba(255,255,255,${(0.95 * alpha).toFixed(3)})`;
+      ctx.shadowColor = tone === 'dark' ? `rgba(120,120,135,${(0.6 * alpha).toFixed(3)})` : `rgba(255,255,255,${alpha.toFixed(3)})`;
+      ctx.stroke();
+    }
     ctx.restore();
   }
 
@@ -381,7 +406,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
   function scene1(ctx, t, out) {
     const w = T.s1;
     leaving(ctx, out, () =>
-      camera(ctx, 540, 960, push(t, 0, 2), () => {
+      camera(ctx, 540, 960, push(t, 0, 2.5), () => {
         words(ctx, t, {y: 880, items: [
           {text: 'Você', at: w[0], size: 88},
           {text: 'estuda', at: w[1], size: 88},
@@ -389,7 +414,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
         ]});
         words(ctx, t, {y: 1130, items: [
           {text: 'há', at: w[3], size: 88},
-          {text: 'anos.', at: w[4], size: 220, weight: 800, color: COLORS.red, glow: true, hits: [T.anos, 1.5]},
+          {text: 'anos.', at: w[4], size: 220, weight: 800, color: COLORS.red, glow: true, hits: [T.anos, T.anos + 1]},
         ]});
       }),
     );
@@ -400,7 +425,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
     leaving(ctx, out, () => {
       const fp = easeOut(prog(t, T.figure, 0.5));
       if (fp > 0) {
-        const s = 1 + 0.05 * prog(t, T.figure, 2.2);
+        const s = 1 + 0.05 * prog(t, T.figure, 4);
         const fw = figure.width * s;
         ctx.save();
         ctx.globalAlpha *= fp;
@@ -438,12 +463,12 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
             {text: 'e', at: w[1], size: 66, color: COLORS.ink},
             {text: 'a sua', at: w[2], size: 66, color: COLORS.ink},
           ]});
-          words(ctx, t, {y: 572, items: [{text: 'carreira?', at: T.carreira - 0.2, size: 132, weight: 800, color: COLORS.red, hits: [T.carreira]}]});
+          words(ctx, t, {y: 572, items: [{text: 'carreira?', at: T.carreira - 0.2, size: 132, weight: 800, color: COLORS.red, hits: [T.carreira, T.carreira + 2]}]});
         });
         ctx.restore();
       }
       words(ctx, t, {y: 1270, items: [{text: 'no mesmo', at: T.lugar[0], size: 160, weight: 800, shadow: true}]});
-      words(ctx, t, {y: 1425, items: [{text: 'lugar.', at: T.lugar[1], size: 160, weight: 800, shadow: true, hits: [T.lugar[1] + 0.5]}]});
+      words(ctx, t, {y: 1425, items: [{text: 'lugar.', at: T.lugar[1], size: 160, weight: 800, shadow: true, hits: [T.lugarHit, T.lugarHit + 1]}]});
     });
   }
 
@@ -451,13 +476,13 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
   function scene3(ctx, t, out) {
     const w = T.s3;
     leaving(ctx, out, () =>
-      camera(ctx, 540, 960, push(t, 3.85, 2), () => {
+      camera(ctx, 540, 960, push(t, T.scene3, 2.6), () => {
         words(ctx, t, {y: 900, items: [
           {text: 'Porque', at: w[0], size: 90},
           {text: 'inglês', at: w[1], size: 90},
           {text: 'sem', at: w[2], size: 90},
         ]});
-        words(ctx, t, {y: 1100, items: [{text: 'prática real', at: w[3], size: 140, weight: 800, color: COLORS.red, glow: true, hits: [T.pratica, T.pratica + 0.5]}]});
+        words(ctx, t, {y: 1100, items: [{text: 'prática real', at: w[3], size: 140, weight: 800, color: COLORS.red, glow: true, hits: [T.pratica, T.pratica + 1]}]});
       }),
     );
   }
@@ -465,9 +490,9 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
   // 4 · "é só decoreba." + 🦜
   function scene4(ctx, t, out) {
     leaving(ctx, out, () => {
-      camera(ctx, 540, 960, push(t, 6, 1.5), () => {
+      camera(ctx, 540, 960, push(t, T.scene4, 2), () => {
         words(ctx, t, {y: 760, items: [{text: 'é só', at: T.s4[0], size: 110, color: COLORS.ink}]});
-        words(ctx, t, {y: 960, items: [{text: 'decoreba.', at: T.s4[1], size: 155, weight: 800, color: COLORS.red, hits: [T.decoreba, T.decoreba + 0.5]}]});
+        words(ctx, t, {y: 960, items: [{text: 'decoreba.', at: T.s4[1], size: 155, weight: 800, color: COLORS.red, hits: [T.decoreba, T.decoreba + 1]}]});
       });
       // papagaio: entra no tempo, inclina a cabeça a cada batida
       const p = easeOutSoft(prog(t, T.parrot, 0.35));
@@ -487,7 +512,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
         {text: 'E', at: a[0], size: 82},
         {text: 'é', at: a[1], size: 82},
         {text: 'na', at: a[2], size: 82},
-        {text: 'reunião', at: a[3], size: 140, weight: 800, color: COLORS.red, glow: true, hits: [T.reuniao]},
+        {text: 'reunião', at: a[3], size: 140, weight: 800, color: COLORS.red, glow: true, hits: [T.reuniao, T.reuniao + 2]},
       ]});
       const b = T.s5b;
       words(ctx, t, {y: 1268, items: [
@@ -496,7 +521,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
         {text: 'decide', at: b[2], size: 82},
         {text: 'a', at: b[3], size: 82},
       ]});
-      words(ctx, t, {y: 1422, items: [{text: 'promoção.', at: b[4], size: 144, weight: 800, color: COLORS.red, glow: true, hits: [T.promocao, T.promocao + 0.5]}]});
+      words(ctx, t, {y: 1422, items: [{text: 'promoção.', at: b[4], size: 144, weight: 800, color: COLORS.red, glow: true, hits: [T.promocao, T.promocao + 1]}]});
     });
   }
 
@@ -516,7 +541,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
     if (inP <= 0) return;
     ctx.save();
     ctx.globalAlpha *= inP;
-    camera(ctx, 540, 860, lerp(0.9, 1, inP) * push(t, T.call, 2.5), () => {
+    camera(ctx, 540, 860, lerp(0.9, 1, inP) * push(t, T.call, 4.5), () => {
       ctx.save();
       ctx.shadowColor = 'rgba(0,0,0,0.7)';
       ctx.shadowBlur = 60;
@@ -702,14 +727,14 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
     ctx.restore();
   }
 
-  // 7 · "O mercado / não premia esforço."
+  // 7 · "O mercado / não premia esforço. / Premia / clareza." — o contraste numa tela só
   function scene7(ctx, t, out) {
     leaving(ctx, out, () =>
-      camera(ctx, 540, 960, push(t, 12.35, 1.8), () => {
+      camera(ctx, 540, 960, push(t, T.circle, 4.4), () => {
         const cp = easeOutSoft(prog(t, T.circle, 0.42));
         if (cp > 0) {
           ctx.beginPath();
-          ctx.arc(540, 880, 330 * cp, 0, TAU);
+          ctx.arc(540, 650, 300 * cp, 0, TAU);
           ctx.fillStyle = '#F8E1E6';
           ctx.fill();
         }
@@ -721,76 +746,70 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
           const tw = ctx.measureText('O mercado').width;
           const x = 540 - tw / 2;
           ctx.beginPath();
-          ctx.rect(x - 10, 700, (tw + 20) * wp, 300);
+          ctx.rect(x - 10, 520, (tw + 20) * wp, 230);
           ctx.clip();
           ctx.fillStyle = COLORS.ink;
-          ctx.fillText('O mercado', x, 925);
+          ctx.fillText('O mercado', x, 700);
           ctx.restore();
-          record(ctx, x, 925 - 140 * 0.8, x + tw * wp, 925 + 140 * 0.24, t);
+          record(ctx, x, 700 - 140 * 0.8, x + tw * wp, 700 + 140 * 0.24, t);
         }
         const w = T.s7;
-        words(ctx, t, {y: 1120, items: [
+        words(ctx, t, {y: 870, items: [
           {text: 'não', at: w[0], size: 80, color: COLORS.ink},
           {text: 'premia', at: w[1], size: 80, weight: 800, color: COLORS.red, hits: [T.premia]},
           {text: 'esforço.', at: w[2], size: 80, color: '#A2A2A8', strike: T.strike},
         ]});
+        words(ctx, t, {y: 1100, items: [{text: 'Premia', at: T.s7b[0], size: 104, color: COLORS.ink}]});
+        words(ctx, t, {y: 1300, items: [{text: 'clareza.', at: T.s7b[1], size: 170, weight: 800, color: COLORS.red, hits: [T.clareza, T.clareza + 1]}]});
       }),
     );
   }
 
-  // 8 · "Premia / clareza."
+  // 8 · "Quem conduz a mentoria:" — cartão da Bruna (foto real), uma linha de cada vez
   function scene8(ctx, t, out) {
-    leaving(ctx, out, () =>
-      camera(ctx, 540, 960, push(t, 13.95, 1.2), () => {
-        words(ctx, t, {y: 830, items: [{text: 'Premia', at: T.s8[0], size: 112, color: COLORS.ink}]});
-        words(ctx, t, {y: 1060, items: [{text: 'clareza.', at: T.s8[1], size: 190, weight: 800, color: COLORS.red, hits: [T.clareza]}]});
-      }),
-    );
-  }
-
-  // 9 · cartão da Bruna (foto real)
-  function scene9(ctx, t, out) {
     leaving(ctx, out, () => {
-      const p = easeOut(prog(t, T.bruna, 0.4));
+      const p = easeOut(prog(t, T.bruna, 0.45));
       if (p <= 0) return;
+      words(ctx, t, {y: 385, items: [{text: 'Quem conduz a mentoria:', at: T.heading, size: 62, color: COLORS.white}]});
       ctx.save();
       ctx.globalAlpha *= p;
-      camera(ctx, 540, 880, push(t, T.bruna, 2), () => {
+      camera(ctx, 540, 880, push(t, T.bruna, 7), () => {
         ctx.translate(0, 90 * (1 - p));
         ctx.save();
         ctx.shadowColor = 'rgba(0,0,0,0.8)';
         ctx.shadowBlur = 70;
         ctx.shadowOffsetY = 30;
-        roundRect(ctx, 130, 500, 820, 760, 40);
+        roundRect(ctx, 130, 450, 820, 870, 40);
         ctx.fillStyle = '#151517';
         ctx.fill();
         ctx.restore();
-        roundRect(ctx, 130, 500, 820, 760, 40);
+        roundRect(ctx, 130, 450, 820, 870, 40);
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#2A2A2F';
         ctx.stroke();
         // foto
         const ap = easeOutSoft(prog(t, T.avatar, 0.35));
         if (ap > 0 && img.photo) {
-          const r = 132 * lerp(0.8, 1, ap);
+          const r = 122 * lerp(0.8, 1, ap);
           const cx = 540;
-          const cy = 690;
+          const cy = 610;
           ctx.save();
           ctx.globalAlpha *= clamp(ap * 1.5);
           ctx.beginPath();
           ctx.arc(cx, cy, r, 0, TAU);
           ctx.save();
           ctx.clip();
-          const s = (r / 132) * 0.6;
+          const s = (r / 122) * 0.555;
           ctx.drawImage(img.photo, cx - 400 * s, cy - 310 * s, img.photo.width * s, img.photo.height * s);
           ctx.restore();
           ctx.lineWidth = 6;
           ctx.strokeStyle = COLORS.red;
           ctx.stroke();
           // pontinho de notificação, como no perfil do exemplo
-          const dp = 1 + 0.35 * bump(t, T.dot, 0.3);
+          let dp = 0;
+          T.dot.forEach((at) => (dp = Math.max(dp, bump(t, at, 0.3))));
           ctx.beginPath();
-          ctx.arc(cx + r * 0.72, cy - r * 0.72, 17 * dp, 0, TAU);
+          ctx.arc(cx + r * 0.72, cy - r * 0.72, 17 * (1 + 0.35 * dp), 0, TAU);
           ctx.fillStyle = COLORS.red;
           ctx.fill();
           ctx.lineWidth = 5;
@@ -798,9 +817,16 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
           ctx.stroke();
           ctx.restore();
         }
-        words(ctx, t, {y: 920, items: [{text: 'Bruna Gavioli', at: T.name, size: 72, weight: 800, color: COLORS.white}]});
-        words(ctx, t, {y: 995, items: [{text: 'Mentoria de inglês funcional', at: T.lines[0], size: 50, color: '#C9C9CF'}]});
-        words(ctx, t, {y: 1058, items: [{text: 'para executivos', at: T.lines[1], size: 50, weight: 800, color: COLORS.red}]});
+        words(ctx, t, {y: 830, items: [{text: 'Bruna Gavioli', at: T.name, size: 74, weight: 800, color: COLORS.white}]});
+        words(ctx, t, {y: 905, items: [{text: 'Criadora do método M.O.V.E.', at: T.creds[0], size: 46, color: '#D6D6DC'}]});
+        words(ctx, t, {y: 968, items: [{text: 'Especialista em ensino de', at: T.creds[1], size: 46, color: '#A9A9B1'}]});
+        words(ctx, t, {y: 1024, items: [{text: 'inglês para adultos.', at: T.creds[2], size: 46, color: '#A9A9B1'}]});
+        const dl = easeOut(prog(t, T.divider, 0.4));
+        if (dl > 0) {
+          ctx.fillStyle = '#2E2E34';
+          ctx.fillRect(540 - 330 * dl, 1066, 660 * dl, 3);
+        }
+        words(ctx, t, {y: 1146, items: [{text: 'Mentoria de inglês funcional', at: T.offer, size: 52, weight: 800, color: COLORS.white}]});
         chips(ctx, t);
       });
       ctx.restore();
@@ -808,7 +834,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
   }
 
   function chips(ctx, t) {
-    const labels = ['Método M.O.V.E.', '20 min por dia'];
+    const labels = ['Para executivos', '20 min por dia'];
     ctx.save();
     ctx.font = '700 38px Inter, Arial, sans-serif';
     const pad = 30;
@@ -821,17 +847,18 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
       if (p > 0) {
         ctx.save();
         ctx.globalAlpha *= clamp(p * 1.5);
-        camera(ctx, x + ws[k] / 2, 1150, lerp(0.7, 1, p), () => {
-          roundRect(ctx, x, 1150 - 38, ws[k], 76, 38);
+        const cy = 1240;
+        camera(ctx, x + ws[k] / 2, cy, lerp(0.7, 1, p), () => {
+          roundRect(ctx, x, cy - 38, ws[k], 76, 38);
           ctx.fillStyle = '#232327';
           ctx.fill();
           ctx.beginPath();
-          ctx.arc(x + pad + 7, 1150, 7, 0, TAU);
+          ctx.arc(x + pad + 7, cy, 7, 0, TAU);
           ctx.fillStyle = COLORS.red;
           ctx.fill();
           ctx.fillStyle = COLORS.white;
-          ctx.fillText(l, x + pad + dot, 1150 + 13);
-          record(ctx, x, 1150 - 38, x + ws[k], 1150 + 38, t);
+          ctx.fillText(l, x + pad + dot, cy + 13);
+          record(ctx, x, cy - 38, x + ws[k], cy + 38, t);
         });
         ctx.restore();
       }
@@ -840,55 +867,40 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
     ctx.restore();
   }
 
-  // 10 · "Você já se / esforça / muito." + 💻
-  function scene10(ctx, t, out) {
-    const w = T.s10;
+  // 9 · "Você já se / esforça muito. / Mas não do / jeito certo." + 🎯 — o contraste numa tela só
+  function scene9(ctx, t, out) {
+    const a = T.s9a;
+    const b = T.s9b;
     leaving(ctx, out, () => {
-      const lp = easeOut(prog(t, T.laptop, 0.45));
-      if (lp > 0 && img.laptop) {
-        const shake = 0.02 * (bump(t, T.typing[0], 0.18) - bump(t, T.typing[1], 0.18));
-        emoji(ctx, img.laptop, 840 + 520 * (1 - lp), 1450, 600, -0.24 + shake, 1);
-      }
-      camera(ctx, 540, 960, push(t, 17, 1.5), () => {
-        words(ctx, t, {y: 660, items: [
-          {text: 'Você', at: w[0], size: 100, color: COLORS.ink},
-          {text: 'já', at: w[1], size: 100, color: COLORS.ink},
-          {text: 'se', at: w[2], size: 100, color: COLORS.ink},
+      camera(ctx, 540, 960, push(t, T.scene9, 4.5), () => {
+        words(ctx, t, {y: 560, items: [
+          {text: 'Você', at: a[0], size: 92, color: COLORS.ink},
+          {text: 'já', at: a[1], size: 92, color: COLORS.ink},
+          {text: 'se', at: a[2], size: 92, color: COLORS.ink},
         ]});
-        words(ctx, t, {y: 860, items: [{text: 'esforça', at: w[3], size: 190, weight: 800, color: COLORS.red, hits: [T.esforca]}]});
-        words(ctx, t, {y: 1060, items: [{text: 'muito.', at: w[4], size: 190, weight: 800, color: COLORS.red, hits: [T.esforca, 18.0]}]});
-      });
-    });
-  }
-
-  // 11 · "Mas não do / jeito / certo." + 🎯
-  function scene11(ctx, t, out) {
-    const w = T.s11;
-    leaving(ctx, out, () => {
-      camera(ctx, 540, 960, push(t, 18.5, 1.5), () => {
-        words(ctx, t, {y: 660, items: [
-          {text: 'Mas', at: w[0], size: 100, color: COLORS.ink},
-          {text: 'não', at: w[1], size: 100, color: COLORS.ink},
-          {text: 'do', at: w[2], size: 100, color: COLORS.ink},
+        words(ctx, t, {y: 720, items: [{text: 'esforça muito.', at: a[3], size: 110, weight: 800, color: COLORS.red, hits: [T.esforca]}]});
+        words(ctx, t, {y: 940, items: [
+          {text: 'Mas', at: b[0], size: 92, color: COLORS.ink},
+          {text: 'não', at: b[1], size: 92, color: COLORS.ink},
+          {text: 'do', at: b[2], size: 92, color: COLORS.ink},
         ]});
-        words(ctx, t, {y: 860, items: [{text: 'jeito', at: w[3], size: 190, weight: 800, color: COLORS.red, hits: [T.certo]}]});
-        words(ctx, t, {y: 1060, items: [{text: 'certo.', at: w[4], size: 190, weight: 800, color: COLORS.red, hits: [T.certo, T.certo + 0.5]}]});
+        words(ctx, t, {y: 1100, items: [{text: 'jeito certo.', at: b[3], size: 110, weight: 800, color: COLORS.red, hits: [T.certo, T.certo + 1]}]});
       });
       const p = easeOutSoft(prog(t, T.target, 0.3));
       if (p > 0 && img.target) {
         const wob = 0.12 * Math.sin((t - T.target) * 22) * Math.exp(-(t - T.target) * 5);
-        emoji(ctx, img.target, 560, 1340, 400 * lerp(0.3, 1, p), wob, clamp(p * 1.5));
+        emoji(ctx, img.target, 560, 1320, 300 * lerp(0.3, 1, p), wob, clamp(p * 1.5));
       }
     });
   }
 
-  // 12 · chamada: "Toque em / Saiba mais / e mude isso." (ou "Link na bio / para mudar isso.")
-  function scene12(ctx, t, out) {
-    const w = T.s12;
+  // 10 · chamada: "Toque em / Saiba mais / e mude isso." (ou "Link na bio / para mudar isso.")
+  function scene10(ctx, t, out) {
+    const w = T.s10;
     leaving(ctx, out, () =>
-      camera(ctx, 540, 960, push(t, 20, 2.5), () => {
+      camera(ctx, 540, 960, push(t, T.scene10, 3.5), () => {
         if (cta === 'linknabio') {
-          words(ctx, t, {y: 860, items: [{text: 'Link na bio', at: w[2], size: 146, weight: 800, color: COLORS.red, glow: true, hits: [T.saiba, 21.5]}]});
+          words(ctx, t, {y: 860, items: [{text: 'Link na bio', at: w[2], size: 146, weight: 800, color: COLORS.red, glow: true, hits: [T.saiba, T.saiba + 1.5]}]});
           words(ctx, t, {y: 1050, items: [
             {text: 'para', at: w[3], size: 92},
             {text: 'mudar', at: w[4], size: 92, weight: 800, color: COLORS.red, glow: true, hits: [T.mude]},
@@ -899,7 +911,7 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
             {text: 'Toque', at: w[0], size: 100},
             {text: 'em', at: w[1], size: 100},
           ]});
-          words(ctx, t, {y: 900, items: [{text: 'Saiba mais', at: w[2], size: 146, weight: 800, color: COLORS.red, glow: true, hits: [T.saiba, 21.5]}]});
+          words(ctx, t, {y: 900, items: [{text: 'Saiba mais', at: w[2], size: 146, weight: 800, color: COLORS.red, glow: true, hits: [T.saiba, T.saiba + 1.5]}]});
           words(ctx, t, {y: 1080, items: [
             {text: 'e', at: w[3], size: 100},
             {text: 'mude', at: w[4], size: 100, weight: 800, color: COLORS.red, glow: true, hits: [T.mude]},
@@ -934,8 +946,8 @@ export function createScene({images, cta = 'saibamais', debug = null, makeCanvas
     ctx.restore();
   }
 
-  // 13 · final: logo original + chamada (2,5 s)
-  function scene13(ctx, t) {
+  // 11 · final: logo original + chamada (3 s)
+  function scene11(ctx, t) {
     const a = easeOut(prog(t, T.final, 0.45));
     const s = lerp(0.94, 1, a);
     if (a >= 1) {

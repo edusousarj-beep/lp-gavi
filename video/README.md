@@ -56,7 +56,7 @@ E uma peça **modelada em outro anúncio** (formato próprio, 16 s):
   `perfil.jpg` é a foto de perfil recortada acima do texto que vinha
   embutido; `retrato.jpg` sem alteração.
 
-E um **Reels desenhado num canvas só** (25 s):
+E um **Reels desenhado num canvas só** (43,5 s):
 
 - **Carreira** (`GaviCarreira` e `GaviCarreiraBio`, `public/reels/`): toda a
   animação é uma função `render(ctx, t)` em JavaScript puro que desenha um
@@ -69,7 +69,12 @@ E um **Reels desenhado num canvas só** (25 s):
   Porque inglês sem prática real é só decoreba. / E é na reunião que se
   decide a promoção. / Sem inglês funcional: … / O mercado não premia
   esforço. Premia clareza. / [Bruna] / Você já se esforça muito. Mas não do
-  jeito certo. / Toque em Saiba mais e mude isso." O executivo (em retícula),
+  jeito certo. / Toque em Saiba mais e mude isso." **Cadência de leitura**: cada
+  tela fica o tempo de ler (~0,3 s por palavra + entrada + um respiro), ideias
+  que se contrapõem ficam na mesma tela, e a Bruna tem 7 s ("Quem conduz a
+  mentoria:", foto, nome, credenciais e a oferta, uma linha de cada vez).
+  Enquanto o texto fica parado, dois brilhos correm pela faixa: a tela nunca
+  congela (algo muda a cada 0,3 s no máximo). O executivo (em retícula),
   a chamada de vídeo e o cartão são desenhados por código; a única foto é o
   retrato real da Bruna (`public/pordentro/retrato.jpg`). Emojis: SVGs da Noto
   (`public/emoji/`). Trilha e efeitos em Web Audio API
@@ -85,7 +90,7 @@ E um **Reels desenhado num canvas só** (25 s):
 
 | | |
 | --- | --- |
-| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` (720 quadros), `out/gavi-pordentro-16s.mp4` (480 quadros), `out/gavi-carreira-25s{,-linknabio}.mp4` (750 quadros) — H.264, 1080×1920, 30 fps |
+| Saída | `out/gavi-anuncio-24s-{claro,escuro}.mp4`, `out/gavi-{post,noticia,conversa}-24s.mp4` (720 quadros), `out/gavi-pordentro-16s.mp4` (480 quadros), `out/gavi-carreira-43s{,-linknabio}.mp4` (1305 quadros) — H.264, 1080×1920, 30 fps |
 | Áudio | AAC 320 kbps, 48 kHz estéreo, −14 LUFS, pico real ≤ −1 dBTP |
 | Grade | 100 BPM = 18 quadros por tempo (Por dentro e Carreira: 120 BPM = 15); cenas cortam no tempo da música |
 

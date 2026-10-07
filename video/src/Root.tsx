@@ -36,9 +36,9 @@ export const RemotionRoot: React.FC = () => (
         height={HEIGHT}
         defaultProps={{tema: 'escuro' as const, aviso: null as string | null}}
       />
-      {/* Reels "Carreira" (25 s): um único canvas desenhado por public/reels/render.js — render(t). */}
-      <Composition id="GaviCarreira" component={ReelsAd} durationInFrames={750} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{cta: 'saibamais' as const}} />
-      <Composition id="GaviCarreiraBio" component={ReelsAd} durationInFrames={750} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{cta: 'linknabio' as const}} />
+      {/* Reels "Carreira" (43,5 s = 1305 quadros, DURATION em render.js): um único canvas desenhado por public/reels/render.js — render(t). */}
+      <Composition id="GaviCarreira" component={ReelsAd} durationInFrames={1305} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{cta: 'saibamais' as const}} />
+      <Composition id="GaviCarreiraBio" component={ReelsAd} durationInFrames={1305} fps={FPS} width={WIDTH} height={HEIGHT} defaultProps={{cta: 'linknabio' as const}} />
       {/* Modelada no anúncio de diagnóstico da turaCRM: 4 blocos, 16 s, 120 BPM. */}
       <Composition id="GaviPorDentro" component={PorDentroAd} durationInFrames={PD_DURATION} fps={FPS} width={WIDTH} height={HEIGHT} />
     </Folder>

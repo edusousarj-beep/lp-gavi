@@ -48,7 +48,7 @@ const result = await withPage((page) =>
         {x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity},
       );
       // logo no quadro final, comparada ao arquivo
-      scene.render(ctx, 24.0);
+      scene.render(ctx, mod.T.final + 1.5);
       const L = mod.LOGO;
       const got = ctx.getImageData(L.left, L.top, L.w, L.h).data;
       const ref = document.createElement('canvas');
