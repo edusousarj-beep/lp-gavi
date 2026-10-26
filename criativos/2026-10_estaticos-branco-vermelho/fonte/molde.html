@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Molde dos criativos estáticos</title>
+<style>
+  /* Inter Display em subconjunto latino (OFL, ver fontes/OFL.txt), a mesma
+     família da LP. Nome próprio para nunca cair numa Inter instalada na
+     máquina, com métrica diferente. */
+  @font-face {
+    font-family: "Criativo Display";
+    font-weight: 400;
+    src: url("fontes/InterDisplay-Regular.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Criativo Display";
+    font-weight: 800;
+    src: url("fontes/InterDisplay-ExtraBold.woff2") format("woff2");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { background: var(--fundo); }
+
+  /* --s é o corpo do gancho em px; o resto da peça escala com ele. */
+  .peca {
+    position: relative;
+    width: calc(var(--largura) * 1px);
+    height: calc(var(--altura) * 1px);
+    padding: calc(var(--topo) * 1px) calc(var(--lados) * 1px) calc(var(--base) * 1px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Criativo Display", sans-serif;
+    font-kerning: normal;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* As quebras vêm do compor(), em <br>: o navegador não requebra. */
+  .gancho, .promessa, .cta { white-space: nowrap; }
+
+  .gancho {
+    font-size: calc(var(--s) * 1px);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.022em;
+  }
+
+  .fio {
+    width: calc(var(--s) * 1.1px);
+    height: calc(var(--s) * 0.075px);
+    margin-bottom: calc(var(--s) * 0.42px);
+    background: var(--texto);
+  }
+
+  .promessa {
+    font-size: calc(var(--s) * 0.6px);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -0.012em;
+  }
+
+  .promessa strong { font-weight: 800; }
+
+  .cta {
+    margin-top: calc(var(--s) * 0.55px);
+    font-size: calc(var(--s) * 0.42px);
+    font-weight: 800;
+  }
+
+  /* Só na conferência (--guias): o que a interface da Meta cobre e as margens. */
+  .guia { position: absolute; background: rgba(0, 110, 255, 0.16); }
+  .guia--margem { background: none; outline: 3px dashed rgba(0, 110, 255, 0.7); }
+</style>
+</head>
+<body>
+  <main class="peca">
+    <h1 class="gancho"></h1>
+    <div class="base">
+      <div class="fio"></div>
+      <p class="promessa"></p>
+      <p class="cta"></p>
+    </div>
+  </main>
+<script>
+  // Vão mínimo entre o gancho e a base, em múltiplos de --s.
+  const VAO_MIN = 0.9;
+
+  // Proporções e espaçamento de cada bloco (iguais ao CSS).
+  const GANCHO = { peso: 800, corpo: 1, espacamento: -0.022, entrelinha: 1.06 };
+  const PROMESSA = { peso: 400, corpo: 0.6, espacamento: -0.012, entrelinha: 1.14 };
+
+  function escapar(t) {
+    return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // "R$ 15 mil" e "8 meses" não quebram no meio. *trecho* vira negrito.
+  function palavras(t) {
+    const lista = [];
+    let negrito = false;
+    const amarrado = t
+      .replace(/R\$ (\d+) mil/g, 'R$\u00A0$1\u00A0mil')
+      .replace(/(\d+) meses/g, '$1\u00A0meses');
+    for (const pedaco of amarrado.split(/(\*)/)) {
+      if (pedaco === '*') { negrito = !negrito; continue; }
+      for (const texto of pedaco.split(' ')) if (texto) lista.push({ texto, negrito });
+    }
+    return lista;
+  }
+
+  const regua = document.createElement('canvas').getContext('2d');
+  function medir(texto, peso, corpo, espacamento) {
+    regua.font = `${peso} ${corpo}px "Criativo Display"`;
+    regua.letterSpacing = `${espacamento * corpo}px`;
+    regua.fontKerning = 'normal';
+    return regua.measureText(texto).width;
+  }
+
+  // Palavras que não fecham linha: artigo, preposição, conjunção, "é", "ser", "não".
+  const FRACAS = new Set([
+    'a', 'o', 'as', 'os', 'e', 'é', 'um', 'uma', 'de', 'da', 'do', 'das', 'dos',
+    'em', 'no', 'na', 'nos', 'nas', 'ao', 'à', 'por', 'para', 'com', 'sem',
+    'que', 'se', 'te', 'ou', 'mas', 'seu', 'sua', 'não', 'já', 'quando', 'porque', 'ser',
+  ]);
+
+  // Quanto vale um corpo menor: abrir mão de 11% do tamanho do gancho custa
+  // o mesmo que uma quebra ruim. Assim o ajuste não espreme a letra até a
+  // quebra ficar feia.
+  const PESO_TAMANHO = 4;
+  const PISO_TAMANHO = 0.82;
+
+  // Quebra de linha em estilo Knuth-Plass, simplificada: escolhe as quebras
+  // que deixam as linhas com comprimentos parecidos. Cobra para fechar linha
+  // em palavra fraca, para partir o trecho em negrito e para deixar a última
+  // linha curta demais; dá um bônus pequeno para quebrar depois de pontuação.
+  function arranjar(lista, max) {
+    const n = lista.length;
+    const custo = Array(n + 1).fill(Infinity);
+    const corte = Array(n + 1);
+    custo[n] = 0;
+    for (let i = n - 1; i >= 0; i--) {
+      let w = 0;
+      for (let j = i; j < n; j++) {
+        w += lista[j].largura + (j > i ? lista[j - 1].espaco : 0);
+        if (w > max && j > i) break;
+        const fim = lista[j];
+        let c;
+        if (j === n - 1) {
+          c = Math.max(0, 0.55 - w / max) * 2;
+        } else {
+          c = (Math.max(0, max - w) / max) ** 2;
+          if (FRACAS.has(fim.texto.toLowerCase())) c += 0.45;
+          if (fim.negrito && lista[j + 1].negrito) c += 0.2;
+          if (/[,?.!;:]$/.test(fim.texto)) c -= 0.04;
+        }
+        if (w > max) c += 100;
+        c += 0.02;
+        if (c + custo[j + 1] < custo[i]) {
+          custo[i] = c + custo[j + 1];
+          corte[i] = j + 1;
+        }
+      }
+    }
+    const linhas = [];
+    for (let i = 0; i < n; i = corte[i]) linhas.push(lista.slice(i, corte[i]));
+    return { linhas, custo: custo[0] };
+  }
+
+  function emHtml(linhas) {
+    return linhas.map(linha => {
+      let h = '';
+      let aberto = false;
+      linha.forEach((p, k) => {
+        if (p.negrito && !aberto) { h += (k ? ' ' : '') + '<strong>'; aberto = true; }
+        else if (!p.negrito && aberto) { h += '</strong> '; aberto = false; }
+        else if (k) h += ' ';
+        h += escapar(p.texto);
+      });
+      return h + (aberto ? '</strong>' : '');
+    }).join('<br>');
+  }
+
+  // Mede cada palavra no corpo atual, quebra e escreve no elemento.
+  function compor(el, lista, bloco, s) {
+    const corpo = s * bloco.corpo;
+    const medidas = lista.map(p => {
+      const peso = p.negrito ? 800 : bloco.peso;
+      return {
+        ...p,
+        largura: medir(p.texto, peso, corpo, bloco.espacamento),
+        espaco: medir(' ', peso, corpo, bloco.espacamento),
+      };
+    });
+    const { linhas, custo } = arranjar(medidas, el.clientWidth - 1);
+    el.innerHTML = emHtml(linhas);
+    return {
+      custo,
+      linhas: linhas.map(l => l.map(p => p.texto).join(' ').replace(/\u00A0/g, ' ')),
+    };
+  }
+
+  function desenharGuias(peca, formato) {
+    const z = formato.zonaSegura;
+    const m = formato.margens;
+    const caixas = [];
+    if (z) {
+      caixas.push({ top: 0, left: 0, right: 0, height: z.topo });
+      caixas.push({ bottom: 0, left: 0, right: 0, height: z.base });
+      caixas.push({ top: 0, bottom: 0, left: 0, width: z.lados });
+      caixas.push({ top: 0, bottom: 0, right: 0, width: z.lados });
+    }
+    caixas.push({ top: m.topo, bottom: m.base, left: m.lados, right: m.lados, margem: true });
+    for (const c of caixas) {
+      const d = document.createElement('div');
+      d.className = c.margem ? 'guia guia--margem' : 'guia';
+      for (const lado of ['top', 'bottom', 'left', 'right', 'width', 'height']) {
+        if (lado in c) d.style[lado] = c[lado] + 'px';
+      }
+      peca.appendChild(d);
+    }
+  }
+
+  window.montar = async function (dados, formato, criativo, guias) {
+    const raiz = document.documentElement.style;
+    raiz.setProperty('--fundo', dados.cores.fundo);
+    raiz.setProperty('--texto', dados.cores.texto);
+    raiz.setProperty('--largura', formato.largura);
+    raiz.setProperty('--altura', formato.altura);
+    raiz.setProperty('--topo', formato.margens.topo);
+    raiz.setProperty('--base', formato.margens.base);
+    raiz.setProperty('--lados', formato.margens.lados);
+
+    const peca = document.querySelector('.peca');
+    const gancho = document.querySelector('.gancho');
+    const base = document.querySelector('.base');
+    const promessa = document.querySelector('.promessa');
+    const cta = document.querySelector('.cta');
+    cta.textContent = criativo.cta + '\u00A0\u2193';
+
+    await Promise.all([
+      document.fonts.load('400 100px "Criativo Display"'),
+      document.fonts.load('800 100px "Criativo Display"'),
+    ]);
+    await document.fonts.ready;
+
+    const textoGancho = palavras(criativo.gancho);
+    const textoPromessa = palavras(criativo.promessa);
+    const util = formato.altura - formato.margens.topo - formato.margens.base;
+    let linhas;
+    let custoQuebras;
+    const cabe = s => {
+      raiz.setProperty('--s', s);
+      const g = compor(gancho, textoGancho, GANCHO, s);
+      const p = compor(promessa, textoPromessa, PROMESSA, s);
+      linhas = { gancho: g.linhas, promessa: p.linhas };
+      custoQuebras = g.custo + p.custo;
+      const altura = gancho.offsetHeight + s * VAO_MIN + base.offsetHeight;
+      const semVazar = [gancho, promessa, cta].every(el => el.scrollWidth <= el.clientWidth);
+      return altura <= util && semVazar;
+    };
+
+    // 1. Maior corpo de gancho em que tudo cabe na área útil, com o vão
+    //    mínimo e sem nenhuma linha vazando para o lado.
+    let cabeEm = 20;
+    let naoCabe = formato.escalaMax;
+    if (cabe(naoCabe)) {
+      cabeEm = naoCabe;
+    } else {
+      for (let i = 0; i < 24; i++) {
+        const meio = (cabeEm + naoCabe) / 2;
+        if (cabe(meio)) cabeEm = meio; else naoCabe = meio;
+      }
+    }
+    const sMax = Math.floor(cabeEm * 2) / 2;
+
+    // 2. Desse corpo para baixo, o que dá a melhor composição.
+    let melhor = { s: sMax, nota: Infinity };
+    for (let t = sMax; t >= sMax * PISO_TAMANHO; t -= 0.5) {
+      if (!cabe(t)) continue;
+      const nota = custoQuebras + PESO_TAMANHO * (sMax - t) / sMax;
+      if (nota < melhor.nota) melhor = { s: t, nota };
+    }
+    const s = melhor.s;
+    cabe(s);
+
+    if (guias) desenharGuias(peca, formato);
+
+    // Medidas reais do texto, para conferir margens e zona segura.
+    const caixa = [gancho, base].map(el => el.getBoundingClientRect());
+    return {
+      corpoGancho: s,
+      corpoPromessa: +(s * PROMESSA.corpo).toFixed(1),
+      textoTopo: Math.round(caixa[0].top),
+      textoBase: Math.round(caixa[1].bottom),
+      vao: Math.round(caixa[1].top - caixa[0].bottom),
+      linhas,
+    };
+  };
+</script>
+</body>
+</html>

@@ -40,6 +40,8 @@ assets/logos/           logos das empresas dos mentorados (SVG)
 assets/img/             foto da Bruna, prints e capas dos vídeos
 tests/                  testes da página (npm test)
 package.json            só para os testes: Playwright preso em 1.56.1
+criativos/              peças de anúncio, fora da LP: cada lote tem README,
+                        PNGs exportados e o molde que gera tudo de novo
 ```
 
 HTML estático, sem build step. Para rodar local:

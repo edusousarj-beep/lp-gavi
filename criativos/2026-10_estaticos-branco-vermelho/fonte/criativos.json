@@ -1,0 +1,70 @@
+{
+  "cores": {
+    "fundo": "#FFFFFF",
+    "texto": "#D50000"
+  },
+  "formatos": [
+    {
+      "id": "feed-4x5",
+      "largura": 1440,
+      "altura": 1800,
+      "margens": { "topo": 150, "base": 150, "lados": 120 },
+      "escalaMax": 150,
+      "uso": "Feed do Facebook e do Instagram, Explorar, Marketplace"
+    },
+    {
+      "id": "stories-reels-9x16",
+      "largura": 1440,
+      "altura": 2560,
+      "margens": { "topo": 418, "base": 956, "lados": 120 },
+      "escalaMax": 140,
+      "uso": "Stories e Reels do Facebook e do Instagram",
+      "zonaSegura": { "topo": 358, "base": 896, "lados": 86 }
+    },
+    {
+      "id": "quadrado-1x1",
+      "largura": 1440,
+      "altura": 1440,
+      "margens": { "topo": 120, "base": 120, "lados": 120 },
+      "escalaMax": 140,
+      "uso": "Coluna da direita, resultados de busca e demais posicionamentos quadrados"
+    }
+  ],
+  "criativos": [
+    {
+      "id": "EST01",
+      "slug": "renda-15k-cargo",
+      "gancho": "Você ganha mais de R$ 15 mil por mês, mas sabe que seu inglês está te impedindo de assumir um cargo maior?",
+      "promessa": "Te faço ficar fluente *ou você não paga.*",
+      "cta": "Te interessa? Clique aqui."
+    },
+    {
+      "id": "EST02",
+      "slug": "gerente-diretor-silencio",
+      "gancho": "Você é gerente ou diretor, domina sua área, mas quando a reunião é em inglês prefere ficar em silêncio?",
+      "promessa": "Te faço ficar fluente *ou você não paga.*",
+      "cta": "Te interessa? Clique aqui."
+    },
+    {
+      "id": "EST03",
+      "slug": "executivo-promocao-8-meses",
+      "gancho": "Você é um executivo, ganha acima de R$ 15 mil por mês e precisa desenvolver o inglês para ser promovido?",
+      "promessa": "Te faço ficar fluente em 8 meses *ou você não paga.*",
+      "cta": "Te interessa? Clique aqui."
+    },
+    {
+      "id": "EST04",
+      "slug": "oportunidades-8-meses",
+      "gancho": "Quantas oportunidades profissionais você já deixou passar porque não consegue falar inglês com confiança?",
+      "promessa": "Te faço ficar fluente em 8 meses *ou você não paga.*",
+      "cta": "Te interessa? Clique aqui."
+    },
+    {
+      "id": "EST05",
+      "slug": "promocao-reunioes-8-meses",
+      "gancho": "Quer ser promovido, mas o inglês te atrapalha?",
+      "promessa": "Te ajudo a liderar reuniões de forma fluente para o inglês não te atrapalhar em menos de 8 meses, *ou você não paga.*",
+      "cta": "Te interessa? Clique aqui."
+    }
+  ]
+}
