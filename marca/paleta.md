@@ -62,7 +62,7 @@ O que mais renova a marca não é o código de cada cor, é quem domina a peça.
 
 ## Por que o vermelho mudou mais que as outras
 
-As maiores escolas de inglês do país usam vermelho como cor principal ou de
+Seis grandes redes de inglês do país usam vermelho como cor principal ou de
 destaque, e o vermelho anterior da Gavi era, na prática, o mesmo delas: a
 distância para o do CNA (0.019) fica abaixo do limiar de 0.02.
 
