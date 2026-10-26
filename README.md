@@ -39,6 +39,7 @@ assets/js/reveal.js     reveals no scroll, IntersectionObserver
 assets/logos/           logos das empresas dos mentorados (SVG)
 assets/img/             foto da Bruna, prints e capas dos vídeos
 tests/                  testes da página (npm test)
+marca/paleta.md         paleta da marca, renovada em 26/10/2026 (a LP usa outra)
 package.json            só para os testes: Playwright preso em 1.56.1
 ```
 

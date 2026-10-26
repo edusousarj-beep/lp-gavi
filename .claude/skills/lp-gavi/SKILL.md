@@ -91,6 +91,11 @@ da Growth não tinha relação com a marca. `--surface`, `--border`, `--text-3` 
 Paletas anteriores, no histórico do git: laranja da Growth (até `4aef10b`) e
 petróleo com vermelho (`981b86d`). Não volte a nenhuma sem o usuário pedir.
 
+A paleta da marca (petróleo com vermelho) foi renovada em 26/10/2026 e está em
+`marca/paleta.md`. Esta LP não usa ela. Se o usuário pedir para aplicar, siga
+as regras de contraste de lá: texto sobre o vermelho novo é petróleo, nunca
+branco.
+
 ### Regras de contraste desta paleta
 
 O amarelo é claro:
