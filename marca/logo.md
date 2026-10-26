@@ -4,6 +4,9 @@ Inglês com a Gavi. Novo em 26/10/2026, para a mentoria voltada ao
 corporativo (executivos e profissionais de diversas áreas). Substitui o G
 vermelho dentro do balão de fala. Usa a paleta de `marca/paleta.md`.
 
+A LP não usa este logo: em 26/10/2026 o usuário decidiu deixá-la como está,
+com o nome em texto e o amarelo da página da bio.
+
 ## A ideia
 
 O logo antigo tinha reticências dentro de um balão: a fala presa. O novo
@@ -82,5 +85,6 @@ papel; o descritor, com 9.5 px e 6 pt.
   ponto à mão a partir destes arquivos.
 - **Registro.** Antes de imprimir em escala, confira com quem cuida da marca
   se o registro no INPI cobre o logo novo.
-- **LP.** O logo não entrou na LP, que ainda usa o amarelo da página da bio.
-  Entra junto com a troca de paleta, se o usuário pedir.
+- **Escolha final.** Em 26/10/2026 o usuário pediu três opções para escolher:
+  ponto final (a deste arquivo), aspas e G que avança. Se a escolha for
+  outra, os arquivos de `marca/logo/` e este guia mudam.

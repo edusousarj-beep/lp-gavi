@@ -6,7 +6,7 @@ como mais do mesmo no mercado de inglês.
 
 Esta é a paleta da marca. A LP deste repositório usa outra, a da página da bio
 (amarelo sobre quase-preto, ver `.claude/skills/lp-gavi/SKILL.md`), e não
-mudou.
+muda: em 26/10/2026 o usuário decidiu não aplicar a paleta nova nela.
 
 ## As sete cores
 
@@ -97,9 +97,6 @@ vermelho foi para 0.31 e o texto em cima dele virou petróleo.
 
 - **Logo.** Substituído em 26/10/2026 por um logo tipográfico com ponto final
   vermelho: ver `marca/logo.md`.
-- **LP.** Continua no amarelo da página da bio, por decisão de 27/09/2026. Só
-  muda se o usuário pedir: a troca mexe nos tokens, nas regras de contraste da
-  skill `lp-gavi` e nos testes.
 
 ## Como os números foram calculados
 
