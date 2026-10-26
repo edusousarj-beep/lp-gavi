@@ -92,9 +92,9 @@ Paletas anteriores, no histórico do git: laranja da Growth (até `4aef10b`) e
 petróleo com vermelho (`981b86d`). Não volte a nenhuma sem o usuário pedir.
 
 A paleta da marca (petróleo com vermelho) foi renovada em 26/10/2026 e está em
-`marca/paleta.md`. Esta LP não usa ela. Se o usuário pedir para aplicar, siga
-as regras de contraste de lá: texto sobre o vermelho novo é petróleo, nunca
-branco.
+`marca/paleta.md`; o logo novo, em `marca/logo.md`. Esta LP não usa nenhum dos
+dois. Se o usuário pedir para aplicar, siga as regras de lá: texto sobre o
+vermelho novo é petróleo, nunca branco, e o logo segue as versões por fundo.
 
 ### Regras de contraste desta paleta
 

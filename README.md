@@ -40,6 +40,8 @@ assets/logos/           logos das empresas dos mentorados (SVG)
 assets/img/             foto da Bruna, prints e capas dos vídeos
 tests/                  testes da página (npm test)
 marca/paleta.md         paleta da marca, renovada em 26/10/2026 (a LP usa outra)
+marca/logo.md           logo da marca (26/10/2026): ideia, versões e regras
+marca/logo/             logo em SVG e PNG, avatar e favicon
 package.json            só para os testes: Playwright preso em 1.56.1
 ```
 

@@ -95,9 +95,8 @@ vermelho foi para 0.31 e o texto em cima dele virou petróleo.
 
 ## Em aberto
 
-- **Logo.** O G vermelho novo sobre o água dá 2.10:1 (o atual dá 3.01:1). Hoje
-  a sombra escura do desenho segura a leitura do G. Se o logo for redesenhado
-  sem a sombra longa, o G precisa de contorno petróleo.
+- **Logo.** Substituído em 26/10/2026 por um logo tipográfico com ponto final
+  vermelho: ver `marca/logo.md`.
 - **LP.** Continua no amarelo da página da bio, por decisão de 27/09/2026. Só
   muda se o usuário pedir: a troca mexe nos tokens, nas regras de contraste da
   skill `lp-gavi` e nos testes.
